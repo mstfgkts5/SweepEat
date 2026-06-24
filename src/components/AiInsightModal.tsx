@@ -82,9 +82,6 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
 
         <div className="bottom-sheet-header">
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-light)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-              {item.restaurant}
-            </span>
             <h3 className="bottom-sheet-title">{language === "tr" ? item.nameTr : item.nameEn}</h3>
           </div>
           <button className="close-btn" onClick={onClose}>

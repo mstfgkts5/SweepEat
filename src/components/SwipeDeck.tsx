@@ -183,10 +183,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
             <div className="card-content-overlay">
               <div className="card-title-row">
                 <span className="card-title">{language === "tr" ? nextItem.nameTr : nextItem.nameEn}</span>
-                <span className="card-price">
-                  {nextItem.currency}
-                  {nextItem.price.toFixed(2)}
-                </span>
               </div>
             </div>
           </div>
@@ -245,10 +241,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           <div className="card-content-overlay">
             <div className="card-title-row">
               <span className="card-title">{language === "tr" ? activeItem.nameTr : activeItem.nameEn}</span>
-              <span className="card-price">
-                {activeItem.currency}
-                {activeItem.price.toFixed(2)}
-              </span>
             </div>
 
             <div className="card-subtitle-row">

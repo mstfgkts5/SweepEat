@@ -69,19 +69,7 @@ export default function App() {
 
   const getFilteredPool = () => {
     const unswiped = foodPool.filter((x) => !swipedIds.includes(x.id));
-    switch (activePersona) {
-      case "vegan":
-        return unswiped.filter((x) => x.isVegan);
-      case "fit":
-        return unswiped.filter((x) => x.isHealthy || x.calories < 600);
-      case "economic":
-        return unswiped.filter((x) => x.price <= 150.00);
-      case "gourmet":
-        return unswiped.filter((x) => x.rating >= 4.7);
-      case "cheat_day":
-      default:
-        return unswiped;
-    }
+    return unswiped.filter((x) => x.modes.includes(activePersona));
   };
 
   const renderActiveContent = () => {

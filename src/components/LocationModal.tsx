@@ -9,23 +9,15 @@ interface LocationModalProps {
   language: "tr" | "en";
 }
 
-// Top 15 Gastronomic & Metropolitan Turkish Cities
+// The 7 Selected Gastronomic & Metropolitan Turkish Cities
 const POPULAR_TURKISH_CITIES = [
   "İstanbul",
   "Ankara",
   "İzmir",
-  "Bursa",
-  "Antalya",
-  "Adana",
+  "Mersin",
   "Gaziantep",
-  "Konya",
-  "Trabzon",
-  "Muğla",
   "Eskişehir",
-  "Hatay",
-  "Şanlıurfa",
-  "Kayseri",
-  "Mersin"
+  "Adana"
 ];
 
 export default function LocationModal({

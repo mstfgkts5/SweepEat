@@ -39,7 +39,7 @@ export const translations = {
     likedEmptyText: "Henüz beğendiğin bir yemek yok.",
 
     // Profile Screen
-    profileHeader: "SweepEat Gurmesi",
+    profileHeader: "SweepEat",
     profileLocation: "İstanbul, TR",
     profileAiModeLabel: "Aktif Yapay Zeka Modu",
     profileFitTitle: "Fit & Diyet Modu",
@@ -82,7 +82,7 @@ export const translations = {
     winnerOrderBtn: "Sipariş Ver",
     winnerReturnBtn: "Keşfetmeye Geri Dön",
     winnerTabCommentary: "Hakem Yorumu",
-    winnerTabRestaurants: "En İyi 10 Mekan",
+    winnerTabRestaurants: "En İyi 3 Restoran",
     winnerNoRestaurants: "Bu ilde uygun mekan bulunamadı.",
     winnerGoogleMapBtn: "Haritada Aç"
   },
@@ -126,7 +126,7 @@ export const translations = {
     likedEmptyText: "No liked foods yet.",
 
     // Profile Screen
-    profileHeader: "SweepEat Gourmet",
+    profileHeader: "SweepEat",
     profileLocation: "Istanbul, TR",
     profileAiModeLabel: "Active AI Mode",
     profileFitTitle: "Fit & Diet Mode",
@@ -169,7 +169,7 @@ export const translations = {
     winnerOrderBtn: "Order Now",
     winnerReturnBtn: "Return to Exploring",
     winnerTabCommentary: "Referee Review",
-    winnerTabRestaurants: "Top 10 Places",
+    winnerTabRestaurants: "Top 3 Restaurants",
     winnerNoRestaurants: "No suitable places found in this city.",
     winnerGoogleMapBtn: "Open in Maps"
   }

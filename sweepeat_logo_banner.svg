@@ -1,0 +1,29 @@
+<svg width="400" height="150" viewBox="0 0 400 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="150" rx="24" fill="url(#bgGrad)" />
+  <g transform="translate(30, 15)">
+    <!-- Logo circle -->
+    <circle cx="60" cy="60" r="56" fill="url(#circleGrad)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="4"/>
+    <circle cx="60" cy="60" r="59.5" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1"/>
+    <!-- Logo SVG Icon inside circle -->
+    <g transform="translate(10, 10)">
+      <path d="M20 50 C20 70, 80 70, 80 50" stroke="white" stroke-width="8" stroke-linecap="round" />
+      <path d="M35 55 C40 62, 60 62, 65 55" stroke="white" stroke-width="4" stroke-linecap="round" />
+      <line x1="30" y1="25" x2="30" y2="45" stroke="white" stroke-width="6" stroke-linecap="round" />
+      <line x1="50" y1="20" x2="50" y2="45" stroke="white" stroke-width="6" stroke-linecap="round" />
+      <line x1="70" y1="25" x2="70" y2="45" stroke="white" stroke-width="6" stroke-linecap="round" />
+    </g>
+  </g>
+  <!-- Text -->
+  <text x="180" y="78" fill="white" font-family="'Outfit', sans-serif" font-size="44" font-weight="800" letter-spacing="-1">SweepEat</text>
+  <text x="182" y="105" fill="rgba(255, 255, 255, 0.8)" font-family="'Outfit', sans-serif" font-size="16" font-weight="500">Lezzet Turnuvası Başlasın!</text>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D62B00" />
+      <stop offset="100%" stop-color="#A51A00" />
+    </linearGradient>
+    <radialGradient id="circleGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(60 60) rotate(90) scale(56)">
+      <stop offset="0%" stop-color="#FF6B00" />
+      <stop offset="100%" stop-color="#e05e00" />
+    </radialGradient>
+  </defs>
+</svg>
