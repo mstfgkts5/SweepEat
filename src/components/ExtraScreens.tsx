@@ -6,6 +6,7 @@ import confetti from "canvas-confetti";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
 import type { ImpactStats } from "../data/sustainability";
 import { getVerifiedRestaurant, RATING_CHECKED_AT } from "../data/verifiedRestaurants";
+import { rankByRating, hasTrustedRating } from "../data/ranking";
 import { REAL_RESTAURANTS_DB, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
 import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
 
@@ -622,19 +623,17 @@ const toVerifiedList = (pool: RealRestaurant[], city: string, language: "tr" | "
     .map((rest) => ({ rest, v: getVerifiedRestaurant(city, rest.name) }))
     .filter((x): x is { rest: RealRestaurant; v: NonNullable<typeof x.v> } => x.v !== null);
 
-  // Hand-checked ratings first (highest, weighted by review count), then the rest in list order.
-  verified.sort((x, y) => {
-    const sx = x.v.rating != null ? x.v.rating + Math.min(Math.log10((x.v.reviews ?? 1) + 1) / 20, 0.2) : -1;
-    const sy = y.v.rating != null ? y.v.rating + Math.min(Math.log10((y.v.reviews ?? 1) + 1) / 20, 0.2) : -1;
-    return sy - sx;
-  });
+  // Trusted ratings first, best Bayesian score (rating weighed by review count) first;
+  // the rest keep list order. See src/data/ranking.ts.
+  const ranked = rankByRating(verified, (x) => ({ rating: x.v.rating, reviews: x.v.reviews }));
 
-  return verified.slice(0, 3).map(({ rest, v }, index) => ({
+  return ranked.slice(0, 3).map(({ rest, v }, index) => ({
     id: `${index + 1}`,
     // "(Karaköy)" / "(Meze Reyonu)" hints come from the old list and can contradict the real address.
     name: rest.name.split("(")[0].trim(),
-    rating: v.rating ?? null,
-    reviewCount: v.reviews ?? null,
+    // Stars only when enough reviews back them up
+    rating: hasTrustedRating(v.rating, v.reviews) ? (v.rating as number) : null,
+    reviewCount: hasTrustedRating(v.rating, v.reviews) ? (v.reviews as number) : null,
     area: v.district || rest.area,
     address: v.address,
     mapsUri: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rest.name.split("(")[0].trim()} ${v.address || v.district} ${city}`)}`,
