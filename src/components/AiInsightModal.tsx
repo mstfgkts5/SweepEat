@@ -1,14 +1,16 @@
 import React from "react";
-import { X, Dumbbell, Flame, Wallet, Compass, Sparkles, Leaf } from "lucide-react";
-import type { MenuItem } from "../data/mockFood";
+import { X, Dumbbell, Flame, Wallet, Compass, Sparkles, Leaf, Landmark, Recycle } from "lucide-react";
+import type { MenuItem, Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
+import { estimateCarbon, getPersonaInsight, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
 
 interface AiInsightModalProps {
   item: MenuItem;
   onClose: () => void;
-  activePersona: "fit" | "cheat_day" | "economic" | "gourmet" | "vegan";
-  onChangePersona: (persona: "fit" | "cheat_day" | "economic" | "gourmet" | "vegan") => void;
+  activePersona: Persona;
+  onChangePersona: (persona: Persona) => void;
   language: "tr" | "en";
+  showCarbon?: boolean;
 }
 
 export const AiInsightModal: React.FC<AiInsightModalProps> = ({
@@ -16,9 +18,12 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
   onClose,
   activePersona,
   onChangePersona,
-  language
+  language,
+  showCarbon = false
 }) => {
   const t = translations[language];
+  const eco = ecoText[language];
+  const carbon = estimateCarbon(item);
 
   const getPersonaLabel = (key: string) => {
     if (language === "tr") {
@@ -33,6 +38,10 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
           return "Gurme";
         case "vegan":
           return "Vegan";
+        case "tourist":
+          return "Turist / Yerel";
+        case "zero_waste":
+          return "Sıfır Atık";
         default:
           return "";
       }
@@ -48,6 +57,10 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
           return "Gourmet";
         case "vegan":
           return "Vegan";
+        case "tourist":
+          return "Tourist / Local";
+        case "zero_waste":
+          return "Zero Waste";
         default:
           return "";
       }
@@ -66,6 +79,10 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
         return <Compass size={18} />;
       case "vegan":
         return <Leaf size={18} />;
+      case "tourist":
+        return <Landmark size={18} />;
+      case "zero_waste":
+        return <Recycle size={18} />;
       default:
         return null;
     }
@@ -91,7 +108,7 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
 
         {/* Persona Selector Tabs */}
         <div className="persona-selector">
-          {(["fit", "cheat_day", "economic", "gourmet", "vegan"] as const).map((persona) => (
+          {(["fit", "cheat_day", "economic", "gourmet", "vegan", "tourist", "zero_waste"] as const).map((persona) => (
             <button
               key={persona}
               className={`persona-tab ${activePersona === persona ? "active" : ""}`}
@@ -110,7 +127,7 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
             <span>{t.insightReferee} - {getPersonaLabel(activePersona)}</span>
           </div>
           <p className="ai-commentary">
-            "{item.aiInsights[language][activePersona]}"
+            "{getPersonaInsight(item, activePersona, language)}"
           </p>
         </div>
 
@@ -135,6 +152,12 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
               <span className="macro-label">{t.insightFat}</span>
             </div>
           </div>
+          {showCarbon && (
+            <div className="carbon-row">
+              <span className="carbon-grade-chip" style={{ backgroundColor: CARBON_GRADE_COLORS[carbon.grade] }}>{carbon.grade}</span>
+              <span>{eco.carbonLabel}: <strong>{carbon.kg} kg CO₂e</strong></span>
+            </div>
+          )}
           <div style={{ fontSize: "10px", color: "var(--text-light)", textAlign: "center", marginTop: "12px", fontStyle: "italic" }}>
             {language === "tr"
               ? "*Standart yerel tarif hazırlama standartlarına göre tahmin edilmiştir."

@@ -52,6 +52,8 @@ export const translations = {
     profileGourmetDesc: "Kullanıcı geçmişine göre en eşsiz, popüler ve gurme tatları önerir.",
     profileVeganTitle: "Vegan Modu",
     profileVeganDesc: "Tamamen bitkisel, temiz ve sürdürülebilir lezzetli vegan alternatifleri filtreler.",
+    profileTouristTitle: "Turist Modu (Yerel Lezzetler)",
+    profileTouristDesc: "Türkiye'nin en meşhur yöresel ve geleneksel lezzetlerini sunar.",
     
     // Settings & App Info
     profileSettingsHeader: "Ayarlar",
@@ -139,6 +141,8 @@ export const translations = {
     profileGourmetDesc: "Recommends unique, popular, and gourmet tastes based on user history.",
     profileVeganTitle: "Vegan Mode",
     profileVeganDesc: "Filters entirely plant-based, clean, and sustainable delicious vegan alternatives.",
+    profileTouristTitle: "Tourist Mode (Local Food)",
+    profileTouristDesc: "Highlights famous traditional and local Turkish culinary delights.",
     
     // Settings & App Info
     profileSettingsHeader: "Settings",
