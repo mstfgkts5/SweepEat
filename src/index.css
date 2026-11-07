@@ -1668,3 +1668,8 @@ body {
   color: var(--text-light);
   margin-bottom: 6px;
 }
+
+/* Winner screen scrolls; its blocks must keep their full height instead of shrinking under the buttons */
+.winner-screen > * {
+  flex-shrink: 0;
+}
