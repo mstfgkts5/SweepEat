@@ -741,7 +741,7 @@ body {
 /* AI Persona Selector inside Sheet */
 .persona-selector {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   background-color: #f3f4f6;
   padding: 4px;
@@ -1491,4 +1491,205 @@ body {
 
 .restaurant-maps-btn:active {
   transform: scale(0.95);
+}
+
+/* ==========================================
+   SUSTAINABILITY (HASAT-13): carbon labels, zero-waste deals, impact
+   ========================================== */
+.persona-selector .persona-tab:last-child:nth-child(3n + 1) {
+  grid-column: 1 / -1;
+}
+
+.nutrient-tag.carbon-tag {
+  color: #ffffff;
+  font-weight: 800;
+  backdrop-filter: none;
+}
+
+.surplus-banner {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(10, 132, 107, 0.92);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.surplus-banner-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.surplus-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.surplus-price {
+  font-size: 13px;
+}
+
+.surplus-price s {
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+.surplus-meta {
+  font-size: 10px;
+  opacity: 0.95;
+}
+
+.carbon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.carbon-grade-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.carbon-grade-chip.large {
+  min-width: 34px;
+  height: 34px;
+  font-size: 17px;
+  border-radius: 10px;
+}
+
+.duel-carbon-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.duel-eco-hint {
+  color: var(--emerald-green);
+  font-weight: 700;
+}
+
+.eco-box {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--emerald-green-light);
+  border: 1px solid rgba(10, 132, 107, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.eco-box-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--emerald-green);
+}
+
+.eco-note {
+  font-size: 10px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.action-btn.rescue-btn {
+  background: var(--emerald-green);
+  box-shadow: 0 6px 16px var(--emerald-green-glow);
+}
+
+.action-btn.rescue-btn:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.impact-card {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0A846B 0%, #13a383 100%);
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.impact-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.impact-value {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.impact-label {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.eco-switch {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background: #d1d5db;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.eco-switch.on {
+  background: var(--emerald-green);
+}
+
+.eco-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: left 0.2s;
+}
+
+.eco-switch.on .eco-switch-knob {
+  left: 21px;
+}
+
+.card-subtitle-row .carbon-tag {
+  font-size: 11px;
+  padding: 3px 8px;
 }

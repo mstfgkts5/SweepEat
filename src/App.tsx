@@ -6,8 +6,12 @@ import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
 import { LikedScreen, ProfileScreen, TournamentScreen, WinnerScreen } from "./components/ExtraScreens";
 import { mockFoodItems } from "./data/mockFood";
-import type { MenuItem } from "./data/mockFood";
+import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
+import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
+import type { ImpactStats } from "./data/sustainability";
+
+const AVERAGE_CARBON = getAverageCarbon(mockFoodItems);
 
 type TabType = "explore" | "liked" | "profile";
 
@@ -26,7 +30,28 @@ export default function App() {
   const [foodPool, setFoodPool] = useState<MenuItem[]>(mockFoodItems);
   const [likedPool, setLikedPool] = useState<MenuItem[]>([]);
   const [swipedIds, setSwipedIds] = useState<string[]>([]);
-  const [activePersona, setActivePersona] = useState<"fit" | "cheat_day" | "economic" | "gourmet" | "vegan">("gourmet");
+  const [activePersona, setActivePersona] = useState<Persona>("gourmet");
+
+  // Sustainability (HASAT-13): carbon labels are opt-in, always on in Zero Waste mode
+  const [showCarbonLabels, setShowCarbonLabels] = useState(false);
+  const [impact, setImpact] = useState<ImpactStats>(() => loadImpact());
+  const isZeroWaste = activePersona === "zero_waste";
+  const carbonVisible = showCarbonLabels || isZeroWaste;
+
+  const handleRescue = (item: MenuItem) => {
+    const deal = getSurplusDeal(item);
+    if (!deal) return;
+    setImpact((prev) => {
+      const next: ImpactStats = {
+        meals: prev.meals + 1,
+        foodKg: Math.round((prev.foodKg + deal.foodKg) * 100) / 100,
+        co2Kg: Math.round((prev.co2Kg + deal.co2Kg) * 10) / 10,
+        moneySaved: prev.moneySaved + (item.price - deal.rescuedPrice)
+      };
+      saveImpact(next);
+      return next;
+    });
+  };
 
   // Selected item for AI Modal
   const [selectedInsightItem, setSelectedInsightItem] = useState<MenuItem | null>(null);
@@ -69,6 +94,7 @@ export default function App() {
 
   const getFilteredPool = () => {
     const unswiped = foodPool.filter((x) => !swipedIds.includes(x.id));
+    if (activePersona === "zero_waste") return unswiped.filter((x) => getSurplusDeal(x) !== null);
     return unswiped.filter((x) => x.modes.includes(activePersona));
   };
 
@@ -78,6 +104,7 @@ export default function App() {
         <TournamentScreen
           likedPool={likedPool}
           language={language}
+          showCarbon={carbonVisible}
           onCancel={() => setIsTournamentActive(false)}
           onFinish={(champ) => {
             setTournamentChampion({ item: champ, commentary: "" });
@@ -91,9 +118,13 @@ export default function App() {
       return (
         <WinnerScreen
           champion={tournamentChampion.item}
-          commentary={tournamentChampion.item.aiInsights[language][activePersona]}
+          commentary={getPersonaInsight(tournamentChampion.item, activePersona, language)}
           language={language}
           userCity={userCity}
+          showCarbon={carbonVisible}
+          averageCarbon={AVERAGE_CARBON}
+          zeroWaste={isZeroWaste}
+          onRescue={handleRescue}
           onRestart={() => {
             setTournamentChampion(null);
             handleRestartExplore();
@@ -111,6 +142,8 @@ export default function App() {
               onSwipe={handleSwipe}
               onOpenInsight={(item) => setSelectedInsightItem(item)}
               language={language}
+              showCarbon={carbonVisible}
+              zeroWaste={isZeroWaste}
             />
           </div>
         );
@@ -130,6 +163,9 @@ export default function App() {
             onChangePersona={(p) => setActivePersona(p)}
             language={language}
             setLanguage={setLanguage}
+            showCarbonLabels={showCarbonLabels}
+            setShowCarbonLabels={setShowCarbonLabels}
+            impact={impact}
           />
         );
       default:
@@ -254,6 +290,7 @@ export default function App() {
             activePersona={activePersona}
             onChangePersona={(p) => setActivePersona(p)}
             language={language}
+            showCarbon={carbonVisible}
           />
         )}
 

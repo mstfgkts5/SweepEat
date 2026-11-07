@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star } from "lucide-react";
-import type { MenuItem } from "../data/mockFood";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout } from "lucide-react";
+import type { MenuItem, Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
+import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
+import type { ImpactStats } from "../data/sustainability";
 import { REAL_RESTAURANTS_DB, getFallbackRestaurants, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
 import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
 
@@ -89,19 +91,26 @@ export const LikedScreen: React.FC<LikedScreenProps> = ({
 // PROFILE / SETTINGS SCREEN
 // ==========================================
 interface ProfileScreenProps {
-  activePersona: "fit" | "cheat_day" | "economic" | "gourmet" | "vegan";
-  onChangePersona: (persona: "fit" | "cheat_day" | "economic" | "gourmet" | "vegan") => void;
+  activePersona: Persona;
+  onChangePersona: (persona: Persona) => void;
   language: "tr" | "en";
   setLanguage: (lang: "tr" | "en") => void;
+  showCarbonLabels?: boolean;
+  setShowCarbonLabels?: (value: boolean) => void;
+  impact?: ImpactStats;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   activePersona,
   onChangePersona,
   language,
-  setLanguage
+  setLanguage,
+  showCarbonLabels = false,
+  setShowCarbonLabels,
+  impact = EMPTY_IMPACT
 }) => {
   const t = translations[language];
+  const eco = ecoText[language];
 
   const getPersonaDesc = (persona: string) => {
     switch (persona) {
@@ -115,6 +124,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         return t.profileGourmetDesc;
       case "vegan":
         return t.profileVeganDesc;
+      case "tourist":
+        return t.profileTouristDesc;
+      case "zero_waste":
+        return eco.zeroWasteDesc;
       default:
         return "";
     }
@@ -132,6 +145,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         return t.profileGourmetTitle;
       case "vegan":
         return t.profileVeganTitle;
+      case "tourist":
+        return t.profileTouristTitle;
+      case "zero_waste":
+        return eco.zeroWasteTitle;
       default:
         return "";
     }
@@ -149,6 +166,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         return <Compass size={18} />;
       case "vegan":
         return <Leaf size={18} />;
+      case "tourist":
+        return <Landmark size={18} />;
+      case "zero_waste":
+        return <Recycle size={18} />;
       default:
         return <User size={18} />;
     }
@@ -164,14 +185,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
       <span className="section-label">{t.profileAiModeLabel}</span>
       <div className="setting-card">
-        {(["fit", "cheat_day", "economic", "gourmet", "vegan"] as const).map((persona) => (
+        {(["fit", "cheat_day", "economic", "gourmet", "vegan", "tourist", "zero_waste"] as const).map((persona) => (
           <div
             key={persona}
             className={`setting-row`}
             style={{
               padding: "8px 0",
               cursor: "pointer",
-              borderBottom: persona !== "vegan" ? "1px solid #f3f4f6" : "none"
+              borderBottom: persona !== "zero_waste" ? "1px solid #f3f4f6" : "none"
             }}
             onClick={() => onChangePersona(persona)}
           >
@@ -197,8 +218,51 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         ))}
       </div>
 
+      {/* SUSTAINABILITY IMPACT (HASAT-13) */}
+      <span className="section-label">{eco.impactHeader}</span>
+      <div className="impact-card">
+        <div className="impact-stat">
+          <span className="impact-value">{impact.meals}</span>
+          <span className="impact-label">{eco.impactMeals}</span>
+        </div>
+        <div className="impact-stat">
+          <span className="impact-value">{impact.foodKg} kg</span>
+          <span className="impact-label">{eco.impactFood}</span>
+        </div>
+        <div className="impact-stat">
+          <span className="impact-value">{impact.co2Kg} kg</span>
+          <span className="impact-label">{eco.impactCo2}</span>
+        </div>
+        <div className="impact-stat">
+          <span className="impact-value">{impact.moneySaved} ₺</span>
+          <span className="impact-label">{eco.impactMoney}</span>
+        </div>
+      </div>
+
       {/* SETTINGS SECTION */}
       <span className="section-label">{t.profileSettingsHeader}</span>
+      {setShowCarbonLabels && (
+        <div className="setting-card">
+          <div
+            className="setting-row"
+            style={{ padding: "8px 0", borderBottom: "none", cursor: "pointer" }}
+            onClick={() => setShowCarbonLabels(!showCarbonLabels)}
+          >
+            <div className="setting-info">
+              <div className="setting-icon" style={{ color: "var(--emerald-green)", backgroundColor: "var(--emerald-green-light)" }}>
+                <Sprout size={18} />
+              </div>
+              <div>
+                <span className="setting-title" style={{ display: "block" }}>{eco.carbonToggleTitle}</span>
+                <span className="setting-desc" style={{ fontSize: "11px" }}>{eco.carbonToggleDesc}</span>
+              </div>
+            </div>
+            <div className={`eco-switch ${showCarbonLabels ? "on" : ""}`} role="switch" aria-checked={showCarbonLabels}>
+              <div className="eco-switch-knob" />
+            </div>
+          </div>
+        </div>
+      )}
       <div className="setting-card">
         <div className="setting-row" style={{ padding: "8px 0", borderBottom: "none" }}>
           <div className="setting-info">
@@ -265,15 +329,18 @@ interface TournamentScreenProps {
   onFinish: (champion: MenuItem) => void;
   onCancel: () => void;
   language: "tr" | "en";
+  showCarbon?: boolean;
 }
 
 export const TournamentScreen: React.FC<TournamentScreenProps> = ({
   likedPool,
   onFinish,
   onCancel,
-  language
+  language,
+  showCarbon = false
 }) => {
   const t = translations[language];
+  const eco = ecoText[language];
   // We need to establish a power of 2 bracket size (e.g. 4 or 8)
   const size = likedPool.length >= 8 ? 8 : 4;
   const initialItems = likedPool.slice(0, size);
@@ -328,6 +395,20 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
 
   if (!itemA || !itemB) return null;
 
+  // Carbon comparison for the current duel (only rendered when labels are on)
+  const carbonA = estimateCarbon(itemA);
+  const carbonB = estimateCarbon(itemB);
+  const renderDuelCarbon = (own: typeof carbonA, other: typeof carbonA) => {
+    if (!showCarbon) return null;
+    return (
+      <div className="duel-carbon-row">
+        <span className="carbon-grade-chip" style={{ backgroundColor: CARBON_GRADE_COLORS[own.grade] }}>{own.grade}</span>
+        <span>{own.kg} kg CO₂e</span>
+        {own.kg < other.kg && <span className="duel-eco-hint">🌱 {eco.duelEcoHint}</span>}
+      </div>
+    );
+  };
+
   return (
     <div className="tournament-screen">
       <div className="tournament-title-row">
@@ -344,6 +425,7 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
           <img src={itemA.imageUrl} alt={language === "tr" ? itemA.nameTr : itemA.nameEn} className="duel-card-img" />
           <div className="duel-card-info">
             <span className="duel-card-name">{language === "tr" ? itemA.nameTr : itemA.nameEn}</span>
+            {renderDuelCarbon(carbonA, carbonB)}
           </div>
         </div>
 
@@ -354,6 +436,7 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
           <img src={itemB.imageUrl} alt={language === "tr" ? itemB.nameTr : itemB.nameEn} className="duel-card-img" />
           <div className="duel-card-info">
             <span className="duel-card-name">{language === "tr" ? itemB.nameTr : itemB.nameEn}</span>
+            {renderDuelCarbon(carbonB, carbonA)}
           </div>
         </div>
       </div>
@@ -374,6 +457,10 @@ interface WinnerScreenProps {
   onRestart: () => void;
   language: "tr" | "en";
   userCity: string;
+  showCarbon?: boolean;
+  averageCarbon?: number;
+  zeroWaste?: boolean;
+  onRescue?: (item: MenuItem) => void;
 }
 
 interface MockRestaurant {
@@ -671,9 +758,17 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   commentary,
   onRestart,
   language,
-  userCity
+  userCity,
+  showCarbon = false,
+  averageCarbon = 0,
+  zeroWaste = false,
+  onRescue
 }) => {
   const t = translations[language];
+  const eco = ecoText[language];
+  const championCarbon = estimateCarbon(champion);
+  const championDeal = zeroWaste ? getSurplusDeal(champion) : null;
+  const [isRescued, setIsRescued] = useState(false);
   const [activeTabSection, setActiveTabSection] = useState<"commentary" | "restaurants">("commentary");
   const [restaurants, setRestaurants] = useState<MockRestaurant[]>([]);
   const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(false);
@@ -911,6 +1006,30 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             </p>
           </div>
 
+          {/* Environmental impact box (HASAT-13) */}
+          {showCarbon && (() => {
+            const diff = Math.round(Math.abs(averageCarbon - championCarbon.kg) * 10) / 10;
+            const lower = championCarbon.kg <= averageCarbon;
+            return (
+              <div className="eco-box">
+                <div className="eco-box-title" lang={language}>
+                  <Sprout size={14} />
+                  <span>{eco.winnerEcoTitle}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span className="carbon-grade-chip large" style={{ backgroundColor: CARBON_GRADE_COLORS[championCarbon.grade] }}>{championCarbon.grade}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <span>{eco.winnerEcoLine.replace("{kg}", String(championCarbon.kg)).replace("{grade}", championCarbon.grade)}</span>
+                    <span style={{ fontWeight: 700, color: lower ? "var(--emerald-green)" : "var(--accent-orange)" }}>
+                      {(lower ? eco.winnerEcoLower : eco.winnerEcoHigher).replace("{diff}", String(diff))}
+                    </span>
+                  </div>
+                </div>
+                <span className="eco-note">{eco.carbonNote}</span>
+              </div>
+            );
+          })()}
+
           {/* Sponsored discount section */}
           {champion.isSponsored && champion.sponsorDiscount && (
             <div className="coupon-dialog" style={{ width: "100%", margin: 0 }}>
@@ -984,6 +1103,27 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
 
       {/* Buttons */}
       <div className="order-btn-group" style={{ marginTop: "16px" }}>
+        {championDeal && (
+          <button
+            className="action-btn rescue-btn"
+            disabled={isRescued}
+            onClick={() => {
+              setIsRescued(true);
+              onRescue?.(champion);
+              confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ["#0A846B", "#4CA84A", "#EBF7F4"] });
+              alert(
+                eco.rescuedAlert
+                  .replace("{name}", language === "tr" ? champion.nameTr : champion.nameEn)
+                  .replace("{restaurant}", champion.restaurant)
+                  .replace("{time}", championDeal.pickupUntil)
+              );
+            }}
+            style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
+          >
+            <Recycle size={18} />
+            {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{price}", String(championDeal.rescuedPrice))}
+          </button>
+        )}
         <button className="action-btn" onClick={handleOrder} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
           <ShoppingCart size={18} /> {t.winnerOrderBtn}
         </button>

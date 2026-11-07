@@ -2,21 +2,27 @@ import React, { useState, useRef, useEffect } from "react";
 import { X, Heart, Sparkles, Star } from "lucide-react";
 import type { MenuItem } from "../data/mockFood";
 import { translations } from "../data/translations";
+import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
 
 interface SwipeDeckProps {
   items: MenuItem[];
   onSwipe: (item: MenuItem, direction: "left" | "right") => void;
   onOpenInsight: (item: MenuItem) => void;
   language: "tr" | "en";
+  showCarbon?: boolean;
+  zeroWaste?: boolean;
 }
 
 export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   items,
   onSwipe,
   onOpenInsight,
-  language
+  language,
+  showCarbon = false,
+  zeroWaste = false
 }) => {
   const t = translations[language];
+  const eco = ecoText[language];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -249,6 +255,14 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <span>{activeItem.rating}</span>
                 <span style={{ fontSize: "11px", opacity: 0.8 }}>({activeItem.reviewCount})</span>
               </div>
+              {showCarbon && (() => {
+                const c = estimateCarbon(activeItem);
+                return (
+                  <span className="nutrient-tag carbon-tag" style={{ backgroundColor: CARBON_GRADE_COLORS[c.grade] }}>
+                    {c.grade} · {c.kg} kg CO₂e
+                  </span>
+                );
+              })()}
             </div>
 
             <div className="card-nutrients">
@@ -257,6 +271,24 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
               <span className="nutrient-tag">C: {activeItem.carbs}g</span>
               <span className="nutrient-tag">F: {activeItem.fat}g</span>
             </div>
+
+            {zeroWaste && (() => {
+              const deal = getSurplusDeal(activeItem);
+              if (!deal) return null;
+              return (
+                <div className="surplus-banner">
+                  <div className="surplus-banner-top">
+                    <span className="surplus-badge">{eco.surplusBadge}</span>
+                    <span className="surplus-price">
+                      <s>{activeItem.price} ₺</s> <strong>{deal.rescuedPrice} ₺</strong>
+                    </span>
+                  </div>
+                  <span className="surplus-meta">
+                    -%{deal.discountPercent} · {eco.portionsLeft.replace("{n}", String(deal.portionsLeft))} · {eco.pickupUntil.replace("{time}", deal.pickupUntil)}
+                  </span>
+                </div>
+              );
+            })()}
 
             {activeItem.isSponsored && activeItem.sponsorDiscount && (
               <div className="coupon-dialog" style={{ padding: "8px", marginTop: "4px" }}>

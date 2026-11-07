@@ -1,3 +1,5 @@
+export type Persona = "fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist" | "zero_waste";
+
 export interface MenuItem {
   id: string;
   nameTr: string;
@@ -20,7 +22,7 @@ export interface MenuItem {
   isSponsored?: boolean;
   sponsorDiscount?: number;
   sponsorCoupon?: string;
-  modes: ("fit" | "cheat_day" | "economic" | "gourmet" | "vegan")[];
+  modes: ("fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist")[];
   aiInsights: {
     tr: {
       fit: string;
@@ -28,6 +30,7 @@ export interface MenuItem {
       economic: string;
       gourmet: string;
       vegan: string;
+      tourist: string;
     };
     en: {
       fit: string;
@@ -35,6 +38,7 @@ export interface MenuItem {
       economic: string;
       gourmet: string;
       vegan: string;
+      tourist: string;
     };
   };
 }
@@ -68,14 +72,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için çok fazla sağlıklı, ama tatlı kaçamağınız için bütçe yaratır!",
         "economic": "155.00 ₺ fiyatına göre mükemmel protein oranına sahip doyurucu bir alternatif.",
         "gourmet": "Hafif kekik ve sarımsak marinasyonuyla ızgara lezzetinin en sade ama usta işi hali.",
-        "vegan": "Tavuk eti içerir, kesinlikle vegan beslenmeye uygun değildir."
+        "vegan": "Tavuk eti içerir, kesinlikle vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Izgara Tavuk Göğsü."
       },
       "en": {
         "fit": "A classic diet choice loaded with 45g of lean protein. Excellent for muscle recovery.",
         "cheat_day": "Way too healthy for a cheat day, but it leaves plenty of calorie room for desserts!",
         "economic": "Great protein value for ₺155.00, keeping you full for a long time.",
         "gourmet": "Infused with wild oregano and garlic marinade, grilled to lock in the juices.",
-        "vegan": "Contains chicken breast. Not suitable for vegans."
+        "vegan": "Contains chicken breast. Not suitable for vegans.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Grilled Chicken Breast."
       }
     }
   },
@@ -107,14 +113,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için fazla masum, bunu meze olarak ana yemeğin yanına ekleyebilirsiniz.",
         "economic": "110.00 ₺ fiyatıyla cep yakmayan, sağlıklı bir sebze alternatifi.",
         "gourmet": "Taze dereotu ve beyaz peynir dengesiyle fırından yeni çıkmış sıcacık bir lezzet.",
-        "vegan": "Yumurta ve peynir içerir. Vegan beslenme için uygun değildir."
+        "vegan": "Yumurta ve peynir içerir. Vegan beslenme için uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Fırında Mücver."
       },
       "en": {
         "fit": "Baked instead of deep-fried, loaded with fresh zucchini and fiber. Very light.",
         "cheat_day": "Too light for a cheat day, but makes a great side dish for a large meal.",
         "economic": "A wallet-friendly vegetable dish costing only ₺110.00.",
         "gourmet": "Features a beautiful balance of fresh dill, spring onions, and white cheese.",
-        "vegan": "Contains eggs and white cheese. Not vegan."
+        "vegan": "Contains eggs and white cheese. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Baked Zucchini Fritters."
       }
     }
   },
@@ -146,14 +154,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için son derece hafif. Sağlıklı yaşam günleri için saklayın.",
         "economic": "Taze enginar mevsiminde makul fiyata tüketebileceğiniz sağlıklı bir alternatif.",
         "gourmet": "Portakal suyuyla pişirilmiş, taze dereotu ve körpe bezelyelerle süslenmiş bir şaheser.",
-        "vegan": "Sadece sebzeler ve kaliteli Ege zeytinyağı ile hazırlanmış %100 vegan meze."
+        "vegan": "Sadece sebzeler ve kaliteli Ege zeytinyağı ile hazırlanmış %100 vegan meze.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Enginar."
       },
       "en": {
         "fit": "Artichoke cups loaded with root vegetables and olive oil. Detoxifies liver.",
         "cheat_day": "Very low calorie. Keep this for your detox or recovery days.",
         "economic": "Good seasonal price for fresh artichokes loaded with olive oil.",
         "gourmet": "Simmered slowly in fresh orange juice, olive oil, and topped with fresh dill.",
-        "vegan": "100% plant-based and dairy-free Aegean classic."
+        "vegan": "100% plant-based and dairy-free Aegean classic.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Artichoke in Olive Oil."
       }
     }
   },
@@ -185,14 +195,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Somon çok lezzetlidir ancak cheat day için yanına çıtır patatesler ekleyebilirsiniz.",
         "economic": "260.00 ₺ balık için normaldir, temiz protein kaynağı için bütçe ayırmaya değer.",
         "gourmet": "Deri kısmı çıtır, içi sulu bırakılmış pembe somon lokumu, roka eşliğinde.",
-        "vegan": "Balık eti içerir, vegan beslenme için uygun değildir."
+        "vegan": "Balık eti içerir, vegan beslenme için uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Izgara Somon."
       },
       "en": {
         "fit": "Packed with clean Omega-3 fatty acids that support metabolic and heart health.",
         "cheat_day": "Salmon is buttery and soft, but add some fries to make it a cheat feast.",
         "economic": "At ₺260.00 it is a premium item, but rich in vital minerals and proteins.",
         "gourmet": "Perfect crispy skin with a tender, moist center, served with fresh baby arugula.",
-        "vegan": "Contains salmon. Definitely not vegan."
+        "vegan": "Contains salmon. Definitely not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Grilled Salmon."
       }
     }
   },
@@ -224,14 +236,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Marulla dürüm yapıp yemek harikadır ancak porsiyon kontrolüne dikkat edin.",
         "economic": "110.00 ₺ fiyatıyla oldukça doyurucu ve tam bir fiyat/performans ürünü.",
         "gourmet": "İnce bulgur, acı biber salçası ve taze yeşilliklerle yoğrulmuş geleneksel lezzet.",
-        "vegan": "Hiçbir hayvansal ürün içermeyen, Anadolu'nun geleneksel vegan atıştırmalığı."
+        "vegan": "Hiçbir hayvansal ürün içermeyen, Anadolu'nun geleneksel vegan atıştırmalığı.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Mercimek Köftesi."
       },
       "en": {
         "fit": "Zero saturated fat, rich in complex carbohydrates and plant protein.",
         "cheat_day": "Addictive when wrapped in crunchy lettuce, eat in moderation.",
         "economic": "Highly cost-effective protein source priced at only ₺110.00.",
         "gourmet": "Kneaded with red pepper paste, green onions, and extra virgin olive oil.",
-        "vegan": "100% plant-based Anatolian classic snack."
+        "vegan": "100% plant-based Anatolian classic snack.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Lentil Patties."
       }
     }
   },
@@ -263,14 +277,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için çok hafif kalır, belki diyet başlangıçlarında tercih edilir.",
         "economic": "Spor yapanlar için oldukça ekonomik ve hazırlaması kolay protein alternatifi.",
         "gourmet": "Kurutulmuş nar taneleri ve hafif balsamik sosla tatlandırılmış bebek ıspanak yatağı.",
-        "vegan": "Hindi eti içerdiğinden dolayı vegan beslenmeye uygun değildir."
+        "vegan": "Hindi eti içerdiğinden dolayı vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Fırınlanmış Hindi Füme Salata."
       },
       "en": {
         "fit": "Low calorie salad loaded with baked smoked turkey breast and microgreens.",
         "cheat_day": "Too light for an indulgence, save this for active dieting days.",
         "economic": "Good price-to-protein ratio for high protein diet tracking.",
         "gourmet": "Served on a bed of baby spinach, pomegranate seeds, and a light balsamic glaze.",
-        "vegan": "Contains poultry. Not suitable for vegans."
+        "vegan": "Contains poultry. Not suitable for vegans.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Baked Smoked Turkey Salad."
       }
     }
   },
@@ -302,14 +318,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Köftenin yanına harika gider ancak sosundaki yağ miktarını azaltabilirsiniz.",
         "economic": "Uygun fiyata bitkisel protein ve yumurta zenginliği sunan F/P yemeği.",
         "gourmet": "Bol sirke, kaliteli zeytinyağı ve Antalya usulü tahin sosunun muazzam birleşimi.",
-        "vegan": "Yumurta çıkarıldığında tamamen vegan ve doyurucu bir alternatiftir."
+        "vegan": "Yumurta çıkarıldığında tamamen vegan ve doyurucu bir alternatiftir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kuru Fasulye Piyazı."
       },
       "en": {
         "fit": "High fiber salad topped with boiled egg slices and fresh red onions.",
         "cheat_day": "Perfect side dish for meatballs, but watch the dressing.",
         "economic": "Budget-friendly option that delivers solid protein from beans and eggs.",
         "gourmet": "Antalya-style tahini dressing, vinegar, and organic olive oil.",
-        "vegan": "Contains boiled egg. Can be made vegan if egg is excluded."
+        "vegan": "Contains boiled egg. Can be made vegan if egg is excluded.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: White Bean Salad."
       }
     }
   },
@@ -341,14 +359,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için hafif kalsa da gün içi sağlıklı atıştırmalık olarak ideal.",
         "economic": "Kinoa malzemesi biraz pahalı olsa da porsiyon boyutu doyurucudur.",
         "gourmet": "Bol nar ekşisi, taze nane ve sızma zeytinyağı ile harmanlanmış enfes kinoa.",
-        "vegan": "Glütensiz kinoa ve taze otlarla zenginleştirilmiş %100 vegan kısır."
+        "vegan": "Glütensiz kinoa ve taze otlarla zenginleştirilmiş %100 vegan kısır.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kinoa veya Karabuğdaylı Kısır."
       },
       "en": {
         "fit": "Gluten-free version of traditional Turkish kısır, made with organic quinoa.",
         "cheat_day": "Very clean eating, great for snack breaks during active diet weeks.",
         "economic": "Uses premium quinoa, yet reasonably priced for a nutrient-dense dish.",
         "gourmet": "Infused with rich pomegranate molasses, mint, and cold-pressed olive oil.",
-        "vegan": "100% plant-based, gluten-free, and oil-light salad."
+        "vegan": "100% plant-based, gluten-free, and oil-light salad.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Quinoa or Buckwheat Kısır."
       }
     }
   },
@@ -380,14 +400,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day sofralarında hafif bir meze olarak yer bulabilir.",
         "economic": "95.00 ₺ fiyatıyla sofraları renklendirecek ekonomik ve hafif bir alternatif.",
         "gourmet": "Kurutulmuş domateslerin zeytinyağında sarımsak ve cevizle sotelenip yoğurtla buluşması.",
-        "vegan": "Yoğurt (süt ürünü) içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Yoğurt (süt ürünü) içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Yoğurtlu Kuru Domates Salatası."
       },
       "en": {
         "fit": "High calcium yogurt dip mixed with antioxidant-rich sun-dried tomatoes.",
         "cheat_day": "Great as a light appetizer alongside heavy kebabs or flatbreads.",
         "economic": "A budget-friendly mezze option costing under ₺100.",
         "gourmet": "Garlic infused sun-dried tomatoes sautéed with walnuts over strained yogurt.",
-        "vegan": "Contains dairy yogurt. Non-vegan."
+        "vegan": "Contains dairy yogurt. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Dried Tomatoes with Yogurt."
       }
     }
   },
@@ -419,14 +441,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Diyet günlerinde kalori açığı oluşturmak için harika bir seçenek.",
         "economic": "Mevsiminde çok ucuz ve besleyici, tencere yemeklerinin F/P şampiyonu.",
         "gourmet": "Domates ve soğan suyuyla kendi buharında pişirilmiş, zeytinyağlı Ege klasiği.",
-        "vegan": "Sadece taze fasulye, domates, soğan ve sızma zeytinyağı içeren saf vegan lezzet."
+        "vegan": "Sadece taze fasulye, domates, soğan ve sızma zeytinyağı içeren saf vegan lezzet.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Taze Fasulye."
       },
       "en": {
         "fit": "Ultra-low calorie green beans rich in dietary fibers and vitamin C.",
         "cheat_day": "An ideal meal to keep your calories low during strict cutting phases.",
         "economic": "Very affordable home-style vegetable dish with great value.",
         "gourmet": "Simmered slowly in its own juices with sweet onions and fresh tomatoes.",
-        "vegan": "Pure plant-based Turkish stew, 100% vegan certified."
+        "vegan": "Pure plant-based Turkish stew, 100% vegan certified.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Green Beans in Olive Oil."
       }
     }
   },
@@ -458,14 +482,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Hafif kahvaltı yapıp akşam kalorili kebaplara yer ayırmak isteyenler için ideal.",
         "economic": "Yumurta ve lor peynirinin bütçe dostu protein birleşimi.",
         "gourmet": "Taze biber, domates ve lor peynirinin ızgarada döküm tavada pişmiş enfes hali.",
-        "vegan": "Yumurta ve süt ürünü lor peyniri içerir. Vegan değildir."
+        "vegan": "Yumurta ve süt ürünü lor peyniri içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tavada Yumurta."
       },
       "en": {
         "fit": "Lightly pan-cooked eggs for a quick, muscle-friendly protein boost.",
         "cheat_day": "Great to save calorie room for your cheat day dinner.",
         "economic": "Highly affordable breakfast protein using simple farm eggs and curd.",
         "gourmet": "Cooked in a cast-iron skillet with sweet green peppers and vine tomatoes.",
-        "vegan": "Contains chicken eggs and dairy whey cheese. Non-vegan."
+        "vegan": "Contains chicken eggs and dairy whey cheese. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Fried Eggs."
       }
     }
   },
@@ -497,14 +523,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için fazla temiz bir profil, kas geliştirmek için harika bir yakıt.",
         "economic": "Nohut ve tavuk göğsünün bir arada sunulduğu oldukça doyurucu ve hesaplı öğün.",
         "gourmet": "Limonlu tahin sosu, maydanoz ve kırmızı soğanla harmanlanmış ılık nohutlar.",
-        "vegan": "Tavuk göğsü içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Tavuk göğsü içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tavuklu Nohut Salatası."
       },
       "en": {
         "fit": "Perfect combination of complex chickpea carbs and lean chicken breast protein.",
         "cheat_day": "Too clean for an indulgence, but amazing fuel for building muscles.",
         "economic": "Highly satisfying meal with solid protein-carb balance at a fair price.",
         "gourmet": "Warm chickpeas tossed with parsley, red onion, and a light lemon tahini drizzle.",
-        "vegan": "Contains chicken breast. Not vegan."
+        "vegan": "Contains chicken breast. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Chickpea Salad with Chicken."
       }
     }
   },
@@ -536,14 +564,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cips yemek yerine televizyon karşısında tüketebileceğiniz suçluluksuz atıştırmalık.",
         "economic": "Karnabaharın lif gücünü ekonomik yoldan sunan diyet dostu sebze.",
         "gourmet": "Fırınlanmış baharatlı karnabaharın sarımsaklı vegan dip sos eşliğindeki sunumu.",
-        "vegan": "%100 bitkisel içerikli, baharatlar ve zeytinyağı ile fırınlanmış vegan lezzet."
+        "vegan": "%100 bitkisel içerikli, baharatlar ve zeytinyağı ile fırınlanmış vegan lezzet.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Fırında Baharatlı Karnabahar."
       },
       "en": {
         "fit": "Baked cauliflower florets dusted with turmeric, sweet paprika, and olive oil.",
         "cheat_day": "A great crunchy snack to replace chips when watching a movie.",
         "economic": "Low-cost high-fiber food that fills you up with minimum budget.",
         "gourmet": "Crispy oven-roasted spiced cauliflower served with garlicky vegan sauce.",
-        "vegan": "100% plant-based, baked using pure vegetable oil and spices."
+        "vegan": "100% plant-based, baked using pure vegetable oil and spices.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Baked Spiced Cauliflower."
       }
     }
   },
@@ -575,14 +605,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Hafif beslenmek istediğiniz detoks günleri için harika bir sıcak başlangıç.",
         "economic": "90.00 ₺ fiyatıyla hem çok şifalı, hem de son derece bütçe dostu.",
         "gourmet": "Saatlerce kaynatılmış organik tavuk kemik suyu ve tiftiklenmiş tavuk etleri.",
-        "vegan": "Tavuk suyu içerir, veganlar için uygun değildir."
+        "vegan": "Tavuk suyu içerir, veganlar için uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Şehriyesiz Tavuk Suyu Çorbası."
       },
       "en": {
         "fit": "Zero carbs (no noodles), packed with immunity-boosting lemon and black pepper.",
         "cheat_day": "Ideal hot soup for your detox or recovery days to ease digestion.",
         "economic": "Very wallet-friendly chicken soup priced at only ₺90.00.",
         "gourmet": "Made from organic chicken bone broth simmered for hours, topped with herbs.",
-        "vegan": "Contains chicken broth. Not vegan."
+        "vegan": "Contains chicken broth. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Clear Chicken Broth Soup."
       }
     }
   },
@@ -614,14 +646,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ağır yemeklerden sonra sindirim sisteminizi dinlendirmek için mükemmel seçim.",
         "economic": "Esnaf lokantası tarzında sunulan, hesaplı ve lif zengini sebze öğünü.",
         "gourmet": "Taze domates ve limon asidiyle salyalanmadan usta ellerde pişmiş gurme bamya.",
-        "vegan": "Hayvansal yağ içermeyen, zeytinyağlı geleneksel vegan sebze yemeği."
+        "vegan": "Hayvansal yağ içermeyen, zeytinyağlı geleneksel vegan sebze yemeği.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Bamya."
       },
       "en": {
         "fit": "Stomach-friendly okra simmered in lemon juice and extra virgin olive oil.",
         "cheat_day": "Great to reset your digestion after eating greasy comfort foods.",
         "economic": "High-fiber seasonal dish that is easy on the wallet.",
         "gourmet": "Cooked expertly without becoming slimy, using fresh tomatoes and lemon.",
-        "vegan": "100% plant-based traditional Turkish olive oil recipe."
+        "vegan": "100% plant-based traditional Turkish olive oil recipe.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Okra in Olive Oil."
       }
     }
   },
@@ -653,14 +687,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Üzerine erimiş kaşar peyniri ekleyerek cheat day tarzına uydurabilirsiniz.",
         "economic": "Protein ve sebzeyi dengeli sunan, porsiyonu doyurucu diyet alternatifi.",
         "gourmet": "Fesleğen aromalı kıymayla doldurulmuş, fırında nar gibi kızarmış kabaklar.",
-        "vegan": "Kıyma veya süt ürünü peynir dolgusu içerir. Vegan değildir."
+        "vegan": "Kıyma veya süt ürünü peynir dolgusu içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Fırında Kabak Sandal."
       },
       "en": {
         "fit": "Hollowed zucchini stuffed with lean minced beef or light curd, baked golden.",
         "cheat_day": "Add extra cheddar on top if you want a cheesy comfort version.",
         "economic": "Fills you up with good protein and greens without breaking the bank.",
         "gourmet": "Zucchini halves stuffed with basil-infused beef and roasted tomatoes.",
-        "vegan": "Stuffed with minced meat and dairy. Not vegan."
+        "vegan": "Stuffed with minced meat and dairy. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Baked Zucchini Boats."
       }
     }
   },
@@ -692,14 +728,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kebapların yanında tüketilebilecek en lezzetli ve hafif eşlikçi meze.",
         "economic": "105.00 ₺ fiyatıyla patlıcanın o nefis isli tadını doyasıya yaşatan F/P.",
         "gourmet": "Meşe kömüründe közlenmiş, limon asidi ve sızma zeytinyağıyla marine edilmiş patlıcan.",
-        "vegan": "Yoğurt eklenmediği takdirde tamamen patlıcan ve sebzelerden oluşan vegan meze."
+        "vegan": "Yoğurt eklenmediği takdirde tamamen patlıcan ve sebzelerden oluşan vegan meze.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Köz Patlıcan Salatası."
       },
       "en": {
         "fit": "Roasted eggplant mash seasoned with fresh garlic, vinegar, and olive oil.",
         "cheat_day": "The ultimate smoky side dish to pair with your weekend kebabs.",
         "economic": "Affordable and smoky appetizer that brings high flavor value.",
         "gourmet": "Charcoal-roasted eggplants hand-peeled and drizzled with cold-pressed olive oil.",
-        "vegan": "100% plant-based salad. Gluten-free and dairy-free."
+        "vegan": "100% plant-based salad. Gluten-free and dairy-free.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Roasted Eggplant Salad."
       }
     }
   },
@@ -731,14 +769,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Şeker krizlerini sıfır suçlulukla atlatmak isteyenler için harika kaçamak.",
         "economic": "Evde hazırlanabilen ama dışarıda da makul fiyata satılan fit kahvaltı/ara öğün.",
         "gourmet": "Süzme yoğurt, chia, yaban mersini ve taze nane yapraklarının şık sunumu.",
-        "vegan": "İnek sütü yoğurdu içerir. Vegan yoğurt alternatifi için içeriği sorun."
+        "vegan": "İnek sütü yoğurdu içerir. Vegan yoğurt alternatifi için içeriği sorun.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Chia Tohumlu Meyveli Yoğurt."
       },
       "en": {
         "fit": "Greek yogurt mixed with fiber-packed chia seeds and topped with fresh berries.",
         "cheat_day": "Great sweet treat substitute to avoid refined sugar crashes.",
         "economic": "Budget-friendly light snack packed with superfoods.",
         "gourmet": "A beautiful cup of strained yogurt, organic chia seeds, blueberries, and mint.",
-        "vegan": "Contains dairy. Ask for almond or coconut yogurt options."
+        "vegan": "Contains dairy. Ask for almond or coconut yogurt options.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Chia Seed Yogurt with Fruits."
       }
     }
   },
@@ -770,14 +810,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ekmek arası yapıp patates kızartması ekleyerek tam bir cheat day şölenine çevirebilirsiniz.",
         "economic": "160.00 ₺ fiyatıyla esnaf usulü porsiyon doyuruculuğu sunan klasik köfte.",
         "gourmet": "Katkısız kıymadan yoğrulmuş, içi sulu bırakılmış usta ızgarasından çıkan köfteler.",
-        "vegan": "Sığır/kuzu eti içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Sığır/kuzu eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Izgara Köfte."
       },
       "en": {
         "fit": "High protein grilled meatballs, served with greens instead of rice or fries.",
         "cheat_day": "Wrap it inside warm bread with extra onions and french fries.",
         "economic": "Good local price for real grilled beef protein that keeps you full.",
         "gourmet": "Lightly seasoned hand-shaped meatballs grilled to juicy perfection over coal.",
-        "vegan": "Contains beef. Definitely non-vegan."
+        "vegan": "Contains beef. Definitely non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Grilled Meatballs."
       }
     }
   },
@@ -809,14 +851,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Doyurucu ve ferahlatıcı yapısıyla kebap yanına hafif bir meze alternatifi.",
         "economic": "100.00 ₺ fiyatıyla hem çok sağlıklı, hem de son derece bütçe dostu.",
         "gourmet": "Zeytinyağında sotelenmiş körpe ıspanak, süzme yoğurt ve pul biberli yağ sosu.",
-        "vegan": "Süzme yoğurt (süt ürünü) içerir. Vegan versiyonu için yoğurtsuz isteyin."
+        "vegan": "Süzme yoğurt (süt ürünü) içerir. Vegan versiyonu için yoğurtsuz isteyin.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Ispanak Borani."
       },
       "en": {
         "fit": "Iron-rich spinach sautéed and mixed with garlicky strained Greek yogurt.",
         "cheat_day": "Makes a refreshing side dish to cut down on heavy calorie entrees.",
         "economic": "Affordable vegetable meal that keeps costs low and nutrition high.",
         "gourmet": "Baby spinach sautéed in extra virgin olive oil, topped with spiced yogurt.",
-        "vegan": "Contains dairy yogurt. Non-vegan."
+        "vegan": "Contains dairy yogurt. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Spinach Borani."
       }
     }
   },
@@ -840,7 +884,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -848,14 +893,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Eritilmiş kızgın tereyağının, döner eti ve pidelerle buluştuğu o efsanevi an! Bugün senin günün.",
         "economic": "Fiyatı yüksek fakat kullanılan kaliteli tereyağı ve kuzu eti için değer.",
         "gourmet": "Eritilmiş keçi tereyağı, manda yoğurdu ve közlenmiş patlıcan yatağında yaprak döner.",
-        "vegan": "%100 dana/kuzu eti ve tereyağı içerir. Sola kaydırın!"
+        "vegan": "%100 dana/kuzu eti ve tereyağı içerir. Sola kaydırın!",
+        "tourist": "Bursa usulü tereyağlı döner ve yoğurdun muazzam buluşması. Türkiye'ye gelen her turistin mutlaka tatması gereken gastronomi ikonu!"
       },
       "en": {
         "fit": "High in fats and simple carbs due to pita and butter. Avoid on cutting phases.",
         "cheat_day": "Pouring hot, sizzling butter over thin slices of lamb doner and pita. Ultimate cheat day royalty!",
         "economic": "Premium pricing, but the quality of meat and butter justifies the expense.",
         "gourmet": "Aged shaved lamb over fire-toasted pide, finished with sizzling sheep butter.",
-        "vegan": "Contains lamb and butter. Highly non-vegan."
+        "vegan": "Contains lamb and butter. Highly non-vegan.",
+        "tourist": "The iconic Bursa specialty featuring sliced doner lamb over pita, drenched in hot butter and tomato sauce alongside fresh yogurt."
       }
     }
   },
@@ -879,7 +926,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -887,14 +935,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Alevlerin öptüğü o zırh kıyması, lavaşın yağı emişi ve sumaklı soğan! Ziyafet başlasın.",
         "economic": "Çok doyurucu bir porsiyon, dürüm olarak fiyat/performansı yüksektir.",
         "gourmet": "Elde zırh ile kıyılmış kuzu eti, köz biber ve domatesle sarılmış çıtır lavaş.",
-        "vegan": "%100 kuzu eti içerir, vegan beslenmeyle uzaktan yakından alakası yoktur."
+        "vegan": "%100 kuzu eti içerir, vegan beslenmeyle uzaktan yakından alakası yoktur.",
+        "tourist": "Zırh kıyması ve meşe kömürünün ateşiyle pişen otantik Adana lezzeti. Türkiye kebap kültürünün kalbi."
       },
       "en": {
         "fit": "Contains high amount of tail fat. Order as a plate without flatbread if dieting.",
         "cheat_day": "Minced lamb kebab packed with tail fat and wrapped in warm flatbread. Delicious indulgence!",
         "economic": "A heavy, satisfying portion size that delivers solid bang for your buck.",
         "gourmet": "Hand-minced lamb leg fat-blended with local red peppers, grilled over oak.",
-        "vegan": "Contains lamb meat. Non-vegan."
+        "vegan": "Contains lamb meat. Non-vegan.",
+        "tourist": "Authentic spicy minced lamb kebab cooked over open charcoal. The absolute heart of Turkish barbecue tradition."
       }
     }
   },
@@ -926,14 +976,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Lavaşa sarılı nefis kebap dilimleri, sarımsaklı yoğurt ve üzerindeki kızgın tereyağı köpüğü!",
         "economic": "Üst segment kebap seçeneği, cheat day kutlamaları için bütçeye değer.",
         "gourmet": "Özel yaprak lavaşla sarılmış közlenmiş kuzu kıyması, süzme yoğurt yatağında sunum.",
-        "vegan": "Kıyma, yoğurt ve tereyağı içerir. Sola kaydırın."
+        "vegan": "Kıyma, yoğurt ve tereyağı içerir. Sola kaydırın.",
+        "tourist": "Yufkaya sarılı köfte, özel domates sosu ve yoğurtla sunulan saray işi kebap klasiği."
       },
       "en": {
         "fit": "Heavy combination of flatbread, tomato sauce, and butter. Avoid on weight loss.",
         "cheat_day": "Grilled kebab rolled in thin flatbread, sliced, topped with tomato sauce and butter.",
         "economic": "A bit expensive, but highly satisfying for a weekend cheat meal reward.",
         "gourmet": "Garlic infused lamb wrap served with thick strained sheep yogurt.",
-        "vegan": "Contains meat, yogurt, and butter. Definitely not vegan."
+        "vegan": "Contains meat, yogurt, and butter. Definitely not vegan.",
+        "tourist": "Palace-style kebab rolled in lavash bread, topped with tomato reduction and served with chilled yogurt."
       }
     }
   },
@@ -957,7 +1009,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "pasta",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -965,14 +1018,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bol sarımsaklı yoğurt, salçalı tereyağı sosu ve nane-sumak baharat şöleni! Harika bir kaçamak.",
         "economic": "Oldukça doyurucu bir tabak, makul fiyata hamur ve et dengesi sunar.",
         "gourmet": "Elde bükülmüş nohut büyüklüğünde orijinal Kayseri mantısı, kurutulmuş nane ile.",
-        "vegan": "Kıyma ve yoğurt içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kıyma ve yoğurt içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Kayseri'nin binbir meşakkatle açılan mikro mantıları; sarımsaklı yoğurt ve kızgın tereyağlı pul biberle lezzet şöleni sunar."
       },
       "en": {
         "fit": "High in simple carbs and wheat flour. Eat in moderation if monitoring macros.",
         "cheat_day": "Garlic yogurt, melted butter, tomato paste, and sumac over tiny beef dumplings.",
         "economic": "Very filling meal that provides solid satiety for its price tag.",
         "gourmet": "Hand-folded micro-sized dumplings filled with minced beef, authentic Kayseri recipe.",
-        "vegan": "Contains minced beef and dairy yogurt. Non-vegan."
+        "vegan": "Contains minced beef and dairy yogurt. Non-vegan.",
+        "tourist": "Hand-folded miniature Turkish dumplings served with garlic yogurt and sizzling chili butter."
       }
     }
   },
@@ -1004,14 +1059,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kimyon, pul biber, kekik ve çıtır ekmek arası sıcak uykuluklu kokoreç lezzeti!",
         "economic": "Çeyrek veya yarım ekmek seçenekleriyle doyurucu ve makul fiyatlı sokak tadı.",
         "gourmet": "Uykuluk ilave edilmiş, kömür ateşinde ağır ağır pişmiş Balıkesir süt kuzusu kokoreç.",
-        "vegan": "Sakatat (kuzu bağırsağı) içerir. Veganların hemen uzaklaşması gerekir."
+        "vegan": "Sakatat (kuzu bağırsağı) içerir. Veganların hemen uzaklaşması gerekir.",
+        "tourist": "İstanbul sokak kültürünün ve gece lezzetlerinin vazgeçilmezi. Baharatlı kömürde kuzu bağırsağı ızgarası."
       },
       "en": {
         "fit": "High in saturated fat and white bread carbs. Skip during strict diets.",
         "cheat_day": "Spicy chopped grilled lamb intestines seasoned with cumin and oregano in toasted bread.",
         "economic": "Street food favorite that fills you up fast without costing a fortune.",
         "gourmet": "Slow-roasted milk lamb intestines over oak charcoal, chopped with sweet peppers.",
-        "vegan": "Contains offal (lamb intestines). Not vegan."
+        "vegan": "Contains offal (lamb intestines). Not vegan.",
+        "tourist": "Istanbul's famous late-night street food classic: spiced and grilled lamb intestines in crispy bread."
       }
     }
   },
@@ -1035,7 +1092,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "general",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1043,14 +1101,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tereyağı ve kaşarla ezilmiş dev patatesin içine kısır, rus salatası, mısır, sosis doldurun!",
         "economic": "155.00 ₺ fiyatına alabileceğiniz en büyük ve en doyurucu porsiyonlardan biri.",
         "gourmet": "Fırınlanmış patatesin içine trüflü mayonez, füme et dilimleri ve gurme zeytinler.",
-        "vegan": "Tereyağı, kaşar, sosis ve rus salatası mayonezi içerir. Vegan versiyonu için malzemeleri seçin."
+        "vegan": "Tereyağı, kaşar, sosis ve rus salatası mayonezi içerir. Vegan versiyonu için malzemeleri seçin.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kumpir."
       },
       "en": {
         "fit": "A massive carb bomb (110g) with heavy mayonnaise salads. Avoid.",
         "cheat_day": "Giant baked potato mashed with butter and cheese, stuffed with all your favorite toppings.",
         "economic": "Extremely heavy and filling portion size that yields high value for ₺155.00.",
         "gourmet": "Baked potato mashed with truffle butter, artisan sausage, and gourmet olives.",
-        "vegan": "Contains butter, cheese, and dairy. Ask for vegan style without these."
+        "vegan": "Contains butter, cheese, and dairy. Ask for vegan style without these.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Kumpir."
       }
     }
   },
@@ -1074,7 +1134,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "dessert",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1082,14 +1143,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çıtır çıtır incecik hamur arasında bol fıstık ve manda kaymağı! Bugün sınırları zorla.",
         "economic": "Pahalı Antep fıstığı içerdiğinden dolayı premium sınıf ama lezzeti eşsizdir.",
         "gourmet": "Taş fırında pişmiş zar inceliğinde el açması hamur, bol boz fıstık ve has kaymak.",
-        "vegan": "Kaymak ve tereyağı içerir. Süt ürünleri yoğunlukludur, vegan değildir."
+        "vegan": "Kaymak ve tereyağı içerir. Süt ürünleri yoğunlukludur, vegan değildir.",
+        "tourist": "Gaziantep'in UNESCO tescilli lezzet mirası. Çıtır baklava yufkası, taze boz fıstık ve hakiki sadeyağ aroması."
       },
       "en": {
         "fit": "Sugar syrup, pastry dough, and clotted cream. Very high calorie density.",
         "cheat_day": "Crispy thin phyllo pastry stuffed with emerald green pistachios and buffalo cream.",
         "economic": "High cost due to premium pistachios, but a legendary dessert experience.",
         "gourmet": "Wood-fired crispy dough sheets loaded with green Boz pistachios and raw cream.",
-        "vegan": "Contains clotted cream and butter. Non-vegan."
+        "vegan": "Contains clotted cream and butter. Non-vegan.",
+        "tourist": "UNESCO-recognized Gaziantep heritage dessert: ultra-thin crispy phyllo pastry stuffed with emerald pistachios and clarified butter."
       }
     }
   },
@@ -1113,7 +1176,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "dessert",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1121,14 +1185,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tuzsuz künefe peynirinin çıtır kadayıf arasında uzadığı, sıcak şerbetli şölen!",
         "economic": "Paylaşımlı tüketildiğinde fiyatı oldukça makul olan klasik bir lezzet.",
         "gourmet": "Hatay'ın taze künefe peyniri ve tereyağı ile bakır tepside kömürde pişen künefe.",
-        "vegan": "Erimiş peynir ve tereyağı içerir, hayvansal süt ürünü doludur."
+        "vegan": "Erimiş peynir ve tereyağı içerir, hayvansal süt ürünü doludur.",
+        "tourist": "Hatay usulü erimiş tuzsuz peynir ve kadayıfın şerbetle buluştuğu eşsiz tatlı deneyimi."
       },
       "en": {
         "fit": "Fried shredded wheat soaked in hot sugar syrup. Highly caloric.",
         "cheat_day": "Sizzling hot sweet pastry stuffed with melted unsalted cheese, soaked in light syrup.",
         "economic": "Reasonable price if shared between two or three friends.",
         "gourmet": "Cooked on a copper plate over coal fire, utilizing traditional stringy cheese.",
-        "vegan": "Contains cheese and butter. Not vegan."
+        "vegan": "Contains cheese and butter. Not vegan.",
+        "tourist": "Hatay's legendary dessert combining shredded kadayıf pastry, melted unsweetened cheese, and sweet syrup."
       }
     }
   },
@@ -1160,14 +1226,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Dışı yanık, içi ise krema gibi akışkan kıvamda. Üzerine eritilmiş çikolata dökülmesi!",
         "economic": "Çikolatalı ve büyük porsiyonlu bir tatlı kaçamağı için makul fiyat.",
         "gourmet": "Yüksek ısıda fırınlanarak dışı karamelize edilmiş, içi yarı akışkan bırakılmış orijinal tarif.",
-        "vegan": "Krem peynir, yumurta ve krema doludur. Vegan olmaktan çok uzaktır."
+        "vegan": "Krem peynir, yumurta ve krema doludur. Vegan olmaktan çok uzaktır.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Sufle / San Sebastian Cheesecake."
       },
       "en": {
         "fit": "High in saturated fats and refined sugars. Avoid on calorie cutting.",
         "cheat_day": "Burnt on the outside, creamy and custardy inside, drenched in warm milk chocolate.",
         "economic": "Fair pricing for a dense slice that fills you up like a small meal.",
         "gourmet": "Baked at high heat to achieve caramelized dark top while retaining semi-liquid center.",
-        "vegan": "Contains large amounts of cream cheese and eggs. Non-vegan."
+        "vegan": "Contains large amounts of cream cheese and eggs. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: San Sebastian Cheesecake."
       }
     }
   },
@@ -1191,7 +1259,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1199,14 +1268,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tepside pamuk yağıyla çevrilen küçük et küpleri, bol pul biber ve lavaş sarması!",
         "economic": "150.00 ₺ Mersin tantuni klasiği için son derece doyurucu ve lezzetli bir fiyat.",
         "gourmet": "Mersin usulü incecik lavaşa sarılmış, sumaklı maydanozlu soğanla harmanlanmış etler.",
-        "vegan": "%100 dana veya kuzu eti içerir, vegan beslenmeye uygun değildir."
+        "vegan": "%100 dana veya kuzu eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Mersin'in pamuk yağı ve pamuksu dana etiyle hazırlanan dünyaca ünlü dürüm lezzeti."
       },
       "en": {
         "fit": "Cooked in cotton oil, lavaash bread absorbs most fats. Skip on diets.",
         "cheat_day": "Minced beef cooked in cotton oil, spices, and wrapped tightly in soft lavaash.",
         "economic": "Highly satisfying Mersin street food classic that won't empty your pocket.",
         "gourmet": "Prepared on a traditional copper tantuni pan, rolled with sumac onions.",
-        "vegan": "Contains beef. Definitely not vegan."
+        "vegan": "Contains beef. Definitely not vegan.",
+        "tourist": "Mersin's famous street wrap made of finely diced tender beef sautéed with spices and cottonseed oil."
       }
     }
   },
@@ -1238,14 +1309,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sütle ıslatılmış kakaolu kek, hafif krem şanti ve enfes yoğun çikolata sosu birleşimi!",
         "economic": "Ev yapımı tadında, porsiyonu oldukça doyurucu bütçe dostu tatlı.",
         "gourmet": "Organik vanilyalı krem şanti ve el yapımı bitter çikolata ganajı ile hazırlanan kek.",
-        "vegan": "Süt, krema ve yumurta içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Süt, krema ve yumurta içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Islak Kek / Ağlayan Pasta."
       },
       "en": {
         "fit": "Soaked cake layers, cream topping, and syrup are full of sugar.",
         "cheat_day": "Spongy cocoa cake soaked in sweet milk, topped with whipped cream and chocolate.",
         "economic": "Home-style traditional chocolate dessert that offers solid sweet satisfaction.",
         "gourmet": "Topped with organic vanilla cream whipped from scratch and dark chocolate ganache.",
-        "vegan": "Contains milk, whipping cream, and eggs. Non-vegan."
+        "vegan": "Contains milk, whipping cream, and eggs. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Weeping Chocolate Cake."
       }
     }
   },
@@ -1277,14 +1350,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Erimiş cheddar peyniri, sulu dana köftesi ve yanında çıtır çıtır patates kızartması!",
         "economic": "185.00 ₺ patates ve içecek dahil komple menü için gayet iyi bir F/P.",
         "gourmet": "Brioche ekmeğinde kuru dinlendirilmiş dana köfte, karamelize soğan ve trüflü mayonez.",
-        "vegan": "Dana eti ve dana peyniri içerir. Veganlar sola kaydırsın."
+        "vegan": "Dana eti ve dana peyniri içerir. Veganlar sola kaydırsın.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Hamburger Menü."
       },
       "en": {
         "fit": "French fries and white burger buns create a high glycemic load. Avoid.",
         "cheat_day": "Melted cheddar, juicy beef patty, and a side of golden salted french fries.",
         "economic": "An all-inclusive combo deal under ₺200 that guarantees total fullness.",
         "gourmet": "Dry-aged beef blend on house-baked brioche with caramelized onion jam.",
-        "vegan": "Contains beef patty and cheddar cheese. Non-vegan."
+        "vegan": "Contains beef patty and cheddar cheese. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Classic Cheeseburger Menu."
       }
     }
   },
@@ -1308,7 +1383,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1316,14 +1392,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çıtır dış kabuğu, içinde bol baharatlı kıyma, ceviz ve tereyağı! Tam bir cheat day başlangıcı.",
         "economic": "Tanesi 120.00 ₺ ama el emeği ve et kalitesi düşünüldüğünde özel bir lezzet.",
         "gourmet": "Bol cevizli, zırh kıymalı ve baharat dolgulu el açması çıtır içli köfte.",
-        "vegan": "Dana kıyması içerir, vegan beslenme için uygun değildir."
+        "vegan": "Dana kıyması içerir, vegan beslenme için uygun değildir.",
+        "tourist": "Dışında incecik bulgurlu kabuk, içinde cevizli baharatlı kıyma; Güneydoğu'nun gurur kaynağı."
       },
       "en": {
         "fit": "Deep fried outer bulgur shell absorbs high fat. Choose boiled style on diets.",
         "cheat_day": "Crispy outer crust stuffed with spiced ground beef, toasted walnuts, and butter.",
         "economic": "Hand-crafted Kibbeh is slightly pricey per piece but rich and satisfying.",
         "gourmet": "Thin bulgur dough hand-stuffed with spiced ribeye mince and walnuts.",
-        "vegan": "Stuffed with minced beef. Non-vegan."
+        "vegan": "Stuffed with minced beef. Non-vegan.",
+        "tourist": "Crispy bulgur shell stuffed with spiced minced meat and walnuts; a proud Southeastern Turkish specialty."
       }
     }
   },
@@ -1355,14 +1433,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Üst üste dizilmiş incecik lavaşlar arasına dökülen sulu kıymalı sos ve sarımsaklı yoğurt!",
         "economic": "Oldukça büyük ve paylaşmaya uygun bir porsiyon, fiyatını sonuna kadar hak eder.",
         "gourmet": "Özel şebit ekmekleri, usta elinden çıkma tereyağlı ve domatesli kıyma sosu.",
-        "vegan": "Kıyma ve yoğurt içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kıyma ve yoğurt içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Kayseri mutfağının kat kat lezzeti. İncecik şebit ekmekleri arası leziz kıymalı sos ve yoğurt."
       },
       "en": {
         "fit": "Layered oily flatbreads soaked in meat juices. High fat and carbs.",
         "cheat_day": "Stacks of thin flatbread layered with spiced minced beef sauce, topped with yogurt.",
         "economic": "A massive plate that can easily be shared between two, making it good value.",
         "gourmet": "Authentic şebit layers rolled with slow-simmered tomato beef reduction.",
-        "vegan": "Contains minced beef and yogurt. Non-vegan."
+        "vegan": "Contains minced beef and yogurt. Non-vegan.",
+        "tourist": "Kayseri's layered flatbread feast layered with rich minced meat sauce and creamy garlic yogurt."
       }
     }
   },
@@ -1386,7 +1466,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "flatbread",
     "modes": [
-      "cheat_day"
+      "cheat_day",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1394,14 +1475,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çıtır hamur üzerinde uzayan kaşarlar, lokum gibi kavurma etleri ve kenarlarına sürülen tereyağı!",
         "economic": "Çok doyurucu, esnaf işi devasa pide bütçenizi zorlamadan ziyafet sunar.",
         "gourmet": "Karadeniz Rize kavurması ve Vakfıkebir tereyağı ile taş fırında pişen çıtır pide.",
-        "vegan": "Kavurma eti ve inek sütü kaşarı içerir. Vegan değildir."
+        "vegan": "Kavurma eti ve inek sütü kaşarı içerir. Vegan değildir.",
+        "tourist": "Trabzon ve Karadeniz pide kültürünün en zengin örneği. Çıtır hamur, zengin kavurma ve erimiş kaşar peyniri."
       },
       "en": {
         "fit": "Pita crust and melted cheese create a massive calorie load. Avoid on cuts.",
         "cheat_day": "Crispy flatbread loaded with stringy cheese, rich roasted beef, brushed with butter.",
         "economic": "Highly satisfying large portion that fills you up completely for ₺190.00.",
         "gourmet": "Wood-fired crispy dough loaded with authentic Rize beef and local butter.",
-        "vegan": "Contains beef and cheese. Highly non-vegan."
+        "vegan": "Contains beef and cheese. Highly non-vegan.",
+        "tourist": "Black Sea crispy flatbread packed with tender braised beef (kavurma) and melted regional cheese."
       }
     }
   },
@@ -1433,14 +1516,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Nohut mayalı özel kumru ekmeğinde ızgara edilmiş sosis, salam, sucuk, kaşar ve turşu!",
         "economic": "135.00 ₺ fiyatıyla hızlıca doyuran, sokak lezzetlerinin F/P şampiyonu.",
         "gourmet": "İzmir'in orijinal nohut mayalı ekmeğiyle yapılan, el yapımı sucuklu kumru.",
-        "vegan": "Yoğun miktarda şarküteri eti ve süt ürünü kaşar içerir. Vegan değildir."
+        "vegan": "Yoğun miktarda şarküteri eti ve süt ürünü kaşar içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kumru / Ayvalık Tostu."
       },
       "en": {
         "fit": "Sausages, salami, sucuk, and mayonnaise. Processed meats are not diet friendly.",
         "cheat_day": "Grilled Turkish sausages, salami, pepperoni, melted cheese, and pickles in artisanal bread.",
         "economic": "Great street food pricing that keeps you fully satisfied.",
         "gourmet": "Made with authentic chickpea-yeast bread and artisanal beef sucuk.",
-        "vegan": "Contains processed meat and cheese. Highly non-vegan."
+        "vegan": "Contains processed meat and cheese. Highly non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Kumru / Ayvalık Street Toast."
       }
     }
   },
@@ -1472,14 +1557,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kömür ateşinde nar gibi kızarmış, baharatlı çıtır tavuk kanatları!",
         "economic": "Fiyat-performans oranı yüksek, doyurucu bir mangal klasiği.",
         "gourmet": "Özel sosla marine edilip mangalda ağır ağır pişirilmiş çıtır kısımlı kanatlar.",
-        "vegan": "Tavuk kanadı içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Tavuk kanadı içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tavuk Kanat."
       },
       "en": {
         "fit": "High fat content from skin and marinade. Good source of protein if skins are removed.",
         "cheat_day": "Charcoal grilled chicken wings marinated in spicy oil, crispy on the outside.",
         "economic": "Decent portion size for a reasonable price, offering good value.",
         "gourmet": "Slow-grilled chicken wings seasoned with authentic sumac and spicy garlic oil.",
-        "vegan": "Contains poultry. Highly non-vegan."
+        "vegan": "Contains poultry. Highly non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Grilled Chicken Wings."
       }
     }
   },
@@ -1511,14 +1598,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "İçi özel pastacı kreması dolu top hamurlar, üzerinde ılık ve akıcı çikolata sosu!",
         "economic": "95.00 ₺ fiyatıyla tatlı krizinizi en üst seviyede çözen popüler F/P.",
         "gourmet": "Gerçek kakao yağı ile hazırlanmış çikolata sosu ve vanilya çekirdekli krema dolgusu.",
-        "vegan": "Süt, tereyağı ve çok miktarda yumurta içerir. Vegan değildir."
+        "vegan": "Süt, tereyağı ve çok miktarda yumurta içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Profiterol."
       },
       "en": {
         "fit": "Choux pastry filled with heavy cream and covered in chocolate syrup. High sugar.",
         "cheat_day": "Puffs filled with vanilla pastry cream and drenched in warm chocolate sauce.",
         "economic": "Under ₺100, this is a highly satisfying chocolate treat.",
         "gourmet": "Prepared with real cocoa butter chocolate coating and madagascar vanilla.",
-        "vegan": "Contains dairy cream, butter, and eggs. Non-vegan."
+        "vegan": "Contains dairy cream, butter, and eggs. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Profiterole."
       }
     }
   },
@@ -1550,14 +1639,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tava köftesi ve yanında nar gibi kızarmış, soslu patates kızartması ikilisi!",
         "economic": "155.00 ₺ fiyatıyla esnaf usulü son derece doyurucu ve klasik bir menü.",
         "gourmet": "Baharatlı el yapımı anne köftesi, yanında taze kesim baharatlı patateslerle.",
-        "vegan": "%100 kıyma içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "%100 kıyma içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Cızbız Köfte ve Patates Kızartması."
       },
       "en": {
         "fit": "Deep-fried potatoes and bread rolls are highly caloric. Skip on diets.",
         "cheat_day": "Pan-fried meatballs paired with crispy, golden, salted french fries.",
         "economic": "Very affordable combo plate that delivers nostalgia and fullness.",
         "gourmet": "Home-style spiced beef meatballs served with hand-cut skin-on fries.",
-        "vegan": "Contains meat. Not vegan."
+        "vegan": "Contains meat. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Meatballs & French Fries."
       }
     }
   },
@@ -1589,14 +1680,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Özel soslu çift lavaş arasında döner eti, bol sarımsaklı mayonez ve patates!",
         "economic": "130.00 ₺ fiyatıyla öğrenci dostu, en doyurucu sokak lezzeti.",
         "gourmet": "Hatay usulü ev yapımı domates sosu ve taze baharatlı tavuk döner eti.",
-        "vegan": "Tavuk eti ve yumurtalı mayonez içerir. Vegan değildir."
+        "vegan": "Tavuk eti ve yumurtalı mayonez içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Soslu Hatay Dürümü."
       },
       "en": {
         "fit": "Tomato oil sauce and mayonnaise overload. Too heavy for cutting phase.",
         "cheat_day": "Shaved chicken in double flatbread soaked in hot tomato sauce and garlic mayo.",
         "economic": "Extremely popular student budget wrap that offers maximum satiety.",
         "gourmet": "Slow-roasted chicken breast marinated with Hatay spices and house-made sauce.",
-        "vegan": "Contains poultry and egg-based mayo. Non-vegan."
+        "vegan": "Contains poultry and egg-based mayo. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Hatay Chicken Doner Wrap."
       }
     }
   },
@@ -1628,14 +1721,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çıtır çıtır kızarmış midye şişleri ve yanında süzme yoğurtlu cevizli tarator sosu!",
         "economic": "Deniz mahsulü lezzetini sokak fiyatıyla sunan güzel bir kaçamak.",
         "gourmet": "Altın sarısı çıtır kaplama, taze midyeler ve usta elinden çıkma cevizli sos.",
-        "vegan": "Midye (deniz canlısı) ve sosunda yoğurt içerir. Vegan değildir."
+        "vegan": "Midye (deniz canlısı) ve sosunda yoğurt içerir. Vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Midye Tava ve Sosu."
       },
       "en": {
         "fit": "Deep-fried batter and heavy dipping sauce are bad for cutting phases.",
         "cheat_day": "Crispy golden fried mussels on skewers dipped in rich garlicky tarator sauce.",
         "economic": "Good local price to satisfy seafood cravings on a budget.",
         "gourmet": "Crispy batter-dipped mussels served with real walnut and garlic sauce.",
-        "vegan": "Contains shellfish and dairy. Non-vegan."
+        "vegan": "Contains shellfish and dairy. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Fried Mussels with Tarator."
       }
     }
   },
@@ -1667,14 +1762,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Hızlı, ucuz ve soslu bir döner kaçamağı yapmak isteyenler için ideal.",
         "economic": "Sadece 110.00 ₺! Türkiye'nin en popüler ve doyurucu öğrenci dostu yemeği.",
         "gourmet": "Özel baharat soslu lavaşta, odun ateşinde pişmiş tavuk döner dilimleri.",
-        "vegan": "Tavuk eti içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Tavuk eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tavuk Döner Dürüm."
       },
       "en": {
         "fit": "High in simple carbs. Decent protein ratio for a budget meal.",
         "cheat_day": "Great for a fast, cheap, and saucy chicken doner experience.",
         "economic": "Only ₺110.00! The ultimate budget-friendly student choice in Turkey.",
         "gourmet": "Wood-fired chicken doner wrapped in spiced flatbread.",
-        "vegan": "Contains chicken. Non-vegan."
+        "vegan": "Contains chicken. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Chicken Doner Wrap."
       }
     }
   },
@@ -1706,14 +1803,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Buz gibi ayran ve karabiberle harika bir sokak lezzeti ziyafeti.",
         "economic": "90.00 ₺ fiyatıyla sizi saatlerce tok tutacak, en doyurucu fiyat/performans seçeneği.",
         "gourmet": "Tavuk suyuyla demlenmiş nohutlu tereyağlı pilav ve tiftiklenmiş tavuk göğsü.",
-        "vegan": "Tavuk eti içerir, vegan versiyonu için sadece nohutlu pilav isteyin."
+        "vegan": "Tavuk eti içerir, vegan versiyonu için sadece nohutlu pilav isteyin.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tavuklu Nohutlu Pilav."
       },
       "en": {
         "fit": "High glycemic rice index. Good for fast post-workout carbohydrate refill.",
         "cheat_day": "Enjoy this hot street food with cold ayran and lots of black pepper.",
         "economic": "Only ₺90.00! Delectable carb-heavy meal that will keep you full all day.",
         "gourmet": "Chicken broth infused rice with chickpeas, topped with tender chicken breast.",
-        "vegan": "Contains chicken. Non-vegan."
+        "vegan": "Contains chicken. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Rice with Chicken & Chickpeas."
       }
     }
   },
@@ -1745,14 +1844,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sokak usulü ızgara köfteleri ekmek arasında acı biberle yemek harikadır.",
         "economic": "125.00 ₺ fiyatıyla seyyar usulü doyurucu ve bütçe dostu köfte ziyafeti.",
         "gourmet": "Kömür ızgarasında pişmiş, piyazlık soğan ve domatesle süslenmiş ekmek arası.",
-        "vegan": "Kıyma içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kıyma içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Ekmek Arası Köfte."
       },
       "en": {
         "fit": "High white bread carbs. Meatballs deliver decent protein weight.",
         "cheat_day": "Classic street meatballs packed in warm toasted bread with spicy pepper.",
         "economic": "At ₺125.00, this is a highly affordable way to eat meat on the go.",
         "gourmet": "Grilled on charcoal, served in freshly baked bread with onions and tomatoes.",
-        "vegan": "Contains meat. Not vegan."
+        "vegan": "Contains meat. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Meatball Sandwich."
       }
     }
   },
@@ -1784,14 +1885,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Lahmacunu sumaklı soğanla sarıp çorbaya banarak yemek tam bir ziyafet!",
         "economic": "130.00 ₺ fiyatına hem çorba hem lahmacun! Şehirdeki en doyurucu ikili menü.",
         "gourmet": "Sarı süzme mercimek çorbası ve taş fırından çıtır çıtır çıkmış sarımsaklı lahmacun.",
-        "vegan": "Lahmacun kıyma içerir. Veganlar için uygun değildir."
+        "vegan": "Lahmacun kıyma içerir. Veganlar için uygun değildir.",
+        "tourist": "Türkiye'de her köşebaşında bulabileceğiniz, taş fırından yeni çıkmış çıtır lahmacun ve sıcak mercimek çorbası ikilisi."
       },
       "en": {
         "fit": "Reasonable meal. Wrap lahmacun with lots of salad and lemon to balance carbs.",
         "cheat_day": "Dip the crispy meat flatbread into hot lentil soup. Pure comfort!",
         "economic": "A double-deal combo for ₺130.00! Excellent value for a complete lunch.",
         "gourmet": "Authentic spiced minced beef flatbread paired with smooth yellow lentil soup.",
-        "vegan": "Lahmacun contains minced meat. Non-vegan."
+        "vegan": "Lahmacun contains minced meat. Non-vegan.",
+        "tourist": "The quintessential Turkish fast food duo: crispy thin-crust lahmacun and steaming lentil soup."
       }
     }
   },
@@ -1823,14 +1926,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tavaya ekmek banarak, üzerine kaşar ekleterek zevkini çıkarın.",
         "economic": "95.00 ₺ fiyatıyla evde veya dışarıda en ucuza en büyük doyuruculuk.",
         "gourmet": "Bol sulu köy domatesi, tatlı biberler ve tereyağlı köy yumurtasının uyumu.",
-        "vegan": "Yumurta içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Yumurta içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Yumurta Kapama / Ekmek Banmalık Menemen."
       },
       "en": {
         "fit": "High protein egg dish. Eat without dipping bread if you are low-carbing.",
         "cheat_day": "Add extra cheddar on top and dip warm bread crusts into the pan.",
         "economic": "Only ₺95.00! The most affordable egg meal that fills you up completely.",
         "gourmet": "Made with juicy vine-ripened tomatoes, sweet peppers, and farm eggs.",
-        "vegan": "Contains eggs. Not vegan."
+        "vegan": "Contains eggs. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Boiled Eggs in Butter / Traditional Menemen."
       }
     }
   },
@@ -1862,14 +1967,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bol salçalı sos ve turşuyla hazırlanmış klasik büfe sandviçi kaçamağı.",
         "economic": "Sadece 85.00 ₺ fiyatıyla en hızlı ve en ucuz atıştırmalık sokak lezzeti.",
         "gourmet": "Salçalı baharatlı suda pişmiş sosisler, özel sandviç ekmeği ve hardal ile.",
-        "vegan": "Sosis (et ürünü) içerir. Veganlar için uygun değildir."
+        "vegan": "Sosis (et ürünü) içerir. Veganlar için uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Sosisli Sandviç."
       },
       "en": {
         "fit": "Processed meat and white bread. Not recommended for lean diets.",
         "cheat_day": "Soaked in spiced tomato sauce and topped with pickles, a nostalgic junk food.",
         "economic": "Only ₺85.00! The fastest and cheapest warm sandwich on the street.",
         "gourmet": "Simmered in a tomato paste broth with wild oregano, served with mustard.",
-        "vegan": "Contains beef/chicken sausage. Not vegan."
+        "vegan": "Contains beef/chicken sausage. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Spiced Hot Dog."
       }
     }
   },
@@ -1901,14 +2008,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ev yemeği özleyenler için doyurucu bir anne yemeği kaçamağı.",
         "economic": "115.00 ₺ fiyatına göre patates ve kıymanın en doyurucu esnaf lokantası birleşimi.",
         "gourmet": "Fırınlanmış patates dilimleri üzerinde karamelize kıyma ve domates sosu.",
-        "vegan": "Kıyma (et) içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kıyma (et) içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Patates Oturtma / Fırında Patates."
       },
       "en": {
         "fit": "Potatoes have high glycemic index, consume in moderation.",
         "cheat_day": "A comforting home-cooked meal for those missing traditional kitchen tastes.",
         "economic": "Excellent cost-to-weight ratio, offering dense calories from potatoes and beef.",
         "gourmet": "Sautéed minced beef layered over baked potatoes in rich tomato glaze.",
-        "vegan": "Contains minced meat. Non-vegan."
+        "vegan": "Contains minced meat. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Potato & Meat Stew / Baked Potatoes."
       }
     }
   },
@@ -1932,7 +2041,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": true,
     "category": "general",
     "modes": [
-      "economic"
+      "economic",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -1940,14 +2050,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Yanına turşu ve soğan kırarak tam bir geleneksel ziyafete çevirin.",
         "economic": "130.00 ₺ esnaf lokantası klasiği! En ucuz yoldan en yüksek tokluk garantisi.",
         "gourmet": "Bakır tencerede güveçte pişmiş ispir kuru fasulyesi ve tereyağlı pilav.",
-        "vegan": "Zeytinyağıyla pişirildiğinde %100 vegan ve son derece besleyici bitkisel menü."
+        "vegan": "Zeytinyağıyla pişirildiğinde %100 vegan ve son derece besleyici bitkisel menü.",
+        "tourist": "Türk ev ve esnaf lokantalarının milli ikilisi! Ağır ateşte pişmiş fasulye ve tereyağlı pirinç pilavı."
       },
       "en": {
         "fit": "High in plant protein. Reduce the rice portion to keep carbs in check.",
         "cheat_day": "Perfect comfort food when paired with pickles and raw onions.",
         "economic": "₺130.00 for the ultimate Turkish comfort duo. Unbeatable value for money.",
         "gourmet": "Ispir dry beans slow-cooked in a clay pot, served with buttery rice.",
-        "vegan": "100% vegan if prepared with vegetable oil instead of butter."
+        "vegan": "100% vegan if prepared with vegetable oil instead of butter.",
+        "tourist": "Turkey's national comfort food dish: slow-cooked white beans served alongside buttery white rice."
       }
     }
   },
@@ -1979,14 +2091,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Üzerine bol peynir ve yoğurt ekleyerek ev usulü kaçamak yapabilirsiniz.",
         "economic": "Sadece 85.00 ₺! Öğrenci bütçesinin ve hızlı beslenmenin kurtarıcı yemeği.",
         "gourmet": "Taze nane ve domates salçası sosuyla demlenmiş fiyonk makarna.",
-        "vegan": "Peynir veya tereyağı içermeyen salçalı versiyonu tamamen vegandır."
+        "vegan": "Peynir veya tereyağı içermeyen salçalı versiyonu tamamen vegandır.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Makarna Çeşitleri."
       },
       "en": {
         "fit": "Loaded with simple carbs. Good for pre-workout glycogen loading.",
         "cheat_day": "Add extra melted cheese or garlic yogurt for a home-style comfort bowl.",
         "economic": "Only ₺85.00! The legendary student savior meal that is easy on the wallet.",
         "gourmet": "Bowtie pasta tossed in a simple, aromatic tomato paste and dried mint sauce.",
-        "vegan": "Vegan if ordered with simple tomato sauce and no dairy toppings."
+        "vegan": "Vegan if ordered with simple tomato sauce and no dairy toppings.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Variety of Pastas."
       }
     }
   },
@@ -2010,7 +2124,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "flatbread",
     "modes": [
-      "economic"
+      "economic",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -2018,14 +2133,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sıcak gözlemenin yanında demli çay! Harika bir pazar sabahı kaçamağı.",
         "economic": "95.00 ₺ fiyatıyla doyurucu, hızlı ve lezzetli ayaküstü atıştırmalık.",
         "gourmet": "Saç üzerinde pişmiş incecik yufka, taze ıspanak ve lor peyniri dolgusu.",
-        "vegan": "Patatesli veya ıspanaklı gözleme tereyağsız pişirildiğinde harika bir vegandır."
+        "vegan": "Patatesli veya ıspanaklı gözleme tereyağsız pişirildiğinde harika bir vegandır.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Gözleme."
       },
       "en": {
         "fit": "Made of white flour dough, high in carbs. Skip on cutting cycles.",
         "cheat_day": "Pair this hot flatbread with fresh Turkish tea for a cozy breakfast.",
         "economic": "Only ₺95.00! Highly affordable, filling, and quick Turkish classic.",
         "gourmet": "Thin dough rolled over local spinach and fresh herbs, cooked on a griddle.",
-        "vegan": "Potato or spinach filled versions are vegan if not brushed with butter."
+        "vegan": "Potato or spinach filled versions are vegan if not brushed with butter.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Gözleme."
       }
     }
   },
@@ -2057,14 +2174,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sıcak lavaşın sıcağında eriyen çökelek peyniri ve tereyağı lezzeti!",
         "economic": "80.00 ₺ fiyatıyla özellikle güney bölgelerinde çok popüler, doyurucu ve ekonomik kahvaltılık.",
         "gourmet": "Sacdan yeni çıkmış sıcak bazlama içine çökelek, tereyağı ve ince kıyılmış soğan.",
-        "vegan": "Çökelek peyniri ve tereyağı içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Çökelek peyniri ve tereyağı içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Sıkma."
       },
       "en": {
         "fit": "Hand-rolled dough and cheese filling is high in fat and simple carbs.",
         "cheat_day": "Hot flatbread wrapping melted cottage cheese and local butter.",
         "economic": "At only ₺80.00, this Southern classic is a highly satisfying cheap meal.",
         "gourmet": "Cooked on a dome griddle, rolled with fresh onions and local goat cheese.",
-        "vegan": "Contains cheese and butter. Not vegan."
+        "vegan": "Contains cheese and butter. Not vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Sıkma."
       }
     }
   },
@@ -2096,14 +2215,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bol acı sos, cips kırıntıları ve nar ekşisiyle dürümü lezzetlendirin.",
         "economic": "Sadece 75.00 ₺! Şehirde karın doyurmanın en hızlı, ucuz ve popüler yolu.",
         "gourmet": "Bol cevizli el yapımı çiğ köfte, taze nane ve nar ekşisiyle sarılmış lavaş.",
-        "vegan": "%100 bitkisel malzemelerle üretilen Türkiye'nin en sevilen vegan sokak dürümü."
+        "vegan": "%100 bitkisel malzemelerle üretilen Türkiye'nin en sevilen vegan sokak dürümü.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Çiğ Köfte Dürüm."
       },
       "en": {
         "fit": "Bulgur contains complex carbs, fat ratio is low. Ask for light pomegranate sauce.",
         "cheat_day": "Load it with extra hot sauce, crispy chips, and sweet pomegranate syrup.",
         "economic": "Only ₺75.00! The cheapest, fastest, and most popular street wrap in Turkey.",
         "gourmet": "Hand-kneaded bulgur mixed with ground walnuts, fresh mint, and lemon.",
-        "vegan": "100% plant-based, egg-free, and dairy-free legendary vegan wrap."
+        "vegan": "100% plant-based, egg-free, and dairy-free legendary vegan wrap.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Çiğ Köfte Wrap."
       }
     }
   },
@@ -2135,14 +2256,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cheat day için hafif kalsa da kış günleri için mükemmel bir içinizi ısıtıcı.",
         "economic": "Sadece 70.00 ₺! Hem çok besleyici, hem de Anadolu'nun en ekonomik çorbası.",
         "gourmet": "Kuru nane ve tereyağlı sos eşliğinde sunulan, ev yapımı fermente tarhana.",
-        "vegan": "Yapımında yoğurt ve süt kullanıldığı için geleneksel tarhana vegan değildir."
+        "vegan": "Yapımında yoğurt ve süt kullanıldığı için geleneksel tarhana vegan değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Tarhana Çorbası + Ekmek."
       },
       "en": {
         "fit": "Rich in probiotics from fermented yogurt and sun-dried vegetables.",
         "cheat_day": "A light warm appetizer, perfect to heat up your stomach before main course.",
         "economic": "Only ₺70.00! Highly nutritious and cheapest traditional soup in Turkey.",
         "gourmet": "Home-fermented tarhana served with dried mint and melted butter glaze.",
-        "vegan": "Contains fermented dairy yogurt. Non-vegan."
+        "vegan": "Contains fermented dairy yogurt. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Tarhana Soup with Bread."
       }
     }
   },
@@ -2174,14 +2297,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Taptaze çıtır çıtır simiti eritme üçgen peynirle yemek çocukluk kaçamağıdır.",
         "economic": "Sadece 60.00 ₺! Türkiye'nin en ucuz, en lezzetli ve en popüler hızlı öğün kombosu.",
         "gourmet": "Taş fırından yeni çıkmış bol susamlı sokak simiti ve buz gibi köpüklü ayran.",
-        "vegan": "Peynir ve ayran süt ürünüdür. Veganlar için simit tek başına tüketilebilir."
+        "vegan": "Peynir ve ayran süt ürünüdür. Veganlar için simit tek başına tüketilebilir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Simit + Ayran + Üçgen Peynir."
       },
       "en": {
         "fit": "Sesame seeds and flour add up to 450 kcal. Eat in moderation.",
         "cheat_day": "Smearing creamy processed cheese inside a hot sesame simit is pure nostalgia.",
         "economic": "Only ₺60.00! The cheapest, most iconic quick lunch combo in Turkey.",
         "gourmet": "Stone-baked crispy sesame simit paired with cold frothy yogurt drink.",
-        "vegan": "Cheese and ayran are dairy products. Simit is vegan on its own."
+        "vegan": "Cheese and ayran are dairy products. Simit is vegan on its own.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Simit, Ayran & Cheese Combo."
       }
     }
   },
@@ -2213,14 +2338,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ev yapımı salçalı kıymalı makarnanın yanına yoğurt ekleyerek tadını çıkarın.",
         "economic": "115.00 ₺ fiyatıyla az miktarda kıyma ile koca bir tencereyi lezzetlendirmenin F/P yolu.",
         "gourmet": "Soğan ve domates salçasıyla kavrulmuş dana kıymalı geleneksel makarna.",
-        "vegan": "Kıyma (et) içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kıyma (et) içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kıymalı Makarna."
       },
       "en": {
         "fit": "High carb profile. Good cheap fuel for intense cardio sessions.",
         "cheat_day": "Top this hot minced beef pasta with garlic yogurt for a cozy cheat plate.",
         "economic": "₺115.00 for a dense protein-carb combo. Extremely popular budget dinner.",
         "gourmet": "Ground beef sautéed with onions and sweet red pepper paste over penne pasta.",
-        "vegan": "Contains minced beef. Non-vegan."
+        "vegan": "Contains minced beef. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Pasta with Minced Beef."
       }
     }
   },
@@ -2252,14 +2379,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çocukluğumuzun pazar sabahı lezzeti! Çay ve peynirle harika gider.",
         "economic": "85.00 ₺ fiyatıyla bayat ekmekleri değerlendiren, en ekonomik kahvaltı klasiği.",
         "gourmet": "Yumurtaya batırılıp tereyağında kızartılmış, kuru kekikli ekmek dilimleri.",
-        "vegan": "Yumurta içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Yumurta içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Yumurtalı Ekmek Kızartması."
       },
       "en": {
         "fit": "Fried in oil, not suitable for strict fat-loss cycles.",
         "cheat_day": "Nostalgic Sunday breakfast toast fried with eggs, pairs great with feta cheese.",
         "economic": "At ₺85.00, a highly resource-saving and budget-friendly breakfast option.",
         "gourmet": "Egg-dipped bread pan-fried in butter, dusted with wild thyme and sea salt.",
-        "vegan": "Contains eggs. Non-vegan."
+        "vegan": "Contains eggs. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Turkish French Toast."
       }
     }
   },
@@ -2291,14 +2420,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bol salçalı ve margarinli kantin usulü çıtır tost nostaljisi kaçamağı.",
         "economic": "Sadece 70.00 ₺! Kantin fiyatıyla en ucuz ve en hızlı karın doyurma yöntemi.",
         "gourmet": "Salçalı baharat sosu ve kaşar peyniriyle tost makinesinde basılmış çıtır ekmek.",
-        "vegan": "Kaşar peyniri (süt ürünü) içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Kaşar peyniri (süt ürünü) içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Salçalı Ekmek / Tost."
       },
       "en": {
         "fit": "White bread and cheese oils. High in simple carbs and fat.",
         "cheat_day": "Nostalgic canteen toast brushed with spiced tomato paste and melted cheese.",
         "economic": "Only ₺70.00! The cheapest quick hot sandwich to grab on a budget.",
         "gourmet": "Flat pressed bread filled with tomato paste sauce and melted kashar cheese.",
-        "vegan": "Contains cheese. Non-vegan."
+        "vegan": "Contains cheese. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Tomato Paste Toast."
       }
     }
   },
@@ -2330,14 +2461,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Evde hızlıca hazırlanan ama dışarıda da çok ucuz olan konfor makarnası.",
         "economic": "Sadece 85.00 ₺! Domates sosu ve makarna ile devasa doyurucu bir F/P öğünü.",
         "gourmet": "Salçalı kekikli sarımsaklı domates sosu ile pişmiş İtalyan usulü sade makarna.",
-        "vegan": "%100 vegan içerik. Peynirsiz, salçalı ve zeytinyağlı buğday makarnası."
+        "vegan": "%100 vegan içerik. Peynirsiz, salçalı ve zeytinyağlı buğday makarnası.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Soslu Makarna (Napoliten)."
       },
       "en": {
         "fit": "Pure carbohydrates. Ideal for pre-workout energy charging.",
         "cheat_day": "Simple tomato-garlic pasta, quick comfort food to satisfy cravings.",
         "economic": "Only ₺85.00! Great value for a heavy plate of wheat pasta with tomato sauce.",
         "gourmet": "Spiced tomato paste, oregano, garlic, and extra virgin olive oil over penne.",
-        "vegan": "100% plant-based, cooked using olive oil and tomatoes. Vegan friendly."
+        "vegan": "100% plant-based, cooked using olive oil and tomatoes. Vegan friendly.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Pasta Napolitana."
       }
     }
   },
@@ -2369,14 +2502,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kuyuda saatlerce pişen çıtır kuzu derisi ve tel tel ayrılan lokum gibi et lezzeti!",
         "economic": "Kuyu yapımı zorluğu ve et kalitesi nedeniyle fiyatı üst segmenttir.",
         "gourmet": "3 metre derinliğindeki kuyu içinde çam odunu ateşiyle buharda pişen Siirt kuzusu.",
-        "vegan": "Sadece kuzu eti içerir. Vegan beslenmeye tamamen aykırıdır."
+        "vegan": "Sadece kuzu eti içerir. Vegan beslenmeye tamamen aykırıdır.",
+        "tourist": "Siirt ve Bitlis bölgesinin yer altı kuyularında saatlerce pişen pamuk gibi kuzu büryanı."
       },
       "en": {
         "fit": "Extremely high in fat. Not recommended unless you follow a strict keto diet.",
         "cheat_day": "Tender pit-cooked lamb that melts in your mouth, served over hot thin pide.",
         "economic": "High price point, but reflecting the labor-intensive pit-roasting method.",
         "gourmet": "Aged lamb cooked in a deep brick pit using wood smoke, Siirt style.",
-        "vegan": "Contains lamb. Non-vegan."
+        "vegan": "Contains lamb. Non-vegan.",
+        "tourist": "Slow-roasted lamb cooked in underground pit ovens for hours until tender as butter."
       }
     }
   },
@@ -2408,14 +2543,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Şiş şiş gelen, odun ateşinde karamelize olmuş o efsanevi kuzu eti ziyafeti!",
         "economic": "Şiş başı ücretlendirilir, gurme deneyim için bütçeye değer.",
         "gourmet": "Reyhan ve soğanla marine edilmiş, yatık olarak odun ateşinde dönen usta işi lezzet.",
-        "vegan": "Kuzu eti ve kuzu yağı içerir. Veganlar sola kaydırsın."
+        "vegan": "Kuzu eti ve kuzu yağı içerir. Veganlar sola kaydırsın.",
+        "tourist": "Erzurum'un yatık döneri! Odun ateşinde yatay pişirilen marine edilmiş kuzu etinin en lezzetli hali."
       },
       "en": {
         "fit": "High in protein (52g) but also contains significant animal fat.",
         "cheat_day": "Horizontal spit-roasted lamb sliced onto small skewers directly at your table.",
         "economic": "Priced per skewer, this is a premium specialty meat dish.",
         "gourmet": "Marinated with sweet basil and onions, cooked horizontally over wood coal.",
-        "vegan": "Contains lamb. Definitely not vegan."
+        "vegan": "Contains lamb. Definitely not vegan.",
+        "tourist": "Erzurum's horizontal wood-fired lamb doner, marinated with onions and herbs."
       }
     }
   },
@@ -2447,14 +2584,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kemikten kendiliğinden dökülen etlerin ekmekle sıyırarak tadını çıkarın.",
         "economic": "Yüksek fiyatlı bir lokanta klasiğidir, et kalitesi ve kemik suyu için değer.",
         "gourmet": "Havuç, patates, karabiber ve usta terbiyesiyle saatlerce fırınlanmış kuzu incik.",
-        "vegan": "Kuzu gerdan eti içerir, veganlığa tamamen aykırıdır."
+        "vegan": "Kuzu gerdan eti içerir, veganlığa tamamen aykırıdır.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kuzu Gerdan / İncik Haşlama."
       },
       "en": {
         "fit": "Boiled slowly with root vegetables, rich in collagen and amino acids.",
         "cheat_day": "Tender meat that literally drops off the bone, best enjoyed with toasted bread.",
         "economic": "A premium classic esnaf dish, but high in nutritional density.",
         "gourmet": "Lamb shank simmered for hours with carrots, potatoes, and lemon-egg wash.",
-        "vegan": "Contains lamb shank. Non-vegan."
+        "vegan": "Contains lamb shank. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Slow Cooked Lamb Neck / Shank."
       }
     }
   },
@@ -2478,7 +2617,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "gourmet"
+      "gourmet",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -2486,14 +2626,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Köz patlıcanlı sarımsaklı süzme yoğurt yatağı üzerinde tereyağlı bonfile dilimleri!",
         "economic": "Porsiyonu zengin, gurme sınıfında fiyatını hak eden özel bir kebap.",
         "gourmet": "Sarımsaklı köz patlıcan beğenisi üzerinde tereyağında çevrilmiş taze kuzu eti.",
-        "vegan": "Et ve süzme yoğurt içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Et ve süzme yoğurt içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Gaziantep mutfağından közlenmiş sarımsaklı patlıcan yatağında servis edilen leziz ızgara et parçaları."
       },
       "en": {
         "fit": "Eggplant base is healthy, but butter sauce and Greek yogurt add calories.",
         "cheat_day": "Warm garlic eggplant yogurt bed topped with hot buttered beef slices.",
         "economic": "A complex culinary plate that is worth the premium pricing.",
         "gourmet": "Charcoal-grilled eggplant puree mixed with garlic yogurt, topped with spiced lamb.",
-        "vegan": "Contains lamb and dairy yogurt. Non-vegan."
+        "vegan": "Contains lamb and dairy yogurt. Non-vegan.",
+        "tourist": "Smoky roasted eggplant mixed with garlic yogurt, topped with tender grilled beef cubes from Gaziantep."
       }
     }
   },
@@ -2517,7 +2659,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "soup",
     "modes": [
-      "gourmet"
+      "gourmet",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -2525,14 +2668,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sabahın erken saatlerinde bol acılı ve sarımsaklı içilmesi gereken bir şifa.",
         "economic": "Çorbaya göre fiyatı yüksektir çünkü yoğun et ve kemik iliği içerir.",
         "gourmet": "Gaziantep usulü bakır sahanda, harlı ateşte pirinç, kuzu eti, sarımsak ve pul biber.",
-        "vegan": "Yoğun kuzu eti ve kemik suyu içerir, veganların uzak durması gerekir."
+        "vegan": "Yoğun kuzu eti ve kemik suyu içerir, veganların uzak durması gerekir.",
+        "tourist": "Gaziantep'in sabah kahvaltılarında içilen acılı, sarımsaklı ve etli efsanevi şifa çorbası."
       },
       "en": {
         "fit": "Incredible source of protein and natural collagen from bone marrow.",
         "cheat_day": "Best enjoyed early in the morning with extra garlic and spicy chili oil.",
         "economic": "Expensive for a soup, but it is actually a very dense meat entree.",
         "gourmet": "Boiled in a copper dish over high flame, mixing rice, lamb, garlic, and lard.",
-        "vegan": "Contains lamb and heavy bone broth. Non-vegan."
+        "vegan": "Contains lamb and heavy bone broth. Non-vegan.",
+        "tourist": "Gaziantep's legendary rich breakfast soup made with slow-cooked lamb, rice, garlic, and fiery chili oil."
       }
     }
   },
@@ -2556,7 +2701,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "kebab",
     "modes": [
-      "gourmet"
+      "gourmet",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -2564,14 +2710,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Osmanlı saray lezzetini evde değil usta lokantasında kaçamak olarak tadın.",
         "economic": "Malzeme kalitesi ve saray mutfağı prestijiyle üst fiyat sınıfı bir gurme yemek.",
         "gourmet": "Köz patlıcan, süt, un ve kaşarlı beğendi yatağında yavaşça pişmiş kuzu kuşbaşı.",
-        "vegan": "Süt, peynir, un ve kuzu eti içerir, veganların kesinlikle kaçınması gerekir."
+        "vegan": "Süt, peynir, un ve kuzu eti içerir, veganların kesinlikle kaçınması gerekir.",
+        "tourist": "Osmanlı saray mutfağının efsanesi. Köz patlıcanlı beşamelli yatak üzerinde yumuşacık dana eti sote."
       },
       "en": {
         "fit": "The eggplant puree contains flour, milk, and cheese. High calorie.",
         "cheat_day": "An imperial palace recipe to indulge your taste buds on the weekend.",
         "economic": "Premium priced gourmet option reflecting historical recipe value.",
         "gourmet": "Slow-stewed tender lamb served over a creamy roasted eggplant bechamel.",
-        "vegan": "Contains lamb, milk, and cheese. Highly non-vegan."
+        "vegan": "Contains lamb, milk, and cheese. Highly non-vegan.",
+        "tourist": "Ottoman palace classic: tender beef stew served over a bed of creamy roasted eggplant puree."
       }
     }
   },
@@ -2603,14 +2751,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bol sumak ekşili dolmaları zeytinyağlı meze sofrasında kaçamak yapın.",
         "economic": "Antep'ten gelen kurutulmuş sebzelerle yapılan, fiyatı makul gurme dolma.",
         "gourmet": "Güneşte kurutulmuş patlıcanların sumak ekşisi, baharatlı pirinç ve zeytinyağı dolgusu.",
-        "vegan": "Etsiz ve tamamen bitkisel malzemelerle hazırlanan %100 vegan dolma."
+        "vegan": "Etsiz ve tamamen bitkisel malzemelerle hazırlanan %100 vegan dolma.",
+        "tourist": "Güneydoğu güneşinde kurutulmuş patlıcanların baharatlı pirinç harcıyla doldurulduğu otantik lezzet."
       },
       "en": {
         "fit": "Contains rice filling. Watch your carb intake but enjoy the fiber.",
         "cheat_day": "Perfect tangy appetizer for a large family style sharing table.",
         "economic": "Reasonably priced considering the dried ingredients are sourced from Antep.",
         "gourmet": "Sun-dried eggplants stuffed with spiced rice and tangy sumac molasses.",
-        "vegan": "100% plant-based and dairy-free traditional vegan recipe."
+        "vegan": "100% plant-based and dairy-free traditional vegan recipe.",
+        "tourist": "Sun-dried eggplants stuffed with aromatic spiced rice, an authentic Southeastern Turkish delicacy."
       }
     }
   },
@@ -2642,14 +2792,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Toprak kapta saatlerce fırında pişmiş, sebzeli sıcak kuzu eti kaçamağı.",
         "economic": "Taş fırın güveci yapım emeği ve et yoğunluğuyla premium fiyat sınıfında.",
         "gourmet": "Toprak güveçte arpacık soğan, sarımsak, taze kekik ve kuzu etiyle yavaş pişim.",
-        "vegan": "Kuzu eti içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Kuzu eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kekikli Kuyu Kebabı / Taş Fırın Güveç."
       },
       "en": {
         "fit": "Rich lamb fats simmered with vegetables. Watch your caloric intake.",
         "cheat_day": "Clay pot stew loaded with garlic, shallots, and tender lamb chunks.",
         "economic": "High quality meat cooked in authentic clay ovens, worth the price.",
         "gourmet": "Simmered slowly in sealed clay pots with baby shallots and fresh rosemary.",
-        "vegan": "Contains lamb. Non-vegan."
+        "vegan": "Contains lamb. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Thyme Pit Kebab / Stone Oven Stew."
       }
     }
   },
@@ -2681,14 +2833,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tereyağlı lezzetli bir pilav kaçamağı yapmak isteyen gurmeler için.",
         "economic": "Taze enginar ve pirinç birleşimi, makul fiyata gurme lokanta yemeği.",
         "gourmet": "Dereotu, taze soğan, çam fıstığı ve enginar kalbiyle demlenmiş pirinç pilavı.",
-        "vegan": "Zeytinyağıyla demlendiği takdirde mükemmel bir vegan pirinç şölenidir."
+        "vegan": "Zeytinyağıyla demlendiği takdirde mükemmel bir vegan pirinç şölenidir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Enginarlı Pilav."
       },
       "en": {
         "fit": "Provides dietary fiber from artichoke hearts mixed with carb fuel.",
         "cheat_day": "A delicious buttery rice dish that feels light but tastes decadent.",
         "economic": "Fair price for a premium rice dish using fresh artichokes.",
         "gourmet": "Basmati rice infused with dill, pine nuts, and tender artichoke hearts.",
-        "vegan": "100% vegan when prepared traditionally using premium olive oil."
+        "vegan": "100% vegan when prepared traditionally using premium olive oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Artichoke Rice."
       }
     }
   },
@@ -2720,14 +2874,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Şarap veya kahvenin yanına yıllandırılmış Kars gravyeri kaçamağı!",
         "economic": "Yıllandırılmış yerli peynirler yüksek fiyatlıdır, gurme keşifler için değer.",
         "gourmet": "Uzun süre mahzenlerde bekletilmiş gözenekli Kars gravyeri ve isli Çerkez peyniri.",
-        "vegan": "Hayvansal süt ürünleridir. Vegan beslenmeye uygun değildir."
+        "vegan": "Hayvansal süt ürünleridir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kars Gravyeri ve İsli Çerkez Peynirli Tabak."
       },
       "en": {
         "fit": "High in calcium and protein, but watch out for saturated fats and sodium.",
         "cheat_day": "Pair these complex aged cheeses with dried figs and single-origin coffee.",
         "economic": "Premium pricing reflecting the aging process in Kars stone cellars.",
         "gourmet": "Cave-aged local Gruyere and oak-smoked Circassian string cheese platter.",
-        "vegan": "Contains dairy milk. Non-vegan."
+        "vegan": "Contains dairy milk. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Kars Gruyere & Smoked Circassian Cheese Platter."
       }
     }
   },
@@ -2759,14 +2915,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Bolluk ve bereket simgesi olan, bol fındık ve narlı sıcak aşure ziyafeti.",
         "economic": "110.00 ₺ fiyatına göre içindeki malzeme çeşitliliği ve besleyiciliği çok yüksektir.",
         "gourmet": "Buğday, nohut, fasulye, incir, kayısı ve kuruyemişlerin gül suyuyla pişen uyumu.",
-        "vegan": "Sıfır hayvansal süt veya yumurta içeren, geleneksel Türk vegan tatlısı."
+        "vegan": "Sıfır hayvansal süt veya yumurta içeren, geleneksel Türk vegan tatlısı.",
+        "tourist": "Osmanlı döneminden günümüze uzanan safranlı ve fıstıklı saray tatlısı."
       },
       "en": {
         "fit": "Loaded with grains and nuts. High in sugar, eat in moderation.",
         "cheat_day": "Comforting historical pudding topped with toasted hazelnuts and fresh pomegranate.",
         "economic": "Excellent value considering the variety of dried fruits, nuts, and grains.",
         "gourmet": "Sweet porridge made of wheat, beans, dried figs, apricots, flavored with rosewater.",
-        "vegan": "100% plant-based, traditionally dairy-free and egg-free vegan dessert."
+        "vegan": "100% plant-based, traditionally dairy-free and egg-free vegan dessert.",
+        "tourist": "Historic Ottoman royal dessert infused with aromatic saffron, pine nuts, and currants."
       }
     }
   },
@@ -2798,14 +2956,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Fırında kızarmış bademli hamur kubbesini kesip içinden dumanı tüten tavuklu pilavı çıkarmak!",
         "economic": "Yapım aşamaları çok zahmetli olduğu için fiyatı gurme seviyesindedir.",
         "gourmet": "Kekik kokulu tavuk eti, kuş üzümü, çam fıstığı ve bademli pilavın incecik hamur içinde fırınlanması.",
-        "vegan": "Tavuk eti, tereyağı ve yumurtalı hamur içerir. Vegan değildir."
+        "vegan": "Tavuk eti, tereyağı ve yumurtalı hamur içerir. Vegan değildir.",
+        "tourist": "Siirt yöresine ait, keklik eti, badem ve fıstıklarla zenginleştirilmiş hamur kaplı muazzam pilav şaheseri."
       },
       "en": {
         "fit": "Heavy combination of pastry crust and buttery rice. Not diet-friendly.",
         "cheat_day": "Slicing open the baked pastry dome to reveal steaming chicken and almond rice.",
         "economic": "Very labor intensive dish, pricing reflects the master craft.",
         "gourmet": "Chicken breast, currants, pine nuts, and almonds baked inside a thin buttery crust.",
-        "vegan": "Contains chicken, eggs, and butter. Non-vegan."
+        "vegan": "Contains chicken, eggs, and butter. Non-vegan.",
+        "tourist": "Siirt's showstopper rice dish cooked inside a pastry crust filled with chicken, almonds, and allspice."
       }
     }
   },
@@ -2837,14 +2997,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Büyük içli köfteler (analar) ve küçük bulgur toplarının (kızlar) nohutlu etli sosu!",
         "economic": "Yapımı usta eller gerektiren, yöresel esnaf lokantasında yenmesi gereken F/P.",
         "gourmet": "Kıymalı içli köfteler ve nohutlu kuzu etinin ekşili salçalı sos içinde harmanı.",
-        "vegan": "İçli köfte kıyması ve kuzu eti içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "İçli köfte kıyması ve kuzu eti içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "Elazığ ve Malatya bölgesinin minik köfteler ve nohutla hazırlanan düğün ve özel gün çorbası."
       },
       "en": {
         "fit": "Contains wheat dough and fatty meat reduction. Watch your calories.",
         "cheat_day": "Large stuffed kibbeh (mothers) and small bulgur balls (daughters) in meat gravy.",
         "economic": "Demands hours of manual preparation, highly valued regional dish.",
         "gourmet": "Spiced minced beef balls simmered with chickpeas and tender lamb chunks.",
-        "vegan": "Contains beef and lamb. Highly non-vegan."
+        "vegan": "Contains beef and lamb. Highly non-vegan.",
+        "tourist": "Traditional celebration stew from Anatolia featuring stuffed bulgur balls and chickpeas."
       }
     }
   },
@@ -2876,14 +3038,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Gece yarısı Adana usulü bol kimyon ve pul biberli şırdan kaçamağı!",
         "economic": "Bulunması zor özel bir sakatat türü olduğundan porsiyon fiyatı özeldir.",
         "gourmet": "Kuzu şırdanının baharatlı pirinç harcı ile doldurulup kazanlarda pişen lezzeti.",
-        "vegan": "Kuzu sakatatı içerir, veganların kesinlikle tercih etmeyeceği bir üründür."
+        "vegan": "Kuzu sakatatı içerir, veganların kesinlikle tercih etmeyeceği bir üründür.",
+        "tourist": "Adana ve Güneydoğu sokak gastronomisinin en otantik, baharatlı sakatat lezzeti."
       },
       "en": {
         "fit": "Rice filling and offal fat make this dish heavy on calorie cuts.",
         "cheat_day": "Late-night street food classic seasoned with cumin and chili flakes.",
         "economic": "Rare offal cut that requires careful sourcing, hence premium priced.",
         "gourmet": "Lamb abomasum stuffed with peppery rice, simmered in a spiced broth.",
-        "vegan": "Contains lamb abomasum. Not vegan."
+        "vegan": "Contains lamb abomasum. Not vegan.",
+        "tourist": "Authentic street food specialty from Adana: spiced rice-stuffed intestines roasted to perfection."
       }
     }
   },
@@ -2915,14 +3079,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tırnak pide üzerinde tereyağlı ve domates soslu incecik Tire köfteleri!",
         "economic": "Kullanılan etin kalitesi ve usta tereyağı nedeniyle haklı bir gurme fiyatı.",
         "gourmet": "İnce şişlerde pişirilmiş, domates sosu ve kızgın tereyağıyla sahanda sunulan köfteler.",
-        "vegan": "Dana eti ve bol tereyağı içerir. Vegan beslenmeye uygun değildir."
+        "vegan": "Dana eti ve bol tereyağı içerir. Vegan beslenmeye uygun değildir.",
+        "tourist": "İzmir Tire usulü domates soslu ve tereyağlı ızgara köfte sunumu."
       },
       "en": {
         "fit": "Swimming in butter, not suitable for fat cutting phases.",
         "cheat_day": "Thin grilled meat sticks over pita bread, covered in hot tomato butter.",
         "economic": "A gourmet specialty meat dish that justifies its price tag.",
         "gourmet": "Minced beef cooked on thin skewers, finished in a pan with butter and tomatoes.",
-        "vegan": "Contains beef and butter. Non-vegan."
+        "vegan": "Contains beef and butter. Non-vegan.",
+        "tourist": "Tire-style grilled meatballs served over fresh tomato sauce and rich melted butter."
       }
     }
   },
@@ -2954,14 +3120,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Yarısı sarımsaklı yoğurtlu, yarısı bol cevizli el açması enfes mantı kaçamağı!",
         "economic": "Büyük porsiyonu ve bol ceviz içi dolgusu ile doyurucu gurme seçeneği.",
         "gourmet": "Kulak şeklinde bükülmüş, üzerine eritilmiş tereyağı ve kıyılmış ceviz dökülen mantı.",
-        "vegan": "Kıyma, yoğurt ve tereyağı içerir. Veganlar sola kaydırsın."
+        "vegan": "Kıyma, yoğurt ve tereyağı içerir. Veganlar sola kaydırsın.",
+        "tourist": "Sinop yöresine özgü, üzerine bol dövülmüş ceviz ve erimiş tereyağı gezdirilen hamur işi harikası."
       },
       "en": {
         "fit": "Dough, butter, and walnuts yield very high calories. Avoid on cuts.",
         "cheat_day": "Half garlic yogurt, half crushed walnuts over hand-folded boiled dumplings.",
         "economic": "Dense calorie plate filled with walnuts and beef, yields high satisfaction.",
         "gourmet": "Ear-shaped thin dough boiled and glazed with melted butter and organic walnuts.",
-        "vegan": "Contains beef, yogurt, and butter. Non-vegan."
+        "vegan": "Contains beef, yogurt, and butter. Non-vegan.",
+        "tourist": "Black Sea regional dumplings served with crushed walnuts and browned butter."
       }
     }
   },
@@ -2993,14 +3161,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Balık restoranında yenebilecek en güzel deniz mahsulü sıcak mezelerinden biri.",
         "economic": "Taze bütün kalamar ve özel dolgu malzemeleriyle lüks segment fiyatlandırma.",
         "gourmet": "Kalamarın içinin karides, mantar ve kaşar peyniriyle doldurulup fırınlanması.",
-        "vegan": "Kalamar, karides ve peynir içerir. Hayvansal deniz mahsulüdür."
+        "vegan": "Kalamar, karides ve peynir içerir. Hayvansal deniz mahsulüdür.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kalamar Dolması."
       },
       "en": {
         "fit": "High protein seafood, but watch the cheese filling inside.",
         "cheat_day": "The ultimate hot seafood appetizer to order at a premium beach restaurant.",
         "economic": "Luxury pricing due to high quality squid and shrimp filling.",
         "gourmet": "Whole calamari tube stuffed with shrimp, mushrooms, and melted cheese, baked.",
-        "vegan": "Contains squid, shrimp, and cheese. Highly non-vegan."
+        "vegan": "Contains squid, shrimp, and cheese. Highly non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Stuffed Squid."
       }
     }
   },
@@ -3024,7 +3194,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": false,
     "category": "dessert",
     "modes": [
-      "gourmet"
+      "gourmet",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -3032,14 +3203,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Taş fırında üstü kızarmış, üzerine bolca kavrulmuş Karadeniz fındığı serpilmiş sütlaç!",
         "economic": "Çok kaliteli süt ve fındık kullanılan, fiyatı makul bir fırın klasiği.",
         "gourmet": "Trabzon Hamsiköy usulü yağlı süt, pirinç ve şekerle pişirilip fırınlanmış lezzet.",
-        "vegan": "Bol miktarda inek sütü içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Bol miktarda inek sütü içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Fırında üzeri nar gibi kızarmış, vanilya kokulu geleneksel Türk sütlaç tatlısı."
       },
       "en": {
         "fit": "Contains refined sugar and rice carbs. Skip on strict fat-loss cycles.",
         "cheat_day": "Oven-baked rice pudding loaded with crushed roasted Black Sea hazelnuts.",
         "economic": "Good local price for a highly comforting traditional dessert.",
         "gourmet": "Hamsiköy style recipe using fresh fatty farm milk, baked in clay dishes.",
-        "vegan": "Contains dairy milk. Non-vegan."
+        "vegan": "Contains dairy milk. Non-vegan.",
+        "tourist": "Traditional Turkish baked rice pudding with a beautifully caramelized skin."
       }
     }
   },
@@ -3063,7 +3236,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": true,
     "category": "general",
     "modes": [
-      "vegan"
+      "vegan",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -3071,14 +3245,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Zeytinyağlı soğuk meze tabağının vazgeçilmez çıtır sarma lezzeti.",
         "economic": "115.00 ₺ fiyatına 8 adet sarma, harika bir F/P meze alternatifi.",
         "gourmet": "Kuş üzümlü, çam fıstıklı ve naneli baharatlı pirinçle doldurulmuş Ege sarması.",
-        "vegan": "Geleneksel soğuk zeytinyağlı meze. Yoğurtsuz servis edildiğinde %100 vegandır."
+        "vegan": "Geleneksel soğuk zeytinyağlı meze. Yoğurtsuz servis edildiğinde %100 vegandır.",
+        "tourist": "Zeytinyağı, pirinç ve taze otlarla özenle sarılmış Ege ve Akdeniz lezzet klasiği."
       },
       "en": {
         "fit": "Grape leaves deliver micronutrients, stuffed with carbs. Squeeze lemon.",
         "cheat_day": "Order a double plate to share as a delicious cold snack.",
         "economic": "Great price for 8 pieces of hand-rolled leaves, highly satisfying.",
         "gourmet": "Aegean style leaves filled with currants, pine nuts, and minty rice.",
-        "vegan": "100% plant-based meze, cooked slowly in olive oil."
+        "vegan": "100% plant-based meze, cooked slowly in olive oil.",
+        "tourist": "Vine leaves delicately rolled with seasoned rice, pine nuts, and olive oil."
       }
     }
   },
@@ -3110,14 +3286,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çay saatlerinin ve salata sofralarının en sevilen pratik kaçamağı.",
         "economic": "95.00 ₺ fiyatıyla bulgurun doyurucu gücünü gösteren bütçe dostu yiyecek.",
         "gourmet": "Bol nar ekşisi, taze nane ve sızma zeytinyağı ile harmanlanmış kıvamında kısır.",
-        "vegan": "Bulgur, taze yeşillikler, salça ve nar ekşisiyle tamamen vegan ve temiz."
+        "vegan": "Bulgur, taze yeşillikler, salça ve nar ekşisiyle tamamen vegan ve temiz.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kısır."
       },
       "en": {
         "fit": "High in fiber and vitamins from bulgur wheat and fresh garden herbs.",
         "cheat_day": "Classic home-style salad that is easy on the stomach during heavy weeks.",
         "economic": "At under ₺100, a very budget-friendly plate that fills you up.",
         "gourmet": "Perfect ratio of sour pomegranate syrup, olive oil, and finely chopped greens.",
-        "vegan": "100% plant-based salad. Lactose-free and egg-free."
+        "vegan": "100% plant-based salad. Lactose-free and egg-free.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Kısır."
       }
     }
   },
@@ -3141,7 +3319,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": true,
     "category": "flatbread",
     "modes": [
-      "vegan"
+      "vegan",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -3149,14 +3328,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Çıtır lavaşa sarılmış bol acılı çiğ köfte dürüm kaçamağı!",
         "economic": "Sadece 80.00 ₺! Türkiye'nin en ucuz, en hızlı ve en yaygın vegan öğünü.",
         "gourmet": "Ceviz içi, isot ve taze limonla yoğrulmuş geleneksel Adıyaman usulü.",
-        "vegan": "Etsiz versiyonuyla tamamen bitkisel, veganların vazgeçilmez sokak lezzeti."
+        "vegan": "Etsiz versiyonuyla tamamen bitkisel, veganların vazgeçilmez sokak lezzeti.",
+        "tourist": "Et kullanmadan yoğrulan baharatlı bulgur ve nar ekşisi aromalı milli sokak lezzeti."
       },
       "en": {
         "fit": "Complex carbs from bulgur wheat. Good clean energy for workouts.",
         "cheat_day": "Roll it inside double flatbread with spicy pepper paste and lemon juice.",
         "economic": "Only ₺80.00! The cheapest and fastest plant-based lunch combo.",
         "gourmet": "Kneaded with premium walnuts, isot chili flakes, and cold-pressed oil.",
-        "vegan": "100% plant-based, dairy-free, and egg-free popular street wrap."
+        "vegan": "100% plant-based, dairy-free, and egg-free popular street wrap.",
+        "tourist": "Anatolia's plant-based spicy bulgur delicacy served in crisp lettuce with pomegranate glaze."
       }
     }
   },
@@ -3188,14 +3369,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Yoğun aromasıyla zeytinyağlı meze sofralarının doyurucu bir üyesi.",
         "economic": "120.00 ₺ fiyatına göre bitkisel protein oranı oldukça yüksek ve doyurucudur.",
         "gourmet": "Havuç, patates ve sarımsakla Ege zeytinyağında ağır ateşte pişmiş barbunya.",
-        "vegan": "Sebzeler ve barbunyayla hazırlanan %100 vegan protein deposu."
+        "vegan": "Sebzeler ve barbunyayla hazırlanan %100 vegan protein deposu.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Barbunya Pilaki."
       },
       "en": {
         "fit": "High in soluble fiber which regulates cholesterol and blood sugar levels.",
         "cheat_day": "Enjoy this cold bean stew with raw onions and a slice of bread.",
         "economic": "Very high protein density for a low price, excellent budget food.",
         "gourmet": "Borlotti beans simmered with carrots, potatoes, and garlic in Aegean olive oil.",
-        "vegan": "100% plant-based meze, dairy-free and highly nutritious."
+        "vegan": "100% plant-based meze, dairy-free and highly nutritious.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Borlotti Beans in Olive Oil."
       }
     }
   },
@@ -3219,7 +3402,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": true,
     "category": "soup",
     "modes": [
-      "vegan"
+      "vegan",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -3227,14 +3411,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Hafif beslenip kalori açığı yaratmak istediğiniz günlerin sıcak kurtarıcısı.",
         "economic": "Sadece 70.00 ₺! Şehirdeki en ucuz ve en besleyici sıcak vegan öğün.",
         "gourmet": "Kimyon ve zeytinyağı ile tatlandırılmış, pürüzsüz kıvamda sarı mercimek.",
-        "vegan": "Tereyağı yerine tamamen bitkisel yağla hazırlanan arındırıcı vegan çorbası."
+        "vegan": "Tereyağı yerine tamamen bitkisel yağla hazırlanan arındırıcı vegan çorbası.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Mercimek Çorbası."
       },
       "en": {
         "fit": "Low in fat, rich in iron and dietary fiber. Squeeze fresh lemon juice.",
         "cheat_day": "A great starter to keep your calorie count low during cutting phases.",
         "economic": "Only ₺70.00! The cheapest warm plant-based starter in the city.",
         "gourmet": "Slowly simmered yellow lentils blended smooth with cumin and olive oil.",
-        "vegan": "100% plant-based, dairy-free, cooked using pure vegetable oil."
+        "vegan": "100% plant-based, dairy-free, cooked using pure vegetable oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Lentil Soup."
       }
     }
   },
@@ -3258,7 +3444,8 @@ export const mockFoodItems: MenuItem[] = [
     "isVegan": true,
     "category": "general",
     "modes": [
-      "vegan"
+      "vegan",
+      "tourist"
     ],
     "aiInsights": {
       "tr": {
@@ -3266,14 +3453,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "İmamı lezzetten bayıltan o meşhur bol soğanlı sarımsaklı patlıcan şöleni!",
         "economic": "130.00 ₺ fiyatıyla saray mutfağı kalitesinde, besleyici ve hesaplı tencere yemeği.",
         "gourmet": "Zeytinyağında karamelize edilmiş soğan, domates ve sarımsak dolgulu köz patlıcan.",
-        "vegan": "Hayvansal hiçbir yağ içermeyen, tamamen zeytinyağlı geleneksel vegan yemeği."
+        "vegan": "Hayvansal hiçbir yağ içermeyen, tamamen zeytinyağlı geleneksel vegan yemeği.",
+        "tourist": "Zeytinyağında fırınlanmış patlıcanın domates ve soğanla harmanlandığı leziz Türk sebze yemeği."
       },
       "en": {
         "fit": "Low calorie eggplant filled with tomato and garlic, cooked in olive oil.",
         "cheat_day": "A delicious sweet onion and garlic stuffed eggplant comfort dish.",
         "economic": "Highly satisfying classic dish that brings rich history for a fair price.",
         "gourmet": "Whole eggplant slit open and stuffed with tomatoes and olive-oil caramelized onions.",
-        "vegan": "100% plant-based Ottoman classic, dairy-free and gluten-free."
+        "vegan": "100% plant-based Ottoman classic, dairy-free and gluten-free.",
+        "tourist": "Classic Ottoman vegetable dish featuring roasted eggplants stuffed with sweet onions and tomatoes."
       }
     }
   },
@@ -3305,14 +3494,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Tahine bulanmış çıtır falafel toplarının dürüm içindeki lezzet uyumu.",
         "economic": "120.00 ₺ fiyatıyla bitkisel protein ihtiyacınızı en lezzetli karşılayan F/P.",
         "gourmet": "Taze kişniş aromalı çıtır falafeller, tahinli humus yatağında lavaş dürümü.",
-        "vegan": "Nohut köfteleri, yeşillik ve tahin soslu lavaş ile %100 vegan enerji."
+        "vegan": "Nohut köfteleri, yeşillik ve tahin soslu lavaş ile %100 vegan enerji.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Falafel Dürüm."
       },
       "en": {
         "fit": "Excellent plant protein from chickpeas. Watch out for deep fried oils.",
         "cheat_day": "Crispy chickpea balls wrapped in flatbread with rich tahini sauce.",
         "economic": "Only ₺120.00! Highly filling plant protein wrap that is wallet-friendly.",
         "gourmet": "Crispy falafel seasoned with fresh coriander, wrapped with garlic tahini.",
-        "vegan": "100% vegan certified street wrap, free of dairy or egg toppings."
+        "vegan": "100% vegan certified street wrap, free of dairy or egg toppings.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Falafel Wrap."
       }
     }
   },
@@ -3344,14 +3535,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Diyet haftalarında mideyi rahatlatmak için hafif bir tencere yemeği.",
         "economic": "Mevsiminde son derece ucuz ve vitamin deposu ekonomik ev yemeği.",
         "gourmet": "Havuç tatlılığı ve limon ekşisiyle ağır ateşte demlenerek pişmiş pırasa.",
-        "vegan": "Tamamen sebzeler, pirinç ve sızma zeytinyağı ile hazırlanan vegan yemeği."
+        "vegan": "Tamamen sebzeler, pirinç ve sızma zeytinyağı ile hazırlanan vegan yemeği.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Pırasa."
       },
       "en": {
         "fit": "High fiber winter vegetable stew that supports active digestion.",
         "cheat_day": "Ideal choice to reset your body after eating high fat street food.",
         "economic": "Very low-cost home cooking option loaded with vitamins.",
         "gourmet": "Simmered slowly with sweet carrots and finished with freshly squeezed lemon juice.",
-        "vegan": "100% plant-based traditional Turkish green vegetable recipe."
+        "vegan": "100% plant-based traditional Turkish green vegetable recipe.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Leeks in Olive Oil."
       }
     }
   },
@@ -3383,14 +3576,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Üzerine pul biberli sıcak zeytinyağı gezdirip pideyle sıyırmak enfestir.",
         "economic": "95.00 ₺ fiyatıyla hem çok besleyici hem de oldukça doyurucu bir meze tabağı.",
         "gourmet": "Pürüzsüz kıvamda ılık humus, sızma zeytinyağı, sumak ve kimyon ile süslenmiş.",
-        "vegan": "Nohut, tahin, sarımsak, limon ve zeytinyağının muazzam %100 vegan buluşması."
+        "vegan": "Nohut, tahin, sarımsak, limon ve zeytinyağının muazzam %100 vegan buluşması.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Humus."
       },
       "en": {
         "fit": "Packed with chickpea protein and healthy sesame fats. Squeeze fresh lemon.",
         "cheat_day": "Drizzle with sizzling chili olive oil and scoop up with warm flatbread.",
         "economic": "Highly affordable protein-dense dip that serves as a light lunch.",
         "gourmet": "Warm, velvety smooth chickpea puree seasoned with premium tahini and cumin.",
-        "vegan": "100% plant-based and dairy-free legendary Middle Eastern dip."
+        "vegan": "100% plant-based and dairy-free legendary Middle Eastern dip.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Hummus."
       }
     }
   },
@@ -3422,14 +3617,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Diyetinizi dengelemek ve bağırsaklarınızı ısıtmak için harika bir başlangıç.",
         "economic": "Sadece 70.00 ₺! Şehirde bulabileceğiniz en ucuz, besleyici ve lezzetli vegan çorba.",
         "gourmet": "Kurutulmuş nane, tatlı pul biber ve zeytinyağlı sos eşliğinde demlenmiş Ezogelin çorbası.",
-        "vegan": "Tamamen bitkisel yağlar ve tahıllarla pişirilen geleneksel vegan çorba klasiği."
+        "vegan": "Tamamen bitkisel yağlar ve tahıllarla pişirilen geleneksel vegan çorba klasiği.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Ezogelin Çorbası."
       },
       "en": {
         "fit": "High fiber soup combining red lentils, bulgur wheat, and dried mint.",
         "cheat_day": "An ideal light meal to keep your calories low during cutting cycles.",
         "economic": "Only ₺70.00! Exceptionally budget-friendly, warm, and highly filling soup.",
         "gourmet": "Traditional Anatolian soup seasoned with sweet paprika and dried mountain mint.",
-        "vegan": "100% plant-based, dairy-free, prepared with vegetable oil."
+        "vegan": "100% plant-based, dairy-free, prepared with vegetable oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Ezogelin Soup."
       }
     }
   },
@@ -3461,14 +3658,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Diyet günlerinde vücudunuzu toksinlerden arındırmak için harika seçim.",
         "economic": "Kış mevsiminin en besleyici, sağlıklı ve ekonomik sebze yemeklerinden biri.",
         "gourmet": "Taze sıkılmış portakal suyu ve mandalina kabuklarıyla pişmiş ekşili gurme kereviz.",
-        "vegan": "Tamamen bitkisel, portakallı ve zeytinyağlı %100 vegan kereviz dilimleri."
+        "vegan": "Tamamen bitkisel, portakallı ve zeytinyağlı %100 vegan kereviz dilimleri.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Kereviz."
       },
       "en": {
         "fit": "High fiber celery cooked with root vegetables, supports kidney health.",
         "cheat_day": "A great light dinner choice during your strict cutting weeks.",
         "economic": "Affordable seasonal vegetable stew that is high in vitamin C.",
         "gourmet": "Poached in fresh orange and tangerine juices, topped with celery leaves.",
-        "vegan": "100% plant-based, dairy-free and gluten-free traditional recipe."
+        "vegan": "100% plant-based, dairy-free and gluten-free traditional recipe.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Celery in Olive Oil."
       }
     }
   },
@@ -3500,14 +3699,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sarımsaklı domates soslu patlıcan ve biberlerin soğuk meze sofrasındaki ziyafeti.",
         "economic": "95.00 ₺ fiyatıyla patlıcan ve domatesin en hesaplı ve lezzetli meze birleşimi.",
         "gourmet": "Fırınlanmış patlıcan, kabak ve kırmızı biberlerin sarımsaklı zeytinyağlı domates sosu ile harmanı.",
-        "vegan": "Sadece sebzeler, sarımsak, domates ve bitkisel yağ içeren %100 vegan meze."
+        "vegan": "Sadece sebzeler, sarımsak, domates ve bitkisel yağ içeren %100 vegan meze.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Şakşuka."
       },
       "en": {
         "fit": "Contains fried eggplants. High in vegetable fats, watch your portions.",
         "cheat_day": "Delicious cold eggplant cubes in garlicky vine-tomato reduction.",
         "economic": "Under ₺100, a highly cost-effective appetizer that delivers rich flavor.",
         "gourmet": "Baked eggplants, peppers, and zucchini seasoned with wild basil and garlic.",
-        "vegan": "100% plant-based, dairy-free, and traditionally vegan appetizer."
+        "vegan": "100% plant-based, dairy-free, and traditionally vegan appetizer.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Şakşuka."
       }
     }
   },
@@ -3539,14 +3740,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Yanına bol yeşillik ve salatalık turşusu ekleyerek ev usulü doyurucu bir öğün.",
         "economic": "110.00 ₺ fiyatıyla bakliyatın en doyurucu ve en ucuz protein birleşimlerinden biri.",
         "gourmet": "Karamelize soğanlı, sızma zeytinyağlı ve kimyonlu yeşil mercimekli bulgur pilavı.",
-        "vegan": "Tereyağı yerine zeytinyağı ile pişirilen, protein zengini saf vegan tahıl öğünü."
+        "vegan": "Tereyağı yerine zeytinyağı ile pişirilen, protein zengini saf vegan tahıl öğünü.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Yeşil Mercimekli Bulgur Pilavı."
       },
       "en": {
         "fit": "Bulgur and lentils combine to form a complete protein amino-acid profile.",
         "cheat_day": "A comforting rustic grain dish, great to enjoy with salad and pickles.",
         "economic": "Incredibly cost-effective way to get high protein and calories on a budget.",
         "gourmet": "Simmered with caramelized sweet onions, cumin, and cold-pressed olive oil.",
-        "vegan": "100% plant-based grain pilaf. Pure vegan power fuel."
+        "vegan": "100% plant-based grain pilaf. Pure vegan power fuel.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Bulgur Pilaf with Green Lentils."
       }
     }
   },
@@ -3578,14 +3781,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ağır pizza veya burgerlerin yanına sipariş edilebilecek tazeleyici salata.",
         "economic": "115.00 ₺ fiyatıyla vitamin ve mineral deposu tazeleyici bir porsiyon.",
         "gourmet": "Frenk maydanozu, bebek roka, çeri domatesler, siyah zeytinler ve balzamik sos.",
-        "vegan": "Peynirsiz, zeytinyağlı ve limonlu olarak hazırlanan taptaze %100 vegan salata."
+        "vegan": "Peynirsiz, zeytinyağlı ve limonlu olarak hazırlanan taptaze %100 vegan salata.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Geniş Yapraklı Akdeniz Salatası."
       },
       "en": {
         "fit": "High in micronutrients and healthy monounsaturated fats from olive oil.",
         "cheat_day": "Perfect green side salad to pair with your heavy carbohydrate entrees.",
         "economic": "Affordable vitamin-dense plate that is easy on the budget.",
         "gourmet": "Baby arugula, cherry tomatoes, Kalamata olives, dressed with cold-pressed oil.",
-        "vegan": "100% plant-based fresh salad, dairy-free and gluten-free."
+        "vegan": "100% plant-based fresh salad, dairy-free and gluten-free.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Mediterranean Salad."
       }
     }
   },
@@ -3617,14 +3822,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ketçap ve hardal ile tatlandırılan çıtır patates dilimleri kaçamağı.",
         "economic": "90.00 ₺ fiyatıyla patatesin en çıtır, ucuz ve doyurucu bitkisel hallerinden biri.",
         "gourmet": "Taze biberiye, sarımsak tozu ve deniz tuzu ile fırınlanmış patates dilimleri.",
-        "vegan": "%100 bitkisel içerikli, zeytinyağı ve baharatlarla fırınlanmış vegan atıştırmalık."
+        "vegan": "%100 bitkisel içerikli, zeytinyağı ve baharatlarla fırınlanmış vegan atıştırmalık.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Fırında Baharatlı Patates Dilimleri."
       },
       "en": {
         "fit": "Baked without deep-frying, providing clean potassium and carbohydrates.",
         "cheat_day": "Great crunchy potato wedges to dip in ketchup and mustard sauce.",
         "economic": "Only ₺90.00! Budget-friendly vegan carbs that fill you up instantly.",
         "gourmet": "Oven roasted potatoes tossed with fresh rosemary, garlic, and sea salt.",
-        "vegan": "100% plant-based, baked using high quality vegetable oil."
+        "vegan": "100% plant-based, baked using high quality vegetable oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Oven Roasted Spiced Potatoes."
       }
     }
   },
@@ -3656,14 +3863,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Ege meze sofralarının vazgeçilmez dereotlu zeytinyağlı lezzeti.",
         "economic": "Taze mevsimlik iç baklanın besleyici ve sağlıklı F/P sunumu.",
         "gourmet": "Dereotu ve sızma zeytinyağlı ılık iç bakla yemeği veya pürüzsüz fava ezmesi.",
-        "vegan": "%100 bitkisel içerik, dereotu ve zeytinyağı ile pişen saf vegan Ege klasiği."
+        "vegan": "%100 bitkisel içerik, dereotu ve zeytinyağı ile pişen saf vegan Ege klasiği.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Zeytinyağlı Taze İç Bakla."
       },
       "en": {
         "fit": "Excellent source of fiber and plant protein from fresh fava beans.",
         "cheat_day": "A refreshing and healthy cold meze that fits well in a family dinner.",
         "economic": "Nutrient-dense seasonal dish that offers high quality at a fair price.",
         "gourmet": "Warm broad beans simmered with fresh spring onions and lots of dill.",
-        "vegan": "100% plant-based traditional Aegean recipe, dairy-free and gluten-free."
+        "vegan": "100% plant-based traditional Aegean recipe, dairy-free and gluten-free.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Fava Beans in Olive Oil."
       }
     }
   },
@@ -3695,14 +3904,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Sıcak ekmek üzerine sürülerek yenildiğinde bağımlılık yaratan Antep ezmesi.",
         "economic": "100.00 ₺ fiyatına göre içindeki yoğun ceviz ve baharat zenginliği çok yüksektir.",
         "gourmet": "Hatay biber salçası, dövülmüş organik ceviz içi, nar ekşisi ve sarımsak ezmesi.",
-        "vegan": "Sıfır hayvansal içerik. Salça, ceviz, zeytinyağı ve baharatlardan oluşan vegan meze."
+        "vegan": "Sıfır hayvansal içerik. Salça, ceviz, zeytinyağı ve baharatlardan oluşan vegan meze.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Muhammara / Acuka."
       },
       "en": {
         "fit": "Packed with heart-healthy fats from walnuts and rich pepper antioxidants.",
         "cheat_day": "An addictive spread to smear over warm toasted flatbread.",
         "economic": "Very high nutritional and ingredient density for a modest price.",
         "gourmet": "Made with authentic pepper paste, crushed walnuts, cumin, and pomegranate.",
-        "vegan": "100% plant-based and dairy-free traditional walnut spread."
+        "vegan": "100% plant-based and dairy-free traditional walnut spread.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Muhammara."
       }
     }
   },
@@ -3734,14 +3945,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Diyette et yerine geçebilecek doyurucu ve lezzetli bir tencere yemeği.",
         "economic": "120.00 ₺ fiyatıyla mantarın protein gücünü en hesaplı yoldan sunan esnaf yemeği.",
         "gourmet": "Kültür ve istiridye mantarlarının renkli biberler ve taze kekikle wokta sotelenmesi.",
-        "vegan": "Etsiz, tereyağsız ve tamamen bitkisel yağlarla pişmiş %100 vegan mantar sote."
+        "vegan": "Etsiz, tereyağsız ve tamamen bitkisel yağlarla pişmiş %100 vegan mantar sote.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Mantarlı Sote."
       },
       "en": {
         "fit": "Mushrooms are very low in calories, high in water content and amino acids.",
         "cheat_day": "A great comforting pan stew that feels rich like beef stir-fry.",
         "economic": "Highly affordable way to enjoy savory proteins without spending on meat.",
         "gourmet": "Oyster and button mushrooms sautéed with bell peppers and fresh wild thyme.",
-        "vegan": "100% plant-based mushroom stir-fry cooked in extra virgin olive oil."
+        "vegan": "100% plant-based mushroom stir-fry cooked in extra virgin olive oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Mushroom Sauté."
       }
     }
   },
@@ -3773,14 +3986,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Kebapçıya gidip etsiz ama son derece lezzetli köz lezzetleri yemek isteyenler için.",
         "economic": "135.00 ₺ fiyatıyla oldukça doyurucu, közlenmiş patlıcanlı F/P kebap alternatifi.",
         "gourmet": "Meşe odunu ızgarasında közlenmiş patlıcan, domates ve biberlerin sıcak zeytinyağlı ezmesi.",
-        "vegan": "Sadece közlenmiş sebzeler, sarımsak ve zeytinyağı içeren sıfır etli geleneksel vegan lezzet."
+        "vegan": "Sadece közlenmiş sebzeler, sarımsak ve zeytinyağı içeren sıfır etli geleneksel vegan lezzet.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Ezmeli Patlıcan Kebap."
       },
       "en": {
         "fit": "Charcoal-roasted vegetables are rich in fiber and extremely low in calories.",
         "cheat_day": "Enjoy the authentic kebab-house smoke flavors without any meat heavy fats.",
         "economic": "Highly satisfying roasted vegetable plate offering great value for money.",
         "gourmet": "Eggplants and red bell peppers slow-grilled over coals, mashed with garlic.",
-        "vegan": "100% plant-based smoky vegetable kebab, prepared traditionally in olive oil."
+        "vegan": "100% plant-based smoky vegetable kebab, prepared traditionally in olive oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Smoky Eggplant Veg-Kebab."
       }
     }
   },
@@ -3812,14 +4027,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Cevizli ve salçalı sos ekleterek ev usulü sıcak bir makarna kaçamağı.",
         "economic": "95.00 ₺ fiyatıyla öğrenci dostu, doyurucu ve geleneksel bir unlu mamul.",
         "gourmet": "Fırınlanarak kavrulmuş el yapımı yumurtasız erişte, zeytinyağlı nane sosu eşliğinde.",
-        "vegan": "Hamurunda yumurta kullanılmayan, tamamen bitkisel un ve zeytinyağı ile hazırlanan vegan erişte."
+        "vegan": "Hamurunda yumurta kullanılmayan, tamamen bitkisel un ve zeytinyağı ile hazırlanan vegan erişte.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Kavrulmuş Çorbalık Erişte."
       },
       "en": {
         "fit": "Wheat carbs are high. Good cheap source of fuel for active gym days.",
         "cheat_day": "Add crushed walnuts and hot pepper paste to make it a warm comfort bowl.",
         "economic": "Only ₺95.00! Nostalgic home-style pasta that fills your stomach quickly.",
         "gourmet": "Roasted egg-free wheat noodles tossed with extra virgin olive oil and walnuts.",
-        "vegan": "100% vegan noodles made without egg yolks, tossed in vegetable oil."
+        "vegan": "100% vegan noodles made without egg yolks, tossed in vegetable oil.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Roasted Vegan Noodles."
       }
     }
   },
@@ -3849,14 +4066,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Hatay'ın o meşhur biber salçalı ve susamlı harcının fırından yeni çıkmış sıcaklığı!",
         "economic": "Sadece 85.00 ₺ fiyatıyla Hatay'ın zengin gastronomi kültürünü yaşatan harika bir F/P.",
         "gourmet": "Çökelek, biber salçası, susam, zahter ve zeytinyağı harcının taş fırında pişen efsane lezzeti.",
-        "vegan": "Tamamen bitkisel harç ve zeytinyağıyla hazırlanan, Hatay'ın geleneksel vegan lezzeti."
+        "vegan": "Tamamen bitkisel harç ve zeytinyağıyla hazırlanan, Hatay'ın geleneksel vegan lezzeti.",
+        "tourist": "Hatay usulü zeytinyağı, lor ve acı biber salçalı taş fırın pidesi."
       },
       "en": {
         "fit": "Yeast flatbread topped with olive oil and spices. High in carbs but rich in flavor.",
         "cheat_day": "Hatay's famous spicy pepper paste and sesame spread fresh out of the stone oven!",
         "economic": "At only ₺85.00, it brings Hatay's rich culinary culture to your plate very affordably.",
         "gourmet": "Flatbread topped with onion, pepper paste, sesame, zahter thyme, and cold-pressed olive oil.",
-        "vegan": "100% plant-based spread prepared with olive oil, sesame, and spices on vegan dough."
+        "vegan": "100% plant-based spread prepared with olive oil, sesame, and spices on vegan dough.",
+        "tourist": "Hatay's stone-oven flatbread topped with olive oil, spicy pepper paste, and fresh curd cheese."
       }
     }
   },
@@ -3888,14 +4107,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Yaz aylarında buz gibi cacık eşliğinde kaşıklanan lezzetli bir bulgur pilavı.",
         "economic": "80.00 ₺ fiyatıyla yaz aylarının hem en ferahlatıcı hem de en ucuz menü alternatifi.",
         "gourmet": "Tereyağlı ve domatesli başbaşı bulgur pilavı, taze nane ve salatalıklı cacıkla.",
-        "vegan": "Cacık yoğurt içerir. Vegan beslenme için cacığı menüden çıkarabilirsiniz."
+        "vegan": "Cacık yoğurt içerir. Vegan beslenme için cacığı menüden çıkarabilirsiniz.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Bulgur Pilavı + Cacık."
       },
       "en": {
         "fit": "Bulgur is rich in fiber and complex carbs. Cacık yogurt drink provides protein.",
         "cheat_day": "Traditional cracked bulgur rice served with chilled cucumber yogurt sauce.",
         "economic": "Only ₺80.00! The coolest and cheapest lunch combo for hot summer days.",
         "gourmet": "Bulgur wheat pilaf cooked with tomatoes and butter, paired with fresh mint cucumber yogurt.",
-        "vegan": "Cacık contains yogurt. Skip cacık for a 100% vegan bulgur dish."
+        "vegan": "Cacık contains yogurt. Skip cacık for a 100% vegan bulgur dish.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Bulgur Rice with Cacık."
       }
     }
   },
@@ -3928,14 +4149,16 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Balık sofrasında zeytinyağlı ve sarımsaklı sosla lezzetlendirilmiş taze otlar.",
         "economic": "Mevsimlik toplanan nadide otlar olduğu için fiyatı diğer mezelerden biraz daha yüksek olabilir.",
         "gourmet": "Taze sıkılmış sızma zeytinyağı, limon ve sarımsaklı sosla harmanlanmış Ege börülcesi.",
-        "vegan": "%100 bitkisel, tamamen vegan dostu şifa deposu."
+        "vegan": "%100 bitkisel, tamamen vegan dostu şifa deposu.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Deniz Börülcesi / Şevketi Bostan."
       },
       "en": {
         "fit": "Aegean wild herbs cooked in olive oil are extremely low calorie and high in fiber.",
         "cheat_day": "Served cold with fresh garlic and olive oil dressing, perfect for seafood tables.",
         "economic": "Rare seasonal wild greens, reflecting an authentic high-quality delicacy.",
         "gourmet": "Fresh sea beans and wild blessed thistle boiled gently, dressed in extra virgin olive oil.",
-        "vegan": "100% plant-based and vegan friendly healthy appetizer."
+        "vegan": "100% plant-based and vegan friendly healthy appetizer.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Sea Beans & Blessed Thistle."
       }
     }
   },
@@ -3968,14 +4191,262 @@ export const mockFoodItems: MenuItem[] = [
         "cheat_day": "Eriyen tereyağlı pul biber sosu ve ceviz parçalarıyla nefis bir başlangıç ziyafeti.",
         "economic": "Ceviz oranı yüksek olduğu için maliyetli ama besleyiciliği ve tokluk hissi çok yüksektir.",
         "gourmet": "Kişniş ve sarımsakla tatlandırılmış, havanda dövülmüş bol ceviz soslu didilmiş tavuk.",
-        "vegan": "Tavuk eti içerir, vegan beslenmeye uygun değildir."
+        "vegan": "Tavuk eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Turistler ve yerel gastronomi severler için tavsiye edilen otantik lezzet: Çerkez Tavuğu."
       },
       "en": {
         "fit": "Excellent protein and healthy fat macro profile coming from walnuts and chicken.",
         "cheat_day": "Topped with warm red pepper infused butter and toasted walnut chunks.",
         "economic": "Contains premium walnut paste, offering very high nutritional values.",
         "gourmet": "Shredded chicken breast folded into spiced coriander, garlic, and walnut puree.",
-        "vegan": "Contains chicken meat. Non-vegan."
+        "vegan": "Contains chicken meat. Non-vegan.",
+        "tourist": "A recommended local Turkish culinary experience for travelers: Circassian Chicken."
+      }
+    }
+  },
+  {
+    "id": "tourist_karniyarik",
+    "nameTr": "Karnıyarık",
+    "nameEn": "Stuffed Eggplant (Karnıyarık)",
+    "restaurant": "Saray Ev Yemekleri",
+    "price": 185,
+    "currency": "₺",
+    "rating": 4.7,
+    "reviewCount": "1100+",
+    "calories": 380,
+    "protein": 18,
+    "carbs": 14,
+    "fat": 22,
+    "imageUrl": "/images/karniyarik.jpg",
+    "matchTagTr": "OSMANLI & ANADOLU KLASİĞİ",
+    "matchTagEn": "ANATOLIAN CLASSIC",
+    "isHealthy": true,
+    "isVegan": false,
+    "category": "general",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Kızartma yerine fırınlanmış patlıcanla hazırlandığında protein ve lif dengesi mükemmel ev yemeği.",
+        "cheat_day": "Tereyağlı pirinç pilavı ve cacık eşliğinde tam bir Anadolu lezzet şöleni.",
+        "economic": "Geleneksel Türk ev yemeği lezzetini en uygun bütçeyle sunan doyurucu menü.",
+        "gourmet": "Közlenmiş bostan patlıcanının domates ve kıymalı harçla fırında ağır ağır pişmiş usta işi sunumu.",
+        "vegan": "Kıyma içerdiğinden dolayı vegan beslenmeye uygun değildir.",
+        "tourist": "Kızartılmış patlıcanın leziz kıymalı soğanlı harç ve domates sosuyla fırınlandığı en sevilen Türk ev yemeği klasiği."
+      },
+      "en": {
+        "fit": "High in fiber and protein, a nutritious Turkish home-style eggplant dish.",
+        "cheat_day": "Best enjoyed with buttery rice pilaf and chilled garlic yogurt cacık.",
+        "economic": "Generous portion offering delicious authentic home-cooked flavor at a great price.",
+        "gourmet": "Roasted eggplant stuffed with spiced beef, garlic, and fresh tomato reduction.",
+        "vegan": "Contains minced beef. Not suitable for vegans.",
+        "tourist": "A beloved Turkish home-cooked dish of roasted eggplant halves stuffed with seasoned ground meat and tomato sauce."
+      }
+    }
+  },
+  {
+    "id": "tourist_testi",
+    "nameTr": "Testi Kebabı",
+    "nameEn": "Cappadocia Pottery Kebab",
+    "restaurant": "Kapadokya Ocağı",
+    "price": 420,
+    "currency": "₺",
+    "rating": 4.9,
+    "reviewCount": "2300+",
+    "calories": 540,
+    "protein": 38,
+    "carbs": 12,
+    "fat": 34,
+    "imageUrl": "/images/testi-kebabi.jpg",
+    "matchTagTr": "KAPADOKYA RİTÜEL LEZZETİ",
+    "matchTagEn": "CAPPADOCIA POTTERY SPECIALTY",
+    "isHealthy": false,
+    "isVegan": false,
+    "category": "kebab",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Yüksek proteinli kuzu eti ve sebze içeriğiyle doyurucu fakat porsiyon kontrolü gerektiren ana yemek.",
+        "cheat_day": "Testisi kırılırken yaşanan görsel şölen ve meşe odunu kokusuyla unutulmaz bir kebap ziyafeti.",
+        "economic": "Özel masada şov sunumu ve premium kuzu etiyle gurme kategorisinde yer alan ziyafet.",
+        "gourmet": "Toprak testide saatlerce ağır ateşte pişen sarımsak ve arpacık soğanlı kuzu etinin zirve lezzeti.",
+        "vegan": "Kuzu eti içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Toprak testide ağır ateşte pişen ve masada testi kırılarak sunulan Kapadokya'nın ikonik ve görsel lezzet şöleni."
+      },
+      "en": {
+        "fit": "Protein-dense tender lamb stew packed with vegetables and garlic.",
+        "cheat_day": "An unforgettable feast featuring meat cooked inside a sealed clay pot broken right at your table.",
+        "economic": "A premium ritual dish with dramatic tableside ceramic breaking experience.",
+        "gourmet": "Slow-cooked lamb with shallots and garlic sealed in Anatolian clay pottery.",
+        "vegan": "Contains lamb meat. Non-vegan.",
+        "tourist": "Cappadocia's famous meat stew slow-cooked inside a sealed clay pot, broken open tableside in a dramatic culinary presentation."
+      }
+    }
+  },
+  {
+    "id": "tourist_suboregi",
+    "nameTr": "Su Böreği",
+    "nameEn": "Traditional Water Börek with Cheese",
+    "restaurant": "Tarihi Sarıyer Börekçisi",
+    "price": 140,
+    "currency": "₺",
+    "rating": 4.8,
+    "reviewCount": "3400+",
+    "calories": 390,
+    "protein": 14,
+    "carbs": 42,
+    "fat": 18,
+    "imageUrl": "/images/su-boregi.jpg",
+    "matchTagTr": "EL İŞİ GELENEKSEL BÖREK",
+    "matchTagEn": "HANDMADE WATER PASTRY",
+    "isHealthy": false,
+    "isVegan": false,
+    "category": "general",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Yüksek karbonhidrat ve tereyağı içerdiğinden diyet günlerinde sınırlı tüketilmesi önerilir.",
+        "cheat_day": "Sıcak demli Türk çayı eşliğinde kat kat pamuk gibi börek kaçamağı.",
+        "economic": "Tarihi taş fırınlarda hazırlanan çok doyurucu ve ekonomik kahvaltı klasiği.",
+        "gourmet": "Tek tek suda haşlanan el açması yufkaların Erzurum lor peyniri ve tereyağıyla buluşması.",
+        "vegan": "Peynir, tereyağı ve yumurta içerir, vegan beslenmeye uygun değildir.",
+        "tourist": "Haşlanan kat kat incecik yufkaların tereyağı ve özel beyaz peynirle fırınlandığı pamuksu Türk börek efsanesi."
+      },
+      "en": {
+        "fit": "Rich in carbs and butter; enjoy in moderation during strict cutting.",
+        "cheat_day": "Mouthwatering layered pastry best paired with freshly brewed hot Turkish tea.",
+        "economic": "Extremely filling traditional baked breakfast pastry at an affordable price.",
+        "gourmet": "Hand-rolled dough layers boiled individually and baked with regional white cheese and butter.",
+        "vegan": "Contains dairy cheese, butter, and eggs. Non-vegan.",
+        "tourist": "A savory Turkish pastry featuring delicate boiled layers of dough layered with butter and white cheese."
+      }
+    }
+  },
+  {
+    "id": "tourist_lokum",
+    "nameTr": "Türk Lokumu",
+    "nameEn": "Traditional Turkish Delight with Pistachios",
+    "restaurant": "Ali Muhiddin Hacı Bekir",
+    "price": 120,
+    "currency": "₺",
+    "rating": 4.9,
+    "reviewCount": "4500+",
+    "calories": 280,
+    "protein": 4,
+    "carbs": 62,
+    "fat": 6,
+    "imageUrl": "/images/turk-lokumu.jpg",
+    "matchTagTr": "TARİHİ TÜRK TATLISI",
+    "matchTagEn": "HISTORIC TURKISH DELIGHT",
+    "isHealthy": false,
+    "isVegan": true,
+    "category": "dessert",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Şeker oranı yüksek olduğu için spor sonrası hızlı glikojen tazelemede az miktarda tercih edilebilir.",
+        "cheat_day": "Köpüklü Türk kahvesi yanında leziz fıstıklı geleneksel tatlı molası.",
+        "economic": "Hediyelik ve ikramlık olarak Türkiye'nin en popüler ekonomik ve lezzetli tatlısı.",
+        "gourmet": "1777'den beri süregelen tarihi lokum ustalarının taze boz fıstık ve çifte kavrulmuş harika tarifi.",
+        "vegan": "%100 bitkisel nişasta, şeker ve fıstık ile hazırlanan tamamen vegan tatlı.",
+        "tourist": "Osmanlı'dan günümüze uzanan, bol Antep fıstıklı ve pudra şekerli Türk kahvesinin vazgeçilmez ikramı."
+      },
+      "en": {
+        "fit": "High in sugar; keep as a quick post-workout carbohydrate boost.",
+        "cheat_day": "The iconic sweet pairing alongside a cup of rich foam-topped Turkish coffee.",
+        "economic": "Turkey's most famous historic sweet treat to enjoy or gift.",
+        "gourmet": "Double-roasted soft confectionery loaded with premium Gaziantep pistachios since 1777.",
+        "vegan": "100% plant-based gelatin-free traditional vegan sweet.",
+        "tourist": "The centuries-old historic sweet treat loaded with Antep pistachios, the ultimate pairing for Turkish coffee."
+      }
+    }
+  },
+  {
+    "id": "tourist_lahmacun",
+    "nameTr": "Lahmacun",
+    "nameEn": "Crispy Stone-Oven Lahmacun",
+    "restaurant": "Gaziantep Lahmacun Evi",
+    "price": 95,
+    "currency": "₺",
+    "rating": 4.8,
+    "reviewCount": "5200+",
+    "calories": 290,
+    "protein": 14,
+    "carbs": 32,
+    "fat": 11,
+    "imageUrl": "/images/lahmacun.jpg",
+    "matchTagTr": "GELENEKSEL MİLLİ PİZZA",
+    "matchTagEn": "TRADITIONAL TURKISH PIZZA",
+    "isHealthy": true,
+    "isVegan": false,
+    "category": "kebab",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Bol maydanoz, domates ve limonla dürülerek yenildiğinde oldukça dengeli ve hafif bir protein kaynağı.",
+        "cheat_day": "Köz patlıcan ve buz gibi ayran eşliğinde 2-3 adet çıtır lahmacun keyfi.",
+        "economic": "Fiyat/performans oranında Türkiye'nin en doyurucu ve bütçe dostu lezzet ikonu.",
+        "gourmet": "Meşe odunu ateşinde taş fırından çıkan, sarımsaklı ve zırh kıymalı Antep usulü çıtır lahmacun.",
+        "vegan": "Kıyma içerdiği için vegan değildir.",
+        "tourist": "İncecik çıtır hamur üzerine baharatlı kıyma, maydanoz ve limonla dürülen Türkiye'nin sokak gastronomi ikonu."
+      },
+      "en": {
+        "fit": "Thin crust with lean meat, wrapped with abundance of fresh parsley and lemon juice.",
+        "cheat_day": "Crispy stone-oven flatbreads served with roasted eggplants and cold ayran.",
+        "economic": "Turkey's top value-for-money traditional quick meal.",
+        "gourmet": "Wood-fired thin crust topped with garlic-infused minced lamb and peppers.",
+        "vegan": "Contains minced meat. Non-vegan.",
+        "tourist": "Crispy thin flatbread topped with spiced minced meat, rolled with fresh parsley and lemon juice."
+      }
+    }
+  },
+  {
+    "id": "tourist_doner",
+    "nameTr": "Döner",
+    "nameEn": "Turkish Beef Doner Plate",
+    "restaurant": "Tarihi Dönerci Ali Usta",
+    "price": 280,
+    "currency": "₺",
+    "rating": 4.8,
+    "reviewCount": "6100+",
+    "calories": 480,
+    "protein": 36,
+    "carbs": 18,
+    "fat": 26,
+    "imageUrl": "/images/et-doner.jpg",
+    "matchTagTr": "ODUN ATEŞİNDE YAPRAK DÖNER",
+    "matchTagEn": "WOOD-FIRED TURKISH DONER",
+    "isHealthy": true,
+    "isVegan": false,
+    "category": "kebab",
+    "modes": [
+      "tourist"
+    ],
+    "aiInsights": {
+      "tr": {
+        "fit": "Pilav yerine taze salata ile tercih edildiğinde 36g yüksek kaliteli protein sunan kas dostu seçenek.",
+        "cheat_day": "Tırnak pide yatağında, patates kızartması ve özel domates sosuyla donatılmış döner tabağı.",
+        "economic": "Gerçek dana etinin odun ateşinde pişmiş en doyurucu porsiyon seçeneği.",
+        "gourmet": "Kendi yağıyla meşe odununda yaprak yaprak pişmiş, katkısız %100 dana et döner şaheseri.",
+        "vegan": "Dana eti içerir, kesinlikle vegan beslenmeye uygun değildir.",
+        "tourist": "Meşe odunu ateşinde ağır ağır dönerek pişen dana yaprak dönerin taze pide ve köz biberle mükemmel sunumu."
+      },
+      "en": {
+        "fit": "Rich in high-grade protein (36g); pair with green salad for cutting phases.",
+        "cheat_day": "Served over warm pide bread with crispy fries and grilled vegetables.",
+        "economic": "Generous portion of authentic wood-fired beef doner.",
+        "gourmet": "100% pure beef stacked in thin layers and roasted vertically over oak fire.",
+        "vegan": "Contains beef meat. Non-vegan.",
+        "tourist": "Slow-roasted beef doner cooked on a vertical wood-fired spit, served over warm pita with roasted peppers."
       }
     }
   }
