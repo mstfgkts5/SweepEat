@@ -5,7 +5,7 @@ import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
 import { LikedScreen, ProfileScreen, TournamentScreen, WinnerScreen } from "./components/ExtraScreens";
-import { mockFoodItems } from "./data/mockFood";
+import { allFoodItems as mockFoodItems } from "./data/allFood";
 import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
