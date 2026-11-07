@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout } from "lucide-react";
 import type { MenuItem, Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
 import type { ImpactStats } from "../data/sustainability";
-import { REAL_RESTAURANTS_DB, getFallbackRestaurants, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
+import { getVerifiedRestaurant, RATING_CHECKED_AT } from "../data/verifiedRestaurants";
+import { REAL_RESTAURANTS_DB, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
 import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
 
 // ==========================================
@@ -466,11 +467,13 @@ interface WinnerScreenProps {
 interface MockRestaurant {
   id: string;
   name: string;
-  rating: number;
-  reviewCount: number;
+  rating: number | null; // Google rating checked by hand; null = not checked
+  reviewCount: number | null;
   area: string;
   comment: string;
   isFoodAvailable: boolean;
+  address?: string;
+  mapsUri?: string;
 }
 
 const getCategoryFromFoodName = (foodNameTr: string): RestaurantCategory => {
@@ -563,47 +566,6 @@ const isFoodAvailableInRestaurant = (
   });
 };
 
-const getNominatimSearchQuery = (foodNameTr: string, city: string): string => {
-  const trLower = foodNameTr.toLowerCase();
-  let foodQuery = "";
-
-  if (trLower.includes("adana kebap") || trLower.includes("urfa kebap")) {
-    foodQuery = "kebap";
-  } else if (trLower.includes("kuyu kebabı") || trLower.includes("tandır")) {
-    foodQuery = "kuyu kebabı";
-  } else if (trLower.includes("iskender") || trLower.includes("döner") || trLower.includes("doner")) {
-    foodQuery = "döner";
-  } else if (trLower.includes("lahmacun") || trLower.includes("pide")) {
-    foodQuery = "pide lahmacun";
-  } else if (trLower.includes("kebap") || trLower.includes("kebab") || trLower.includes("ciğer") || trLower.includes("ocakbaşı")) {
-    foodQuery = "kebap";
-  } else if (trLower.includes("burger") || trLower.includes("hamburger")) {
-    foodQuery = "burger";
-  } else if (trLower.includes("pizza")) {
-    foodQuery = "pizza";
-  } else if (trLower.includes("makarna") || trLower.includes("lazanya") || trLower.includes("pasta") || trLower.includes("fettuccine")) {
-    foodQuery = "makarna";
-  } else if (trLower.includes("çorba")) {
-    foodQuery = "çorba";
-  } else if (trLower.includes("balık") || trLower.includes("somon") || trLower.includes("karides") || trLower.includes("deniz ürünleri")) {
-    foodQuery = "balık";
-  } else if (trLower.includes("künefe") || trLower.includes("baklava") || trLower.includes("katmer")) {
-    foodQuery = "baklava";
-  } else if (trLower.includes("tatlı") || trLower.includes("waffle") || trLower.includes("dondurma") || trLower.includes("cheesecake")) {
-    foodQuery = "tatlı";
-  } else if (trLower.includes("tavuk")) {
-    foodQuery = "tavuk";
-  } else if (trLower.includes("salata") || trLower.includes("kinoa") || trLower.includes("diyet") || trLower.includes("sağlıklı")) {
-    foodQuery = "salata";
-  } else if (trLower.includes("ev yemeği") || trLower.includes("lokanta") || trLower.includes("sulu yemek")) {
-    foodQuery = "lokanta";
-  } else {
-    foodQuery = foodNameTr.split(" (")[0].split("/")[0].trim();
-  }
-
-  return `${foodQuery} in ${city}`;
-};
-
 const normalizeTurkish = (str: string): string => {
   if (!str) return "";
   return str
@@ -616,33 +578,6 @@ const normalizeTurkish = (str: string): string => {
     .replace(/ö/g, "o")
     .replace(/ç/g, "c")
     .trim();
-};
-
-const isPlaceInCity = (item: any, city: string): boolean => {
-  const searchCityClean = normalizeTurkish(city);
-  if (!searchCityClean) return true;
-
-  const address = item.address || {};
-  const cityFields = [
-    address.city,
-    address.province,
-    address.state,
-    address.town,
-    address.suburb,
-    address.county,
-    address.municipality,
-    address.region
-  ].map(val => val ? normalizeTurkish(val) : "");
-
-  const parts = (item.display_name || "")
-    .split(",")
-    .slice(1)
-    .map((p: string) => normalizeTurkish(p.trim()));
-
-  const inCity = cityFields.some(field => field.includes(searchCityClean)) || 
-                 parts.some((part: string) => part.includes(searchCityClean));
-  
-  return inCity;
 };
 
 const findCuratedRestaurants = (foodNameTr: string, city: string): RealRestaurant[] | null => {
@@ -678,6 +613,36 @@ const findCuratedRestaurants = (foodNameTr: string, city: string): RealRestauran
   return null;
 };
 
+// Only restaurants that really exist (found on OpenStreetMap) are shown, with
+// their real address. Stars appear only where the Google rating was checked by hand.
+const toVerifiedList = (pool: RealRestaurant[], city: string, language: "tr" | "en"): MockRestaurant[] => {
+  const seen = new Set<string>();
+  const verified = pool
+    .filter((rest) => (seen.has(rest.name) ? false : (seen.add(rest.name), true)))
+    .map((rest) => ({ rest, v: getVerifiedRestaurant(city, rest.name) }))
+    .filter((x): x is { rest: RealRestaurant; v: NonNullable<typeof x.v> } => x.v !== null);
+
+  // Hand-checked ratings first (highest, weighted by review count), then the rest in list order.
+  verified.sort((x, y) => {
+    const sx = x.v.rating != null ? x.v.rating + Math.min(Math.log10((x.v.reviews ?? 1) + 1) / 20, 0.2) : -1;
+    const sy = y.v.rating != null ? y.v.rating + Math.min(Math.log10((y.v.reviews ?? 1) + 1) / 20, 0.2) : -1;
+    return sy - sx;
+  });
+
+  return verified.slice(0, 3).map(({ rest, v }, index) => ({
+    id: `${index + 1}`,
+    // "(Karaköy)" / "(Meze Reyonu)" hints come from the old list and can contradict the real address.
+    name: rest.name.split("(")[0].trim(),
+    rating: v.rating ?? null,
+    reviewCount: v.reviews ?? null,
+    area: v.district || rest.area,
+    address: v.address,
+    mapsUri: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rest.name.split("(")[0].trim()} ${v.address || v.district} ${city}`)}`,
+    comment: language === "tr" ? rest.commentTr : rest.commentEn,
+    isFoodAvailable: true
+  }));
+};
+
 const generateTopRestaurants = (
   foodNameTr: string,
   foodNameEn: string,
@@ -685,72 +650,18 @@ const generateTopRestaurants = (
   language: "tr" | "en"
 ): MockRestaurant[] => {
   const normCity = normalizeTurkish(city);
+  const curated = findCuratedRestaurants(foodNameTr, city) || [];
+  const fromCurated = toVerifiedList(curated, city, language);
+  if (fromCurated.length >= 3) return fromCurated;
 
-  const curated = findCuratedRestaurants(foodNameTr, city);
-  if (curated && curated.length > 0) {
-    return curated.map((rest, index) => ({
-      id: `${index + 1}`,
-      name: rest.name,
-      rating: rest.rating,
-      reviewCount: rest.reviewCount,
-      area: rest.area,
-      comment: language === "tr" ? rest.commentTr : rest.commentEn,
-      isFoodAvailable: true
-    }));
-  }
-
+  // Top up from the city's general list (same food category) if the dish list had too few real places.
+  const matchedCityKey = Object.keys(REAL_RESTAURANTS_DB).find((key) => normalizeTurkish(key) === normCity);
+  if (!matchedCityKey) return fromCurated;
+  const cityData = REAL_RESTAURANTS_DB[matchedCityKey];
   const category = getCategoryFromFoodName(foodNameTr);
-  let list: RealRestaurant[] = [];
-
-  let matchedCityKey = "";
-  for (const key of Object.keys(REAL_RESTAURANTS_DB)) {
-    if (normalizeTurkish(key) === normCity) {
-      matchedCityKey = key;
-      break;
-    }
-  }
-
-  if (matchedCityKey) {
-    const cityData = REAL_RESTAURANTS_DB[matchedCityKey];
-    const catItems = cityData[category] || [];
-    list = [...catItems.filter(rest => isFoodAvailableInRestaurant(foodNameTr, foodNameEn, rest))];
-
-    if (list.length < 5) {
-      const allCategories: RestaurantCategory[] = ["general", "kebab", "burger", "pasta", "soup", "dessert", "vegan"];
-      for (const cat of allCategories) {
-        const otherItems = cityData[cat] || [];
-        for (const item of otherItems) {
-          if (list.length >= 5) break;
-          if (!list.some(x => x.name.toLowerCase() === item.name.toLowerCase())) {
-            list.push(item);
-          }
-        }
-        if (list.length >= 5) break;
-      }
-    }
-  }
-
-  if (list.length < 5) {
-    const fallbackChains = getFallbackRestaurants(category, city, language);
-    for (const chain of fallbackChains) {
-      if (list.length >= 5) break;
-      if (!list.some(x => x.name.toLowerCase() === chain.name.toLowerCase())) {
-        list.push(chain);
-      }
-    }
-  }
-
-  list.sort((a, b) => b.rating - a.rating);
-
-  return list.slice(0, 3).map((rest, index) => ({
-    id: `${index + 1}`,
-    name: rest.name,
-    rating: rest.rating,
-    reviewCount: rest.reviewCount,
-    area: rest.area,
-    comment: language === "tr" ? rest.commentTr : rest.commentEn,
-    isFoodAvailable: true
-  }));
+  // Only places known to serve this dish; never pad the list with unrelated restaurants.
+  const preferred = (cityData[category] || []).filter((rest) => isFoodAvailableInRestaurant(foodNameTr, foodNameEn, rest));
+  return toVerifiedList([...curated, ...preferred], city, language);
 };
 
 export const WinnerScreen: React.FC<WinnerScreenProps> = ({
@@ -770,190 +681,13 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   const championDeal = zeroWaste ? getSurplusDeal(champion) : null;
   const [isRescued, setIsRescued] = useState(false);
   const [activeTabSection, setActiveTabSection] = useState<"commentary" | "restaurants">("commentary");
-  const [restaurants, setRestaurants] = useState<MockRestaurant[]>([]);
-  const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-    const fetchRealPlaces = async () => {
-      setIsLoadingRestaurants(true);
-      try {
-        const curated = findCuratedRestaurants(champion.nameTr, userCity);
-        if (curated && curated.length > 0) {
-          const baseList = curated.map((rest, index) => ({
-            id: `${index + 1}`,
-            name: rest.name,
-            rating: rest.rating,
-            reviewCount: rest.reviewCount,
-            area: rest.area,
-            comment: language === "tr" ? rest.commentTr : rest.commentEn,
-            isFoodAvailable: true
-          }));
-          if (active) {
-            setRestaurants(baseList);
-            setIsLoadingRestaurants(false);
-          }
-          return;
-        }
-
-        let osmList: any[] = [];
-        let baseList: MockRestaurant[] = [];
-
-        const query = getNominatimSearchQuery(champion.nameTr, userCity);
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=tr&limit=40&addressdetails=1`;
-        const response = await fetch(url, {
-          headers: {
-            "Accept-Language": language === "tr" ? "tr" : "en",
-            "User-Agent": "SweepEatFoodApp/1.0"
-          }
-        });
-        const data = await response.json();
-        
-        let tempOsm = Array.isArray(data) ? data : [];
-        tempOsm = tempOsm.filter((item: any) => {
-          const type = item.type || "";
-          const cls = item.class || "";
-          const isFood = cls === "amenity" && (type === "restaurant" || type === "cafe" || type === "fast_food" || type === "food" || type === "bar");
-          return isFood && isPlaceInCity(item, userCity);
-        });
-
-        osmList = [...tempOsm];
-
-        if (osmList.length + baseList.length < 3) {
-          const category = getCategoryFromFoodName(champion.nameTr);
-          let catTerm = "restaurant";
-          if (category === "kebab") catTerm = "kebap";
-          else if (category === "burger") catTerm = "burger";
-          else if (category === "vegan") catTerm = "vegan";
-          else if (category === "soup") catTerm = "çorba";
-          else if (category === "pasta") catTerm = "makarna";
-          else if (category === "dessert") catTerm = "tatlı";
-
-          const backupQuery = `${catTerm} in ${userCity}`;
-          const backupUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(backupQuery)}&countrycodes=tr&limit=40&addressdetails=1`;
-          const backupResponse = await fetch(backupUrl, {
-            headers: {
-              "Accept-Language": language === "tr" ? "tr" : "en",
-              "User-Agent": "SweepEatFoodApp/1.0"
-            }
-          });
-          const backupData = await backupResponse.json();
-          if (Array.isArray(backupData)) {
-            backupData.forEach((item: any) => {
-              const type = item.type || "";
-              const cls = item.class || "";
-              const isFood = cls === "amenity" && (type === "restaurant" || type === "cafe" || type === "fast_food" || type === "food" || type === "bar");
-              if (
-                isFood &&
-                isPlaceInCity(item, userCity) &&
-                !osmList.some(x => x.osm_id === item.osm_id || x.display_name === item.display_name)
-              ) {
-                osmList.push(item);
-              }
-            });
-          }
-        }
-
-        if (osmList.length + baseList.length < 3) {
-          const generalQuery = `restaurant in ${userCity}`;
-          const generalUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(generalQuery)}&countrycodes=tr&limit=40&addressdetails=1`;
-          const generalResponse = await fetch(generalUrl, {
-            headers: {
-              "Accept-Language": language === "tr" ? "tr" : "en",
-              "User-Agent": "SweepEatFoodApp/1.0"
-            }
-          });
-          const generalData = await generalResponse.json();
-          if (Array.isArray(generalData)) {
-            generalData.forEach((item: any) => {
-              const type = item.type || "";
-              const cls = item.class || "";
-              const isFood = cls === "amenity" && (type === "restaurant" || type === "cafe" || type === "fast_food" || type === "food" || type === "bar");
-              if (
-                isFood &&
-                isPlaceInCity(item, userCity) &&
-                !osmList.some(x => x.osm_id === item.osm_id || x.display_name === item.display_name)
-              ) {
-                osmList.push(item);
-              }
-            });
-          }
-        }
-
-        const mappedOsm: MockRestaurant[] = osmList.map((item: any, idx: number) => {
-          let name = item.display_name.split(",")[0].trim();
-          if (name.toLowerCase() === "restaurant" || !name) {
-            name = item.display_name.split(",")[1]?.trim() || "Lezzet Durağı";
-          }
-          
-          const parts = item.display_name.split(",");
-          let area = parts[1]?.trim() || "Merkez";
-          if (area.toLowerCase() === "turkey" || area.toLowerCase() === "türkiye") {
-            area = "Merkez";
-          }
-
-          const seed = item.osm_id || idx;
-          const rating = parseFloat((4.3 + (seed % 7) * 0.1).toFixed(1));
-          const reviewCount = Math.floor(250 + (seed % 150) * 18 + (seed % 10));
-
-          const commentTr = `Menüsündeki ${champion.nameTr} tek kelimeyle harika, Google yorumlarında da en yüksek puan alan yerlerden biri.`;
-          const commentEn = `The ${champion.nameEn} on their menu is absolutely legendary, highly rated in Google reviews.`;
-
-          return {
-            id: `osm_${idx}`,
-            name,
-            rating,
-            reviewCount,
-            area,
-            comment: language === "tr" ? commentTr : commentEn,
-            isFoodAvailable: true
-          };
-        });
-
-        let merged = [...baseList];
-        mappedOsm.forEach(osmRest => {
-          if (merged.length >= 3) return;
-          if (!merged.some(m => m.name.toLowerCase() === osmRest.name.toLowerCase())) {
-            merged.push(osmRest);
-          }
-        });
-
-        if (merged.length < 3) {
-          const offlineList = generateTopRestaurants(champion.nameTr, champion.nameEn, userCity, language);
-          offlineList.forEach(off => {
-            if (merged.length >= 3) return;
-            if (!merged.some(m => m.name.toLowerCase() === off.name.toLowerCase())) {
-              merged.push(off);
-            }
-          });
-        }
-
-        const finalThree = merged.slice(0, 3).map((item, idx) => ({
-          ...item,
-          id: `${idx + 1}`
-        }));
-
-        if (active) {
-          setRestaurants(finalThree);
-        }
-      } catch (err) {
-        console.error("Error fetching real restaurants:", err);
-        if (active) {
-          const offline = generateTopRestaurants(champion.nameTr, champion.nameEn, userCity, language);
-          setRestaurants(offline);
-        }
-      } finally {
-        if (active) {
-          setIsLoadingRestaurants(false);
-        }
-      }
-    };
-
-    fetchRealPlaces();
-    return () => {
-      active = false;
-    };
-  }, [champion, userCity, language]);
+  // Local data only: no network, no API key.
+  const restaurants = useMemo(
+    () => generateTopRestaurants(champion.nameTr, champion.nameEn, userCity, language),
+    [champion, userCity, language]
+  );
+  const isLoadingRestaurants = false;
 
   const handleOrder = () => {
     const name = language === "tr" ? champion.nameTr : champion.nameEn;
@@ -1053,22 +787,47 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
               </span>
             </div>
           ) : restaurants.length === 0 ? (
-            <p style={{ fontSize: "13px", color: "var(--text-secondary)", padding: "20px 0" }}>{t.winnerNoRestaurants}</p>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "16px 0" }}>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", textAlign: "center" }}>
+                {language === "tr"
+                  ? `${userCity} için doğrulanmış bir restoranımız yok.`
+                  : `We have no verified restaurant for ${userCity} yet.`}
+              </p>
+              <button
+                className="restaurant-maps-btn"
+                onClick={() => {
+                  const q = encodeURIComponent(`${champion.nameTr} ${userCity}`);
+                  window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+                }}
+              >
+                <MapPin size={11} />
+                <span>{language === "tr" ? "Google Haritalar'da ara" : "Search on Google Maps"}</span>
+              </button>
+            </div>
           ) : (
-            restaurants.map((rest, idx) => (
+            <>
+            <span className="restaurant-source-note">
+              {language === "tr"
+                ? `Adresler OpenStreetMap'ten doğrulandı. Yıldızlar: Google puanı, ${RATING_CHECKED_AT} elle kontrol.`
+                : `Addresses verified on OpenStreetMap. Stars: Google rating, checked by hand ${RATING_CHECKED_AT}.`}
+            </span>
+            {restaurants.map((rest, idx) => (
               <div key={rest.id} className="winner-restaurant-card">
                 <div className="restaurant-rank-badge">#{idx + 1}</div>
                 <div className="restaurant-info-box">
                   <span className="restaurant-name-text">{rest.name}</span>
                   <div className="restaurant-meta-detail">
-                    <span>{rest.area}</span>
-                    <span>•</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: "2px", color: "#fbbf24" }}>
-                      <Star size={11} fill="#fbbf24" style={{ color: "#fbbf24" }} />
-                      <span style={{ fontWeight: 700 }}>{rest.rating}</span>
-                      <span style={{ fontSize: "10px", opacity: 0.7 }}>({rest.reviewCount})</span>
-                    </div>
+                    {rest.area && <span>{rest.area}</span>}
+                    {rest.area && rest.rating !== null && <span>•</span>}
+                    {rest.rating !== null ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "2px", color: "#fbbf24" }}>
+                        <Star size={11} fill="#fbbf24" style={{ color: "#fbbf24" }} />
+                        <span style={{ fontWeight: 700 }}>≈{rest.rating.toFixed(1)}</span>
+                        <span style={{ fontSize: "10px", opacity: 0.7 }}>({(rest.reviewCount ?? 0).toLocaleString(language === "tr" ? "tr-TR" : "en-US")})</span>
+                      </div>
+                    ) : null}
                   </div>
+                  {rest.address && <span className="restaurant-address">{rest.address}</span>}
                   {rest.comment && (
                     <p className="restaurant-review-comment" style={{
                       fontSize: "11px",
@@ -1087,8 +846,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                 <button
                   className="restaurant-maps-btn"
                   onClick={() => {
-                    const query = encodeURIComponent(`${rest.name} ${userCity}`);
-                    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                    const query = encodeURIComponent(`${rest.name} ${rest.area} ${userCity}`);
+                    const url = rest.mapsUri || `https://www.google.com/maps/search/?api=1&query=${query}`;
                     window.open(url, "_blank");
                   }}
                 >
@@ -1096,7 +855,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                   <span>{t.winnerGoogleMapBtn}</span>
                 </button>
               </div>
-            ))
+            ))}
+            </>
           )}
         </div>
       )}
