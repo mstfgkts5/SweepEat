@@ -7,7 +7,7 @@ export const translations = {
 
     // Splash screen
     splashPowered: "YAPAY ZEKA KEŞFİ İLE DESTEKLENİYOR",
-    splashSubtitle: "Bir sonraki yemeğinizi keşfedin.",
+    splashSubtitle: "Seç. Kaydır. Ye.",
 
     // Explore / Swipe Deck
     swipeSponsored: "SPONSORLU",
@@ -39,7 +39,7 @@ export const translations = {
     likedEmptyText: "Henüz beğendiğin bir yemek yok.",
 
     // Profile Screen
-    profileHeader: "SweepEat",
+    profileHeader: "Kaydırak",
     profileLocation: "İstanbul, TR",
     profileAiModeLabel: "Aktif Yapay Zeka Modu",
     profileFitTitle: "Fit & Diyet Modu",
@@ -96,7 +96,7 @@ export const translations = {
 
     // Splash screen
     splashPowered: "POWERED BY AI DISCOVERY",
-    splashSubtitle: "Discover your next meal.",
+    splashSubtitle: "Pick. Swipe. Eat.",
 
     // Explore / Swipe Deck
     swipeSponsored: "SPONSORED",
@@ -128,7 +128,7 @@ export const translations = {
     likedEmptyText: "No liked foods yet.",
 
     // Profile Screen
-    profileHeader: "SweepEat",
+    profileHeader: "Kaydırak",
     profileLocation: "Istanbul, TR",
     profileAiModeLabel: "Active AI Mode",
     profileFitTitle: "Fit & Diet Mode",

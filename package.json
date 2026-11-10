@@ -13,6 +13,7 @@
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
+    "@capacitor/status-bar": "^8.0.2",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.18.0",
     "react": "^19.2.6",
@@ -29,6 +30,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "jetifier": "^2.0.0",
+    "terser": "^5.48.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12"
