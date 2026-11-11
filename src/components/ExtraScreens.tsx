@@ -9,6 +9,8 @@ import { getVerifiedRestaurant, RATING_CHECKED_AT } from "../data/verifiedRestau
 import { rankByRating, hasTrustedRating } from "../data/ranking";
 import { REAL_RESTAURANTS_DB, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
 import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
+import { EXTRA_CITY_RESTAURANTS, getExtraCityPlace } from "../data/extraCities";
+import { restaurantLookupName } from "../data/allFood";
 
 // ==========================================
 // LIKED ITEMS SCREEN
@@ -180,7 +182,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   return (
     <div className="profile-screen">
       <div className="profile-avatar-row">
-        <div className="profile-avatar">S</div>
+        <div className="profile-avatar">K</div>
         <h3 className="profile-name">{t.profileHeader}</h3>
         <span className="profile-subtitle">{t.profileLocation}</span>
       </div>
@@ -268,7 +270,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       <div className="setting-card">
         <div className="setting-row" style={{ padding: "8px 0", borderBottom: "none" }}>
           <div className="setting-info">
-            <div className="setting-icon" style={{ color: "var(--accent-orange)", backgroundColor: "rgba(255,149,0,0.1)" }}>
+            <div className="setting-icon" style={{ color: "var(--accent-text)", backgroundColor: "var(--accent-orange-light)" }}>
               <Settings size={18} />
             </div>
             <div>
@@ -285,7 +287,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 fontSize: "12px",
                 fontWeight: language === "tr" ? "bold" : "normal",
                 color: language === "tr" ? "#ffffff" : "var(--text-secondary)",
-                backgroundColor: language === "tr" ? "var(--accent-orange)" : "transparent",
+                backgroundColor: language === "tr" ? "var(--navy)" : "transparent",
                 cursor: "pointer",
                 transition: "all 0.2s"
               }}
@@ -301,7 +303,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 fontSize: "12px",
                 fontWeight: language === "en" ? "bold" : "normal",
                 color: language === "en" ? "#ffffff" : "var(--text-secondary)",
-                backgroundColor: language === "en" ? "var(--accent-orange)" : "transparent",
+                backgroundColor: language === "en" ? "var(--navy)" : "transparent",
                 cursor: "pointer",
                 transition: "all 0.2s"
               }}
@@ -620,7 +622,8 @@ const toVerifiedList = (pool: RealRestaurant[], city: string, language: "tr" | "
   const seen = new Set<string>();
   const verified = pool
     .filter((rest) => (seen.has(rest.name) ? false : (seen.add(rest.name), true)))
-    .map((rest) => ({ rest, v: getVerifiedRestaurant(city, rest.name) }))
+    // Diyarbakır / Kahramanmaraş come from extraCities.ts (address from published guides, no rating)
+    .map((rest) => ({ rest, v: getVerifiedRestaurant(city, rest.name) ?? getExtraCityPlace(city, rest.name) }))
     .filter((x): x is { rest: RealRestaurant; v: NonNullable<typeof x.v> } => x.v !== null);
 
   // Trusted ratings first, best Bayesian score (rating weighed by review count) first;
@@ -654,9 +657,10 @@ const generateTopRestaurants = (
   if (fromCurated.length >= 3) return fromCurated;
 
   // Top up from the city's general list (same food category) if the dish list had too few real places.
-  const matchedCityKey = Object.keys(REAL_RESTAURANTS_DB).find((key) => normalizeTurkish(key) === normCity);
+  const cityDb = { ...REAL_RESTAURANTS_DB, ...EXTRA_CITY_RESTAURANTS };
+  const matchedCityKey = Object.keys(cityDb).find((key) => normalizeTurkish(key) === normCity);
   if (!matchedCityKey) return fromCurated;
-  const cityData = REAL_RESTAURANTS_DB[matchedCityKey];
+  const cityData = cityDb[matchedCityKey];
   const category = getCategoryFromFoodName(foodNameTr);
   // Only places known to serve this dish; never pad the list with unrelated restaurants.
   const preferred = (cityData[category] || []).filter((rest) => isFoodAvailableInRestaurant(foodNameTr, foodNameEn, rest));
@@ -683,7 +687,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
 
   // Local data only: no network, no API key.
   const restaurants = useMemo(
-    () => generateTopRestaurants(champion.nameTr, champion.nameEn, userCity, language),
+    // Look up with the dish's original name: the curated restaurant lists are keyed by it.
+    () => generateTopRestaurants(restaurantLookupName(champion), champion.nameEn, userCity, language),
     [champion, userCity, language]
   );
   const isLoadingRestaurants = false;
@@ -753,7 +758,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                   <span className="carbon-grade-chip large" style={{ backgroundColor: CARBON_GRADE_COLORS[championCarbon.grade] }}>{championCarbon.grade}</span>
                   <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                     <span>{eco.winnerEcoLine.replace("{kg}", String(championCarbon.kg)).replace("{grade}", championCarbon.grade)}</span>
-                    <span style={{ fontWeight: 700, color: lower ? "var(--emerald-green)" : "var(--accent-orange)" }}>
+                    <span style={{ fontWeight: 700, color: lower ? "var(--emerald-green)" : "var(--accent-text)" }}>
                       {(lower ? eco.winnerEcoLower : eco.winnerEcoHigher).replace("{diff}", String(diff))}
                     </span>
                   </div>
@@ -766,7 +771,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           {/* Sponsored discount section */}
           {champion.isSponsored && champion.sponsorDiscount && (
             <div className="coupon-dialog" style={{ width: "100%", margin: 0 }}>
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-orange)", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-text)", letterSpacing: "0.5px" }}>
                 {t.winnerSponsorLabel}
               </div>
               <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
@@ -780,7 +785,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
         <div className="winner-restaurant-list">
           {isLoadingRestaurants ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", gap: "12px" }}>
-              <RefreshCw size={24} className="spin-animation" style={{ color: "var(--accent-orange)" }} />
+              <RefreshCw size={24} className="spin-animation" style={{ color: "var(--emerald-green)" }} />
               <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 600 }}>
                 {language === "tr" ? "Gerçek mekanlar sorgulanıyor..." : "Searching real places..."}
               </span>
@@ -819,8 +824,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                     {rest.area && <span>{rest.area}</span>}
                     {rest.area && rest.rating !== null && <span>•</span>}
                     {rest.rating !== null ? (
-                      <div style={{ display: "flex", alignItems: "center", gap: "2px", color: "#fbbf24" }}>
-                        <Star size={11} fill="#fbbf24" style={{ color: "#fbbf24" }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: "2px", color: "#E9C46A" }}>
+                        <Star size={11} fill="#E9C46A" style={{ color: "#E9C46A" }} />
                         <span style={{ fontWeight: 700 }}>≈{rest.rating.toFixed(1)}</span>
                         <span style={{ fontSize: "10px", opacity: 0.7 }}>({(rest.reviewCount ?? 0).toLocaleString(language === "tr" ? "tr-TR" : "en-US")})</span>
                       </div>
@@ -869,7 +874,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             onClick={() => {
               setIsRescued(true);
               onRescue?.(champion);
-              confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ["#0A846B", "#4CA84A", "#EBF7F4"] });
+              confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ["#2A9D8F", "#E9C46A", "#E63946"] });
               alert(
                 eco.rescuedAlert
                   .replace("{name}", language === "tr" ? champion.nameTr : champion.nameEn)

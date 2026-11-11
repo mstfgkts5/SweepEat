@@ -7,8 +7,10 @@ import type { MenuItem } from "./mockFood";
 
 type Mode = MenuItem["modes"][number];
 
-interface DishSpec {
+export interface DishSpec {
   slug: string;
+  // Photo file name (without .jpg) when it differs from the slug
+  image?: string;
   nameTr: string;
   nameEn: string;
   restaurant: string;
@@ -148,11 +150,12 @@ const buildInsights = (d: DishSpec): MenuItem["aiInsights"] => {
   };
 };
 
-export const extraFoodItems: MenuItem[] = DISHES.map((d) => {
+// Turns a compact dish spec into a full menu card. Also used by popularFood.ts.
+export const buildDish = (d: DishSpec, idPrefix: string): MenuItem => {
   const h = seed(d.slug);
   const [calories, protein, carbs, fat] = d.macros;
   return {
-    id: `more_${d.slug.replace(/-/g, "_")}`,
+    id: `${idPrefix}_${d.slug.replace(/-/g, "_")}`,
     nameTr: d.nameTr,
     nameEn: d.nameEn,
     restaurant: d.restaurant,
@@ -164,7 +167,7 @@ export const extraFoodItems: MenuItem[] = DISHES.map((d) => {
     protein,
     carbs,
     fat,
-    imageUrl: `/images/${d.slug}.jpg`,
+    imageUrl: `/images/${d.image ?? d.slug}.jpg`,
     matchTagTr: d.tag[0],
     matchTagEn: d.tag[1],
     isHealthy: d.healthy,
@@ -173,4 +176,6 @@ export const extraFoodItems: MenuItem[] = DISHES.map((d) => {
     modes: d.modes,
     aiInsights: buildInsights(d)
   };
-});
+};
+
+export const extraFoodItems: MenuItem[] = DISHES.map((d) => buildDish(d, "more"));

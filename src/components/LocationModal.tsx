@@ -9,7 +9,7 @@ interface LocationModalProps {
   language: "tr" | "en";
 }
 
-// The 7 Selected Gastronomic & Metropolitan Turkish Cities
+// Cities offered in the picker (restaurant data exists for these)
 const POPULAR_TURKISH_CITIES = [
   "İstanbul",
   "Ankara",
@@ -17,7 +17,9 @@ const POPULAR_TURKISH_CITIES = [
   "Mersin",
   "Gaziantep",
   "Eskişehir",
-  "Adana"
+  "Adana",
+  "Diyarbakır",
+  "Kahramanmaraş"
 ];
 
 export default function LocationModal({
@@ -146,7 +148,7 @@ export default function LocationModal({
         </button>
 
         {errorMessage && (
-          <p style={{ fontSize: "12px", color: "#ef4444", fontWeight: 600, textAlign: "center", margin: "4px 0" }}>
+          <p style={{ fontSize: "12px", color: "#E63946", fontWeight: 600, textAlign: "center", margin: "4px 0" }}>
             {errorMessage}
           </p>
         )}
@@ -186,7 +188,7 @@ export default function LocationModal({
               backgroundColor: "var(--accent-orange-light)",
               border: "1px dashed var(--accent-orange)",
               borderRadius: "12px",
-              color: "var(--accent-orange)",
+              color: "var(--accent-text)",
               fontSize: "13px",
               fontWeight: 700,
               cursor: "pointer",
@@ -219,8 +221,8 @@ export default function LocationModal({
                   padding: "12px 16px",
                   borderRadius: "10px",
                   border: "none",
-                  backgroundColor: isSelected ? "var(--accent-orange-light)" : "transparent",
-                  color: isSelected ? "var(--accent-orange)" : "var(--text-primary)",
+                  backgroundColor: isSelected ? "var(--emerald-green-light)" : "transparent",
+                  color: isSelected ? "var(--emerald-green)" : "var(--text-primary)",
                   fontWeight: isSelected ? 700 : 500,
                   fontSize: "14px",
                   cursor: "pointer",

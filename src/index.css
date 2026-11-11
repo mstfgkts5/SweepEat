@@ -4,20 +4,23 @@
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   /* Color Palette */
-  --primary-red: #C82200;
-  --primary-red-hover: #A51C00;
-  --primary-red-glow: rgba(200, 34, 0, 0.2);
-  --accent-orange: #FF6B00;
-  --accent-orange-light: #FFEFE5;
-  --emerald-green: #0A846B;
-  --emerald-green-light: #EBF7F4;
-  --emerald-green-glow: rgba(10, 132, 107, 0.25);
+  --primary-red: #E63946;
+  --primary-red-hover: #CF2F3C;
+  --primary-red-glow: rgba(230, 57, 70, 0.2);
+  --accent-orange: #E9C46A;
+  --accent-orange-light: #FBF3DD;
+  --accent-text: #8A6410;
+  --emerald-green: #2A9D8F;
+  --emerald-green-light: #E6F4F2;
+  --emerald-green-glow: rgba(42, 157, 143, 0.25);
+  --navy: #1D2D44;
+  --navy-deep: #16233A;
   
   /* Neutrals */
-  --bg-page: #0f1115;
-  --bg-phone: #f7f9fc;
+  --bg-page: #111B2B;
+  --bg-phone: #F8F9FA;
   --card-white: #ffffff;
-  --text-primary: #111827;
+  --text-primary: #1D2D44;
   --text-secondary: #4b5563;
   --text-light: #9ca3af;
   --border-color: #e5e7eb;
@@ -123,7 +126,7 @@ body {
 .splash-screen {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #D62B00 0%, #A51A00 100%);
+  background: var(--navy);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -156,9 +159,9 @@ body {
 .splash-logo-circle {
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, var(--accent-orange) 0%, #e05e00 100%);
+  background: var(--primary-red);
   border-radius: 50%;
-  box-shadow: 0 10px 30px rgba(255, 107, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -244,7 +247,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #232730;
+  background-color: var(--navy);
   border: none;
   display: flex;
   justify-content: center;
@@ -257,7 +260,7 @@ body {
 
 .header-action-btn:hover {
   transform: scale(1.05);
-  background-color: #1c2027;
+  background-color: var(--navy-deep);
 }
 
 /* Bottom Navigation Bar */
@@ -301,11 +304,11 @@ body {
 }
 
 .nav-item:hover .nav-icon-wrapper {
-  background-color: #fff1f0;
+  background-color: #FDECEE;
 }
 
 .nav-item.active .nav-icon-wrapper {
-  background-color: #fff1f0;
+  background-color: #FDECEE;
   transform: scale(1.05);
 }
 
@@ -388,7 +391,7 @@ body {
   position: absolute;
   top: 16px;
   left: 16px;
-  background-color: rgba(10, 132, 107, 0.92);
+  background-color: rgba(42, 157, 143, 0.94);
   backdrop-filter: blur(8px);
   color: #ffffff;
   padding: 6px 12px;
@@ -408,7 +411,7 @@ body {
   top: 16px;
   right: 16px;
   background-color: var(--accent-orange);
-  color: #ffffff;
+  color: var(--navy);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 10px;
@@ -437,15 +440,17 @@ body {
 
 .card-swipe-badge.like {
   left: 30px;
-  border-color: #4ade80;
-  color: #4ade80;
+  border-color: #2A9D8F;
+  color: #2A9D8F;
+  background-color: rgba(255, 255, 255, 0.92);
   transform: rotate(-12deg);
 }
 
 .card-swipe-badge.nope {
   right: 30px;
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: #E63946;
+  color: #E63946;
+  background-color: rgba(255, 255, 255, 0.92);
   transform: rotate(12deg);
 }
 
@@ -480,7 +485,7 @@ body {
 .card-price {
   font-size: 22px;
   font-weight: 800;
-  color: #4ade80;
+  color: #E9C46A;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   white-space: nowrap;
 }
@@ -507,8 +512,8 @@ body {
 }
 
 .card-rating-container svg {
-  fill: #fbbf24;
-  color: #fbbf24;
+  fill: #E9C46A;
+  color: #E9C46A;
 }
 
 .card-nutrients {
@@ -558,7 +563,7 @@ body {
 
 .ai-insight-btn:hover {
   transform: translateY(-2px);
-  background-color: #086d58;
+  background-color: #228176;
   box-shadow: 0 8px 20px var(--emerald-green-glow);
 }
 
@@ -600,12 +605,12 @@ body {
 
 .control-btn.dislike {
   background-color: var(--card-white);
-  color: #ea4335;
+  color: #E63946;
   border: 1px solid rgba(229, 231, 235, 0.6);
 }
 
 .control-btn.dislike:hover {
-  background-color: #fff5f5;
+  background-color: #FDECEE;
 }
 
 .control-btn.like {
@@ -622,7 +627,7 @@ body {
 .bottom-sheet-backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgba(15, 17, 21, 0.6);
+  background-color: rgba(29, 45, 68, 0.6);
   z-index: 15;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease-out;
@@ -739,7 +744,7 @@ body {
   border-left: 4px solid var(--emerald-green);
   padding: 16px;
   border-radius: 12px;
-  color: #075a49;
+  color: #1B695F;
   font-size: 14px;
   line-height: 1.45;
   font-weight: 500;
@@ -794,7 +799,7 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #fff1f0;
+  background-color: #FDECEE;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -913,7 +918,7 @@ body {
 .liked-card-remove {
   background: none;
   border: none;
-  color: #ff4d4f;
+  color: #E63946;
   cursor: pointer;
   padding: 6px;
   border-radius: 50%;
@@ -924,17 +929,17 @@ body {
 }
 
 .liked-card-remove:hover {
-  background-color: #fff1f0;
+  background-color: #FDECEE;
 }
 
 /* Tournament Promo Card inside Liked Screen */
 .tournament-promo-card {
-  background: linear-gradient(135deg, #FF6B00 0%, #C82200 100%);
+  background: linear-gradient(135deg, #E63946 0%, #CF2F3C 100%);
   color: #ffffff;
   border-radius: 20px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 20px rgba(200, 34, 0, 0.25);
+  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.25);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -990,7 +995,7 @@ body {
 
 .tournament-round-badge {
   background-color: var(--accent-orange-light);
-  color: var(--accent-orange);
+  color: var(--accent-text);
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 11px;
@@ -1019,7 +1024,7 @@ body {
 .tournament-vs-circle {
   width: 44px;
   height: 44px;
-  background-color: #232730;
+  background-color: var(--navy);
   border: 4px solid var(--bg-phone);
   border-radius: 50%;
   color: #ffffff;
@@ -1102,13 +1107,13 @@ body {
 .winner-crown {
   width: 72px;
   height: 72px;
-  background-color: #fffbeb;
+  background-color: #FBF3DD;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #fbbf24;
-  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
+  color: #D9A93A;
+  box-shadow: 0 8px 20px rgba(233, 196, 106, 0.3);
   margin-bottom: 16px;
   animation: bounce 2s infinite;
 }
@@ -1218,7 +1223,7 @@ body {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--primary-red) 100%);
+  background: linear-gradient(135deg, #E63946 0%, #CF2F3C 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1297,7 +1302,7 @@ body {
 
 /* Coupon Dialog inside Phone Screen */
 .coupon-dialog {
-  background-color: #fff6f0;
+  background-color: #FBF3DD;
   border: 2px dashed var(--accent-orange);
   border-radius: 16px;
   padding: 12px;
@@ -1392,7 +1397,7 @@ body {
 }
 
 .restaurant-rank-badge {
-  background-color: #fff1f0;
+  background-color: #FDECEE;
   color: var(--primary-red);
   font-size: 12px;
   font-weight: 900;
@@ -1468,7 +1473,7 @@ body {
   margin-top: 6px;
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(10, 132, 107, 0.92);
+  background: rgba(42, 157, 143, 0.94);
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -1551,7 +1556,7 @@ body {
   padding: 12px;
   border-radius: 14px;
   background: var(--emerald-green-light);
-  border: 1px solid rgba(10, 132, 107, 0.2);
+  border: 1px solid rgba(42, 157, 143, 0.2);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1593,7 +1598,7 @@ body {
   gap: 10px;
   padding: 14px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #0A846B 0%, #13a383 100%);
+  background: linear-gradient(135deg, #2A9D8F 0%, #3DB5A6 100%);
   color: #ffffff;
   margin-bottom: 16px;
 }
@@ -1672,4 +1677,102 @@ body {
 /* Winner screen scrolls; its blocks must keep their full height instead of shrinking under the buttons */
 .winner-screen > * {
   flex-shrink: 0;
+}
+
+/* Mode intro: shown briefly after picking a mode, before the dishes */
+.mode-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 28px;
+  text-align: center;
+  cursor: pointer;
+  animation: modeIntroIn 0.25s ease-out;
+}
+
+.mode-intro.leaving {
+  opacity: 0;
+  transition: opacity 0.25s ease-in;
+}
+
+@keyframes modeIntroIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mode-intro-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.mode-intro-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  animation: modeIntroPop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes modeIntroPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.mode-intro-title {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  max-width: 320px;
+}
+
+.mode-intro-desc {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  max-width: 300px;
+}
+
+.mode-intro-progress {
+  width: 140px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.mode-intro-progress > span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 2px;
+  transform-origin: left center;
+  animation: modeIntroProgress linear forwards;
+}
+
+@keyframes modeIntroProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-intro,
+  .mode-intro-circle {
+    animation: none;
+  }
 }

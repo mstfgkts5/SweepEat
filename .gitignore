@@ -29,3 +29,7 @@ dist-ssr
 *.pem
 sweepeat-key
 keystore.properties
+desktop.ini
+
+# Photo candidates downloaded by tools/foto-adaylari.ps1
+photo-candidates/

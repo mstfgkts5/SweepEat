@@ -4,8 +4,9 @@ import { Compass, Heart, User, MapPin, Sparkles } from "lucide-react";
 import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
+import ModeIntro from "./components/ModeIntro";
 import { LikedScreen, ProfileScreen, TournamentScreen, WinnerScreen } from "./components/ExtraScreens";
-import { allFoodItems as mockFoodItems } from "./data/allFood";
+import { allFoodItems as mockFoodItems, sortByModeRank, pickLocalDishes } from "./data/allFood";
 import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
@@ -31,6 +32,13 @@ export default function App() {
   const [likedPool, setLikedPool] = useState<MenuItem[]>([]);
   const [swipedIds, setSwipedIds] = useState<string[]>([]);
   const [activePersona, setActivePersona] = useState<Persona>("gourmet");
+  // Mode intro: after picking a mode, show which mode was picked before the dishes
+  const [modeIntro, setModeIntro] = useState<Persona | null>(null);
+
+  const handleSelectMode = (p: Persona) => {
+    setActivePersona(p);
+    setModeIntro(p);
+  };
 
   // Sustainability (HASAT-13): carbon labels are opt-in, always on in Zero Waste mode
   const [showCarbonLabels, setShowCarbonLabels] = useState(false);
@@ -107,7 +115,15 @@ export default function App() {
   const getFilteredPool = () => {
     const unswiped = foodPool.filter((x) => !swipedIds.includes(x.id));
     if (activePersona === "zero_waste") return unswiped.filter((x) => getSurplusDeal(x) !== null);
-    return unswiped.filter((x) => x.modes.includes(activePersona));
+    const inMode = unswiped.filter((x) => x.modes.includes(activePersona));
+    // Most-preferred dishes first; after "reset" the deck is shuffled on purpose.
+    const ordered = foodPool === mockFoodItems ? sortByModeRank(inMode, activePersona) : inMode;
+    if (activePersona !== "tourist") return ordered;
+    // Tourist mode: the selected city's own dishes come first (e.g. Diyarbakır starts with
+    // kaburga dolması, not kumpir), then the rest of the Tourist list.
+    const local = pickLocalDishes(unswiped, userCity);
+    const localIds = new Set(local.map((x) => x.id));
+    return [...local, ...ordered.filter((x) => !localIds.has(x.id))];
   };
 
   const renderActiveContent = () => {
@@ -172,7 +188,7 @@ export default function App() {
         return (
           <ProfileScreen
             activePersona={activePersona}
-            onChangePersona={(p) => setActivePersona(p)}
+            onChangePersona={handleSelectMode}
             language={language}
             setLanguage={setLanguage}
             showCarbonLabels={showCarbonLabels}
@@ -189,10 +205,10 @@ export default function App() {
     <>
       <div className="page-bg-decor" />
 
-      <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#FDF7F5' }}>
+      <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F8F9FA' }}>
         
         {showSplash && (
-          <div className="splash-screen" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#131B2E' }}>
+          <div className="splash-screen" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1D2D44' }}>
             <div className="splash-logo-container">
               <div className="splash-logo-circle">
                 <svg width="64" height="60" viewBox="0 0 1762 1664" xmlns="http://www.w3.org/2000/svg" aria-label="Kaydırak">
@@ -289,6 +305,17 @@ export default function App() {
             onChangePersona={(p) => setActivePersona(p)}
             language={language}
             showCarbon={carbonVisible}
+          />
+        )}
+
+        {!showSplash && modeIntro && (
+          <ModeIntro
+            persona={modeIntro}
+            language={language}
+            onDone={() => {
+              setModeIntro(null);
+              setActiveTab("explore");
+            }}
           />
         )}
 

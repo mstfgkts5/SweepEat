@@ -9,6 +9,9 @@ export const translations = {
     splashPowered: "YAPAY ZEKA KEŞFİ İLE DESTEKLENİYOR",
     splashSubtitle: "Seç. Kaydır. Ye.",
 
+    // Mode intro (shown after picking a mode)
+    modeIntroLabel: "Seçilen Mod",
+
     // Explore / Swipe Deck
     swipeSponsored: "SPONSORLU",
     swipeCouponUnlock: "%15 İNDİRİM KUPONUNU AÇMAK İÇİN SAĞA KAYDIR",
@@ -97,6 +100,9 @@ export const translations = {
     // Splash screen
     splashPowered: "POWERED BY AI DISCOVERY",
     splashSubtitle: "Pick. Swipe. Eat.",
+
+    // Mode intro (shown after picking a mode)
+    modeIntroLabel: "Selected Mode",
 
     // Explore / Swipe Deck
     swipeSponsored: "SPONSORED",

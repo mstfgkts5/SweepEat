@@ -65,11 +65,11 @@ export const estimateCarbon = (item: MenuItem): CarbonInfo => {
 };
 
 export const CARBON_GRADE_COLORS: Record<CarbonGrade, string> = {
-  A: "#0A846B",
+  A: "#2A9D8F",
   B: "#4CA84A",
   C: "#C9A100",
   D: "#E07A00",
-  E: "#C82200"
+  E: "#E63946"
 };
 
 export const getAverageCarbon = (items: MenuItem[]): number => {

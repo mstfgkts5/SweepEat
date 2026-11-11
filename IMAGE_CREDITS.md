@@ -66,3 +66,43 @@ They were resized to 800 px wide; no other changes were made.
 | `firinda-tavuk.jpg` | [File:Butterfly chicken with roasted vegetables - Massachusetts.jpg](https://commons.wikimedia.org/wiki/File:Butterfly_chicken_with_roasted_vegetables_-_Massachusetts.jpg) | Daderot | CC0 |
 | `kofte-piyaz.jpg` | [File:Meals in Turkey.jpg](https://commons.wikimedia.org/wiki/File:Meals_in_Turkey.jpg) | E4024 | CC BY-SA 4.0 |
 | `sebzeli-omlet.jpg` | [File:Cha-om omelette.jpg](https://commons.wikimedia.org/wiki/File:Cha-om_omelette.jpg) | Wagaung at English Wikipedia | CC BY-SA 3.0 |
+
+## Added November 2026 (popular dishes)
+
+Chosen by hand so that each photo shows exactly the dish named in the app; resized to at most 800 px wide.
+
+| File | Source | Author | License |
+|---|---|---|---|
+| `acili-ezme.jpg` | [File:Acılı Ezme.jpg](https://commons.wikimedia.org/wiki/File:Ac%C4%B1l%C4%B1_Ezme.jpg) | Garrett Ziegler | CC BY-SA 4.0 |
+| `babagannus.jpg` | [File:Baba ghanoush food.jpg](https://commons.wikimedia.org/wiki/File:Baba_ghanoush_food.jpg) | CNEcija12345 | CC BY-SA 4.0 |
+| `balik-ekmek.jpg` | [File:Fish sandwich, Istanbul, Turkey.JPG](https://commons.wikimedia.org/wiki/File:Fish_sandwich,_Istanbul,_Turkey.JPG) | User: (WT-shared) Shoestring at wts wikivoyage | CC BY-SA 4.0 |
+| `bulgur-pilavi.jpg` | [File:Bulgur pilavı from Turkey.jpg](https://commons.wikimedia.org/wiki/File:Bulgur_pilav%C4%B1_from_Turkey.jpg) | E4024 | CC BY-SA 3.0 |
+| `citir-tavuk.jpg` | [File:Fried Chicken (Unsplash).jpg](https://commons.wikimedia.org/wiki/File:Fried_Chicken_(Unsplash).jpg) | Brian Chan tigerrulezzz | CC0 |
+| `cokertme-kebabi.jpg` | [File:Çökertme kebabı (cropped).jpg](https://commons.wikimedia.org/wiki/File:%C3%87%C3%B6kertme_kebab%C4%B1_(cropped).jpg) | Jwslubbock | CC BY-SA 4.0 |
+| `hamburger.jpg` | [File:Cultivated hamburger, 2013.jpg](https://commons.wikimedia.org/wiki/File:Cultivated_hamburger,_2013.jpg) | Mosa Meat | CC BY 4.0 |
+| `izgara-bonfile.jpg` | [File:Beef tenderloin - Guillaume at Bennelong.jpg](https://commons.wikimedia.org/wiki/File:Beef_tenderloin_-_Guillaume_at_Bennelong.jpg) | Alpha from Melbourne, Australia | CC BY-SA 2.0 |
+| `izgara-sebze.jpg` | [File:Ready Grilled vegetables.jpg](https://commons.wikimedia.org/wiki/File:Ready_Grilled_vegetables.jpg) | Meriemou | CC BY-SA 4.0 |
+| `izgara-somon.jpg` | [File:Grilled salmon.jpg](https://commons.wikimedia.org/wiki/File:Grilled_salmon.jpg) | Petar Milošević | CC BY-SA 4.0 |
+| `kalamar-tava.jpg` | [File:Kalamar tava and tartar sauce.jpg](https://commons.wikimedia.org/wiki/File:Kalamar_tava_and_tartar_sauce.jpg) | E4024 | CC BY-SA 4.0 |
+| `karides-guvec.jpg` | [File:Prawn güveç - Gigibaba.jpg](https://commons.wikimedia.org/wiki/File:Prawn_g%C3%BCve%C3%A7_-_Gigibaba.jpg) | Alpha | CC BY-SA 2.0 |
+| `katmer.jpg` | [File:Katmer (sweet).jpg](https://commons.wikimedia.org/wiki/File:Katmer_(sweet).jpg) | E4024 | CC BY-SA 4.0 |
+| `kiymali-pide.jpg` | [File:Turkish pide with ground beef.jpg](https://commons.wikimedia.org/wiki/File:Turkish_pide_with_ground_beef.jpg) | E4024 | CC BY-SA 4.0 |
+| `kuzu-pirzola.jpg` | [File:Pirzola in a "lenger" (oval metal plate).jpg](https://commons.wikimedia.org/wiki/File:Pirzola_in_a_%22lenger%22_(oval_metal_plate).jpg) | E4024 | CC BY-SA 4.0 |
+| `magnolia.jpg` | [File:Magnolia–IMG 5735.jpg](https://commons.wikimedia.org/wiki/File:Magnolia%E2%80%93IMG_5735.jpg) | Kızıl | CC BY-SA 4.0 |
+| `meyve-tabagi.jpg` | [File:20241117 Fruit Platter anagoria.jpg](https://commons.wikimedia.org/wiki/File:20241117_Fruit_Platter_anagoria.jpg) | Anagoria | CC BY-SA 4.0 |
+| `patates-kizartmasi.jpg` | [File:Truffle oil french fries (33024792848).jpg](https://commons.wikimedia.org/wiki/File:Truffle_oil_french_fries_(33024792848).jpg) | Tony Webster from Minneapolis, Minnesota, United States | CC BY-SA 2.0 |
+| `patatesli-gozleme.jpg` | [File:Gözleme.JPG](https://commons.wikimedia.org/wiki/File:G%C3%B6zleme.JPG) | Maderibeyza | CC BY-SA 3.0 |
+| `pilav-ustu-doner.jpg` | [File:Pilav üstü döner.jpg](https://commons.wikimedia.org/wiki/File:Pilav_%C3%BCst%C3%BC_d%C3%B6ner.jpg) | E4024 | CC BY-SA 4.0 |
+| `pizza.jpg` | [File:Pizza 2023.jpg](https://commons.wikimedia.org/wiki/File:Pizza_2023.jpg) | Yakshitha | CC BY-SA 4.0 |
+| `pogaca.jpg` | [File:Peynirli poğaça in Ankara.jpg](https://commons.wikimedia.org/wiki/File:Peynirli_po%C4%9Fa%C3%A7a_in_Ankara.jpg) | E4024 | CC BY-SA 4.0 |
+| `sahanda-yumurta.jpg` | [File:Two fried eggs.jpg](https://commons.wikimedia.org/wiki/File:Two_fried_eggs.jpg) | Balise42 | CC BY-SA 4.0 |
+| `sebze-corbasi.jpg` | [File:Simple vegetable soup 2009.jpg](https://commons.wikimedia.org/wiki/File:Simple_vegetable_soup_2009.jpg) | Scott Teresi | CC BY-SA 2.0 |
+| `sebzeli-makarna.jpg` | [File:Pasta primavera (1) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Pasta_primavera_(1)_(cropped).jpg) | Stacy Spensley from San Diego | CC BY 2.0 |
+| `serpme-kahvalti.jpg` | [File:Turkish breakfast in Rumelihisarı.jpg](https://commons.wikimedia.org/wiki/File:Turkish_breakfast_in_Rumelihisar%C4%B1.jpg) | Jwslubbock | CC BY-SA 3.0 |
+| `tahin-helvasi.jpg` | [File:Tahin helva.jpg](https://commons.wikimedia.org/wiki/File:Tahin_helva.jpg) | E4024 | CC BY-SA 4.0 |
+| `tavuk-pirzola.jpg` | [File:Tavuk pirzola.jpg](https://commons.wikimedia.org/wiki/File:Tavuk_pirzola.jpg) | E4024 | CC BY-SA 4.0 |
+| `tavuklu-sezar-salata.jpg` | [File:Chicken Caesar salad - Auckland, New Zealand.jpg](https://commons.wikimedia.org/wiki/File:Chicken_Caesar_salad_-_Auckland,_New_Zealand.jpg) | Daderot | CC0 |
+| `tiramisu.jpg` | [File:Classic Italian Tiramisu-3 (29989504485).jpg](https://commons.wikimedia.org/wiki/File:Classic_Italian_Tiramisu-3_(29989504485).jpg) | Sharon Chen from Austin, United States | CC BY 2.0 |
+| `trilece.jpg` | [File:Trileche.jpg](https://commons.wikimedia.org/wiki/File:Trileche.jpg) | E4024 | CC BY-SA 4.0 |
+| `vegan-burger.jpg` | [File:Fancy Veggie Burger and Fries - Joe's Burger House 2024-07-07.jpg](https://commons.wikimedia.org/wiki/File:Fancy_Veggie_Burger_and_Fries_-_Joe%27s_Burger_House_2024-07-07.jpg) | Andy Li | CC0 |
+| `yulaf-lapasi.jpg` | [File:Fruit and oatmeal.jpg](https://commons.wikimedia.org/wiki/File:Fruit_and_oatmeal.jpg) | Lila.ritter13 | CC BY-SA 4.0 |

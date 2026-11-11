@@ -292,7 +292,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
             {activeItem.isSponsored && activeItem.sponsorDiscount && (
               <div className="coupon-dialog" style={{ padding: "8px", marginTop: "4px" }}>
-                <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-orange)", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-text)", letterSpacing: "0.5px", textTransform: "uppercase" }}>
                   {t.swipeCouponUnlock}
                 </div>
               </div>
