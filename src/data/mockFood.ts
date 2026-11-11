@@ -1,3 +1,5 @@
+import type { DishType } from "./dishTypes";
+
 export type Persona = "fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist" | "zero_waste";
 
 export interface MenuItem {
@@ -19,6 +21,8 @@ export interface MenuItem {
   isHealthy: boolean;
   isVegan: boolean;
   category: string;
+  // Dish type (et, tavuk, balık, ..., tatlı); filled in by allFood.ts from dishTypes.ts
+  dishType?: DishType;
   isSponsored?: boolean;
   sponsorDiscount?: number;
   sponsorCoupon?: string;
