@@ -10,13 +10,21 @@ import { rankByRating, hasTrustedRating } from "../data/ranking";
 import { REAL_RESTAURANTS_DB, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
 import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
 import { EXTRA_CITY_RESTAURANTS, getExtraCityPlace } from "../data/extraCities";
-import { restaurantLookupName } from "../data/allFood";
+import { restaurantLookupName, filterByCourse } from "../data/allFood";
+import type { Course } from "../data/allFood";
+import CourseToggle from "./CourseToggle";
+import Recommendations from "./Recommendations";
 
 // ==========================================
 // LIKED ITEMS SCREEN
 // ==========================================
 interface LikedScreenProps {
   likedPool: MenuItem[];
+  course: Course;
+  onChangeCourse: (course: Course) => void;
+  recommendations: MenuItem[];
+  recoSubtitle: string;
+  onOpenItem: (item: MenuItem) => void;
   onRemove: (item: MenuItem) => void;
   onStartTournament: () => void;
   language: "tr" | "en";
@@ -24,11 +32,17 @@ interface LikedScreenProps {
 
 export const LikedScreen: React.FC<LikedScreenProps> = ({
   likedPool,
+  course,
+  onChangeCourse,
+  recommendations,
+  recoSubtitle,
+  onOpenItem,
   onRemove,
   onStartTournament,
   language
 }) => {
   const t = translations[language];
+  const shownLiked = filterByCourse(likedPool, course);
   const minRequired = 4;
   const progressPercent = Math.min((likedPool.length / minRequired) * 100, 100);
 
@@ -36,6 +50,9 @@ export const LikedScreen: React.FC<LikedScreenProps> = ({
     <div className="liked-screen">
       <h2 className="liked-header">{t.likedHeader}</h2>
       <p className="liked-subtitle">{t.likedSubtitle}</p>
+
+      {/* Personal recommendations (last 5 selections) */}
+      <Recommendations items={recommendations} subtitle={recoSubtitle} language={language} onOpen={onOpenItem} />
 
       {/* Tournament Promo */}
       <div className="tournament-promo-card">
@@ -67,14 +84,25 @@ export const LikedScreen: React.FC<LikedScreenProps> = ({
         {t.likedPoolLabel.replace("{count}", likedPool.length.toString())}
       </span>
 
+      {likedPool.length > 0 && (
+        <CourseToggle
+          course={course}
+          onChange={onChangeCourse}
+          counts={{ main: filterByCourse(likedPool, "main").length, dessert: filterByCourse(likedPool, "dessert").length }}
+          language={language}
+        />
+      )}
+
       {likedPool.length === 0 ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "var(--text-light)", gap: "12px", minHeight: "200px" }}>
           <Trophy size={40} strokeWidth={1.5} style={{ color: "var(--border-color)" }} />
           <span style={{ fontSize: "13px" }}>{t.likedEmptyText}</span>
         </div>
+      ) : shownLiked.length === 0 ? (
+        <p className="course-empty">{course === "dessert" ? t.courseDessertEmpty : t.likedEmptyText}</p>
       ) : (
         <div className="liked-grid">
-          {likedPool.map((item) => (
+          {shownLiked.map((item) => (
             <div key={item.id} className="liked-card-item">
               <img src={item.imageUrl} alt={language === "tr" ? item.nameTr : item.nameEn} className="liked-card-img" />
               <div className="liked-card-info">
