@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kaydırak HASAT-13 Poster</title>
+<style>
+/*FONTS*/
+@page { size: 500mm 700mm; margin: 0; }
+:root {
+  --red: #E63946; --red-d: #CF2F3C; --red-l: #FDECEE;
+  --teal: #2A9D8F; --teal-l: #E6F4F2;
+  --yellow: #E9C46A; --yellow-l: #FBF3DD; --yellow-t: #8A6410;
+  --navy: #1D2D44; --navy-d: #16233A;
+  --bg: #F8F9FA; --line: #E5E7EB; --muted: #5B6575;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1890px; height: 2646px; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--navy); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.poster { width: 1890px; height: 2646px; display: flex; flex-direction: column; }
+
+/* Header */
+header { flex-shrink: 0; background: linear-gradient(120deg, var(--navy) 0%, var(--navy-d) 100%); color: #fff; padding: 40px 70px 38px; display: flex; align-items: center; gap: 44px; position: relative; overflow: hidden; }
+header::after { content: ""; position: absolute; right: -120px; top: -160px; width: 520px; height: 520px; border-radius: 50%; background: rgba(42,157,143,0.10); }
+header::before { content: ""; position: absolute; left: 34%; bottom: -230px; width: 420px; height: 420px; border-radius: 50%; background: rgba(230,57,70,0.10); }
+.logo { width: 170px; height: 170px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 0 10px rgba(255,255,255,0.08); }
+.logo svg { width: 104px; height: 98px; }
+.brand { flex: 1; position: relative; z-index: 1; }
+.brand h1 { font-size: 100px; font-weight: 800; letter-spacing: -1px; line-height: 0.95; }
+.slogan { font-size: 46px; font-weight: 600; margin-top: 10px; }
+.slogan span:nth-child(1) { color: var(--red); }
+.slogan span:nth-child(2) { color: var(--yellow); }
+.slogan span:nth-child(3) { color: #6FD3C5; }
+.slogan em { font-style: normal; color: rgba(255,255,255,0.75); font-weight: 400; font-size: 34px; margin-left: 14px; }
+.lead { font-size: 23px; line-height: 1.35; margin-top: 12px; color: rgba(255,255,255,0.88); max-width: 1000px; }
+.meta { text-align: right; font-size: 21px; line-height: 1.55; position: relative; z-index: 1; color: rgba(255,255,255,0.85); }
+.meta b { color: #fff; }
+.meta .event { font-size: 27px; font-weight: 800; color: #fff; }
+.meta .pill { display: inline-block; background: var(--teal); color: #fff; font-weight: 700; padding: 6px 18px; border-radius: 999px; margin: 10px 0; font-size: 20px; }
+
+main { flex: 1; padding: 24px 50px 0; display: flex; flex-direction: column; gap: 18px; }
+.row { display: grid; gap: 18px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 22px 30px; box-shadow: 0 4px 14px rgba(29,45,68,0.05); }
+h2 { display: flex; align-items: center; gap: 14px; font-size: 34px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+h2 .n { width: 44px; height: 44px; border-radius: 50%; background: var(--red); color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+p, li { font-size: 20px; line-height: 1.4; }
+b, strong { font-weight: 700; }
+ul.dots { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+ul.dots li { padding-left: 24px; position: relative; }
+ul.dots li::before { content: ""; position: absolute; left: 0; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: var(--teal); }
+.src { font-size: 15px; color: var(--muted); margin-top: 12px; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+.stat { background: var(--red-l); border-radius: 16px; padding: 14px 18px; }
+.stat .v { font-size: 36px; font-weight: 800; color: var(--red); line-height: 1.1; }
+.stats .stat .v { white-space: nowrap; font-size: 32px; }
+.stat .l { font-size: 16px; color: var(--muted); line-height: 1.3; margin-top: 4px; }
+.stat.teal { background: var(--teal-l); } .stat.teal .v { color: var(--teal); }
+
+/* Solution */
+.phones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 16px; }
+.step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.phone { width: 240px; height: 519px; border-radius: 46px; background: var(--navy); padding: 11px; box-shadow: 0 14px 34px rgba(29,45,68,0.22); }
+.phone img { width: 100%; height: 100%; border-radius: 36px; object-fit: cover; object-position: top; display: block; }
+.step .num { margin-top: 12px; width: 40px; height: 40px; border-radius: 50%; background: var(--teal); color: #fff; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+.step .t { font-size: 26px; font-weight: 800; margin-top: 8px; }
+.step .d { font-size: 19px; color: var(--muted); margin-top: 4px; line-height: 1.35; max-width: 380px; }
+
+/* Method */
+.grades { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 14px; }
+.g { border-radius: 12px; color: #fff; text-align: center; padding: 10px 6px; }
+.g .L { font-size: 36px; font-weight: 800; line-height: 1; }
+.g .r { font-size: 15px; margin-top: 4px; opacity: 0.95; }
+.g .e { font-size: 15px; font-weight: 700; margin-top: 2px; }
+.funnel { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+.funnel .box { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; }
+.funnel .box .v { font-size: 34px; font-weight: 800; line-height: 1.1; }
+.funnel .box .l { font-size: 15px; color: var(--muted); }
+.funnel .box.t .v { color: var(--teal); }
+.funnel .arrow { font-size: 30px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 16px; font-size: 19px; font-weight: 600; }
+
+/* Results */
+.res { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.res .stat .v { font-size: 42px; }
+.example { background: var(--yellow-l); border-radius: 16px; padding: 16px 20px; margin-top: 14px; }
+.example .s { font-size: 16px; color: var(--yellow-t); }
+.example .big { font-size: 32px; font-weight: 800; color: var(--navy); margin-top: 6px; }
+.example .big + .l { font-size: 16px; color: var(--muted); }
+ol { padding-left: 28px; display: flex; flex-direction: column; gap: 8px; }
+ol li::marker { color: var(--red); font-weight: 800; }
+
+footer { padding: 16px 50px 20px; font-size: 14.5px; color: var(--muted); line-height: 1.5; }
+footer b { color: var(--navy); }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 1762 1664" aria-label="Kaydırak logosu"><path fill="#fff" fill-rule="evenodd" d="LOGOPATH"/></svg>
+    </div>
+    <div class="brand">
+      <h1>Kaydırak</h1>
+      <div class="slogan"><span>Kaydır.</span> <span>Seç.</span> <span>Ye.</span></div>
+      <p class="lead">“Bugün ne yesek?” kararsızlığını kaydırma ve düelloyla çözen, restoranların gün sonu artan porsiyonlarını israf olmadan sofraya ulaştıran mobil uygulama.</p>
+    </div>
+    <div class="meta">
+      <div class="event">HASAT-13 Proje Pazarı</div>
+      Hasan Kalyoncu Üniversitesi · 25–26 Kasım 2026<br>
+      <span class="pill">Sıfır Atık ve Döngüsel Ekonomi</span><br>
+      <b>Proje ekibi:</b> Mustafa Göktaş · Enes Tekiş<br>
+      <b>Danışman:</b> Dr. Öğr. Üyesi Sena Taş<br>
+      mstfgkts5@gmail.com
+    </div>
+  </header>
+
+  <main>
+    <div class="row" style="grid-template-columns: 1.12fr 0.88fr;">
+      <section class="card">
+        <h2><span class="n">1</span>Problem</h2>
+        <p>Restoranların gün sonunda satamadığı porsiyonlar çöpe gidiyor; kullanıcı ise ne yiyeceğine karar veremeden menülerde kayboluyor. Seçim anında yemeğin çevresel etkisi de görünmüyor.</p>
+        <div class="stats">
+          <div class="stat"><div class="v nowrap">1,05 milyar ton</div><div class="l">2022'de israf edilen gıda (tüketiciye ulaşanın ~beşte biri)</div></div>
+          <div class="stat"><div class="v">%28</div><div class="l">israfın restoran ve yemek servislerinden gelen payı</div></div>
+          <div class="stat"><div class="v">%8–10</div><div class="l">gıda kaybı ve israfının küresel sera gazı salımındaki payı</div></div>
+        </div>
+        <div class="src">Kaynak: UNEP Food Waste Index Report 2024 (27 Mart 2024)</div>
+      </section>
+      <section class="card">
+        <h2><span class="n">2</span>Amaç</h2>
+        <ul class="dots">
+          <li>Kararsızlığı <b>kaydırma ve düello</b> ile saniyelere indirmek.</li>
+          <li>Gün sonu artan porsiyonları <b>%40–60 indirimle</b> kullanıcıya ulaştırıp <b>israfı önlemek</b>.</li>
+          <li>Her yemeğin <b>karbon ayak izini</b> seçim anında görünür kılmak.</li>
+          <li>Kullanıcıyı <b>gerçek ve yerel</b> restoranlara ve yöresel lezzetlere yönlendirmek.</li>
+          <li>Kullanıcının seçimlerinden öğrenip <b>kişiye özel öneriler</b> sunmak.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2><span class="n">3</span>Çözüm: Gaziantep'te bir akşam</h2>
+      <p>Kullanıcı Sıfır Atık modunda Antep yemeklerini kaydırır, tatlıları ayrı <b>Tatlılar</b> sekmesinden seçer, beğendiklerini düelloda eler; kazanan, gün sonunda çöpe gitmek üzere olan bir porsiyondur ve tek dokunuşla kurtarılır.</p>
+      <div class="phones">
+        <div class="step"><div class="phone"><img src="ph_s1.jpg" alt="Kaydır ekranı"></div><div class="num">1</div><div class="t">Kaydır</div><div class="d">Beyran: gün sonu 99 ₺, karbon notu E</div></div>
+        <div class="step"><div class="phone"><img src="ph_duel0.jpg" alt="Düello ekranı"></div><div class="num">2</div><div class="t">Düello</div><div class="d">Daha düşük karbonlu Katmer “çevre dostu seçim” işaretli</div></div>
+        <div class="step"><div class="phone"><img src="ph_win.jpg" alt="Porsiyonu kurtar ekranı"></div><div class="num">3</div><div class="t">Porsiyonu kurtar</div><div class="d">Baklava 96 ₺: 0,49 kg yemek ve 1,4 kg CO₂e korunur</div></div>
+        <div class="step"><div class="phone"><img src="ph_rest.jpg" alt="Gerçek restoran ekranı"></div><div class="num">4</div><div class="t">Gerçek restoran</div><div class="d">Koçak Baklava, doğrulanmış adresiyle</div></div>
+      </div>
+    </section>
+
+    <div class="row" style="grid-template-columns: 1.12fr 0.88fr;">
+      <section class="card">
+        <h2><span class="n">4</span>Yöntem</h2>
+        <p><b>Karbon notu:</b> Her yemek içeriğine göre bir sınıfa girer; porsiyon başına kg CO₂e tahmini kaloriyle ölçeklenir ve A–E notuna çevrilir (Poore ve Nemecek, Science 2018 verisi).</p>
+        <div class="grades">
+          <div class="g" style="background:#2A9D8F"><div class="L">A</div><div class="r">≤ 0,6 kg</div><div class="e">Gavurdağı 0,3</div></div>
+          <div class="g" style="background:#4CA84A"><div class="L">B</div><div class="r">≤ 1,2 kg</div><div class="e">F. Sarma 0,7</div></div>
+          <div class="g" style="background:#C9A100"><div class="L">C</div><div class="r">≤ 2,2 kg</div><div class="e">Katmer 1,4</div></div>
+          <div class="g" style="background:#E07A00"><div class="L">D</div><div class="r">≤ 4 kg</div><div class="e">İçli köfte 2,8</div></div>
+          <div class="g" style="background:#E63946"><div class="L">E</div><div class="r">&gt; 4 kg</div><div class="e">Beyran 5,7</div></div>
+        </div>
+        <p><b>Kişisel öneri:</b> Son 5 seçimin türleri (et, tavuk, balık, sebze…) sayılır; önerilerin ~%80'i en çok seçilen türlerden, ~%20'si keşif için farklı türlerden gelir. Az önce seçilenler üste konmaz.</p>
+        <p style="margin-top:10px"><b>Gerçek restoranlar:</b> Listedeki her restoran OpenStreetMap'te arandı; adı ve semti tutanlar gerçek adresiyle gösterilir, doğrulanamayan puan gösterilmez.</p>
+        <div class="funnel">
+          <div class="box"><div class="v">1.481</div><div class="l">aday restoran</div></div><div class="arrow">→</div>
+          <div class="box t"><div class="v">268</div><div class="l">adresi doğrulanmış</div></div><div class="arrow">→</div>
+          <div class="box t"><div class="v">32</div><div class="l">Gaziantep'te</div></div>
+        </div>
+      </section>
+      <div style="display:flex; flex-direction:column; gap:22px;">
+        <section class="card">
+          <h2><span class="n">5</span>Özgünlük</h2>
+          <ul class="dots">
+            <li>İsraf önleme, kullanıcının zaten yaptığı <b>“ne yesem?”</b> seçiminin içinde; ayrı bir indirim uygulaması değil.</li>
+            <li>Kurtarılacak porsiyon <b>adı, besin değeri ve karbon notuyla</b> gösterilir, sürpriz paket değildir.</li>
+            <li><b>Oyunlaştırma:</b> kaydırma, düello ve etki sayacı.</li>
+            <li><b>Yöresel:</b> Turist modunda seçilen şehrin kendi lezzetleri önce gelir.</li>
+            <li><b>Dürüst veri:</b> doğrulanmış adres, uydurma puan yok.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2><span class="n">6</span>Kullanılan teknolojiler</h2>
+          <div class="chips">
+            <span class="chip">React 19</span><span class="chip">TypeScript</span><span class="chip">Vite</span><span class="chip">Capacitor 8 (Android + iOS)</span>
+            <span class="chip">OpenStreetMap</span><span class="chip">Wikimedia Commons</span><span class="chip">Çevrimdışı çalışır</span><span class="chip">Google Play (kapalı test)</span>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="row" style="grid-template-columns: 1fr 1fr 1fr;">
+      <section class="card">
+        <h2><span class="n">7</span>Sonuçlar</h2>
+        <div class="res">
+          <div class="stat teal"><div class="v">167</div><div class="l">yemek; her modda en çok tercih edilen 50</div></div>
+          <div class="stat teal"><div class="v">7</div><div class="l">kişilik modu</div></div>
+          <div class="stat teal"><div class="v">268</div><div class="l">gerçek restoran</div></div>
+          <div class="stat teal"><div class="v">A–E</div><div class="l">karbon notu, her yemekte</div></div>
+        </div>
+        <p class="src" style="font-size:17px">Çalışan prototip: Android (Google Play kapalı test) ve web; iPhone'da tarayıcıdan çalışır, iOS paketi aynı kodla derlenebilir.</p>
+      </section>
+      <section class="card">
+        <h2><span class="n">8</span>Beklenen çıktılar</h2>
+        <p>Etki sayacı her kurtarmayı kg yemek, kg CO₂e ve ₺ olarak ölçer.</p>
+        <div class="example">
+          <div class="s">Örnek: 1 restoran × günde 5 porsiyon</div>
+          <div class="big">≈ 730 kg/yıl</div><div class="l">israftan kurtarılan yemek</div>
+          <div class="big">≈ 3,65 ton CO₂e/yıl</div><div class="l">Varsayım: porsiyon 0,4 kg ve 2 kg CO₂e</div>
+        </div>
+      </section>
+      <section class="card">
+        <h2><span class="n">9</span>Gelecek hedefleri</h2>
+        <ol>
+          <li><b>Restoran paneli:</b> işletme gün sonu porsiyonlarını kendisi girer.</li>
+          <li><b>Gaziantep pilotu:</b> yerel restoranlarla gerçek kurtarma verisi.</li>
+          <li><b>Tarif bazlı</b> karbon hesabı ve aylık etki raporu.</li>
+          <li><b>Bağış:</b> satılamayan porsiyonları gıda bankalarına yönlendirme.</li>
+          <li><b>App Store:</b> aynı kodla iOS sürümü.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <b>Kaynaklar:</b> UNEP, “World squanders over 1 billion meals a day”, Food Waste Index Report 2024 basın bülteni, 27.03.2024 · J. Poore, T. Nemecek, “Reducing food's environmental impacts through producers and consumers”, Science 360 (2018), Our World in Data özeti · Restoran adresleri © OpenStreetMap katkıcıları (ODbL) · Yemek görselleri Wikimedia Commons (özgür lisanslar; yazarlar projedeki IMAGE_CREDITS.md dosyasında) · HASAT-13 çağrı metni, hku.edu.tr/proje/hasat-13
+  </footer>
+</div>
+</body>
+</html>
