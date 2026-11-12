@@ -4,6 +4,14 @@ import type { MenuItem } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
 
+// Typical price band for a dish (prices differ by restaurant): about -10% / +20%, rounded to 10 TL.
+const round10 = (n: number) => Math.max(10, Math.round(n / 10) * 10);
+const priceRange = (price: number): string => {
+  const low = round10(price * 0.9);
+  const high = Math.max(low + 10, round10(price * 1.2));
+  return `${low} - ${high} TL`;
+};
+
 interface SwipeDeckProps {
   items: MenuItem[];
   onSwipe: (item: MenuItem, direction: "left" | "right") => void;
@@ -151,13 +159,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   let colorOverlayColor = "transparent";
 
   if (dragOffset.x > 0) {
-    glowShadow = `0 12px 35px rgba(74, 222, 128, ${dragPercentage * 0.45})`;
-    borderGlow = `${1 + dragPercentage}px solid rgba(74, 222, 128, ${dragPercentage})`;
-    colorOverlayColor = `rgba(74, 222, 128, ${dragPercentage * 0.25})`;
+    glowShadow = `0 12px 35px rgba(42, 157, 143, ${dragPercentage * 0.45})`;
+    borderGlow = `${1 + dragPercentage}px solid rgba(42, 157, 143, ${dragPercentage})`;
+    colorOverlayColor = `rgba(42, 157, 143, ${dragPercentage * 0.25})`;
   } else if (dragOffset.x < 0) {
-    glowShadow = `0 12px 35px rgba(239, 68, 68, ${dragPercentage * 0.45})`;
-    borderGlow = `${1 + dragPercentage}px solid rgba(239, 68, 68, ${dragPercentage})`;
-    colorOverlayColor = `rgba(239, 68, 68, ${dragPercentage * 0.25})`;
+    glowShadow = `0 12px 35px rgba(230, 57, 70, ${dragPercentage * 0.45})`;
+    borderGlow = `${1 + dragPercentage}px solid rgba(230, 57, 70, ${dragPercentage})`;
+    colorOverlayColor = `rgba(230, 57, 70, ${dragPercentage * 0.25})`;
   }
 
   const cardStyle: React.CSSProperties = {
@@ -184,12 +192,9 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           >
             <div className="card-image-container">
               <img src={nextItem.imageUrl} alt={language === "tr" ? nextItem.nameTr : nextItem.nameEn} className="card-image" />
-              <div className="card-gradient-overlay" />
             </div>
-            <div className="card-content-overlay">
-              <div className="card-title-row">
-                <span className="card-title">{language === "tr" ? nextItem.nameTr : nextItem.nameEn}</span>
-              </div>
+            <div className="card-body">
+              <span className="card-title">{language === "tr" ? nextItem.nameTr : nextItem.nameEn}</span>
             </div>
           </div>
         )}
@@ -212,7 +217,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
           <div className="card-image-container">
             <img src={activeItem.imageUrl} alt={language === "tr" ? activeItem.nameTr : activeItem.nameEn} className="card-image" />
-            <div className="card-gradient-overlay" />
             <div
               style={{
                 position: "absolute",
@@ -233,28 +237,33 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
             {activeItem.isSponsored && (
               <span className="sponsored-pill">{t.swipeSponsored}</span>
             )}
-          </div>
 
-          {/* AI Insight Button (Center-Bottom of the Image) */}
-          <div className="ai-insight-btn-wrapper" onMouseDown={(e) => e.stopPropagation()} onClick={() => onOpenInsight(activeItem)}>
-            <button className="ai-insight-btn">
-              <Sparkles size={13} />
-              {t.swipeAiInsight}
-            </button>
-          </div>
-
-          {/* Details Overlay */}
-          <div className="card-content-overlay">
-            <div className="card-title-row">
-              <span className="card-title">{language === "tr" ? activeItem.nameTr : activeItem.nameEn}</span>
+            {/* AI Insight Button (Center-Bottom of the Image) */}
+            <div
+              className="ai-insight-btn-wrapper"
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onClick={() => onOpenInsight(activeItem)}
+            >
+              <button className="ai-insight-btn">
+                <Sparkles size={13} />
+                {t.swipeAiInsight}
+              </button>
             </div>
+          </div>
+
+          {/* Details (white area under the photo) */}
+          <div className="card-body">
+            <span className="card-title">{language === "tr" ? activeItem.nameTr : activeItem.nameEn}</span>
 
             <div className="card-subtitle-row">
               <div className="card-rating-container">
-                <Star size={13} />
-                <span>{activeItem.rating}</span>
-                <span style={{ fontSize: "11px", opacity: 0.8 }}>({activeItem.reviewCount})</span>
+                <Star size={14} />
+                <strong>{activeItem.rating}</strong>
+                <span className="card-review-count">({activeItem.reviewCount})</span>
               </div>
+              <span className="card-meta-dot">•</span>
+              <span className="card-price-range">{priceRange(activeItem.price)}</span>
               {showCarbon && (() => {
                 const c = estimateCarbon(activeItem);
                 return (
