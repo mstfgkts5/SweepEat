@@ -76,6 +76,7 @@ export const translations = {
     locationModalSub: "Yemeklerin ve restoranların Türkiye genelinde senin ilinde aranması için konumunu belirle.",
     locationModalAuto: "Konumumu Otomatik Bul",
     locationModalLoading: "Konum bulunuyor...",
+    cityDetected: "Konumun: {city}. Yemekler buradan başlıyor.",
     locationSearchPlaceholder: "İl ara...",
 
     // Tournament / Duello Screen
@@ -175,6 +176,7 @@ export const translations = {
     locationModalSub: "Set your city to search for dishes and restaurants within Turkey in your current area.",
     locationModalAuto: "Detect Location Automatically",
     locationModalLoading: "Locating...",
+    cityDetected: "You are in {city}. Dishes start from here.",
     locationSearchPlaceholder: "Search city...",
 
     // Tournament / Duello Screen

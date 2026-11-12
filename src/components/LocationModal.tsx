@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { X, MapPin, Compass, Search } from "lucide-react";
 import { translations } from "../data/translations";
+import { detectProvince } from "../data/location";
+import { PROVINCES } from "../data/provinces";
 
 interface LocationModalProps {
   currentCity: string;
@@ -33,82 +35,31 @@ export default function LocationModal({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleAutoDetect = () => {
-    if (!navigator.geolocation) {
-      setErrorMessage(
-        language === "tr"
-          ? "Tarayıcınız konum özelliğini desteklemiyor."
-          : "Geolocation is not supported by your browser."
-      );
-      return;
-    }
-
+  // Offline: the position is matched to the nearest province centre on the device.
+  const handleAutoDetect = async () => {
     setIsLoading(true);
     setErrorMessage("");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          // Fetch reverse geocode from OpenStreetMap's Nominatim (free, public API)
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
-            {
-              headers: {
-                "Accept-Language": language === "tr" ? "tr" : "en"
-              }
-            }
-          );
-          const data = await response.json();
-          
-          // Nominatim address hierarchy for Turkish provinces / cities
-          const address = data.address || {};
-          const city = address.province || address.city || address.town || address.state || "";
-          
-          if (city) {
-            // Clean up common Turkish reverse-geocode suffixes
-            const cleanCity = city
-              .replace(" İli", "")
-              .replace(" Province", "")
-              .replace(" ili", "")
-              .trim();
-            
-            onSelectCity(cleanCity);
-            onClose();
-          } else {
-            setErrorMessage(
-              language === "tr"
-                ? "Konum bilgisi çözümlenemedi. Lütfen listeden seçin."
-                : "Could not parse city. Please select from the list."
-            );
-          }
-        } catch (err) {
-          console.error("Geocoding error", err);
-          setErrorMessage(
-            language === "tr"
-              ? "Konum sorgulama başarısız oldu. Lütfen listeden seçin."
-              : "Failed to reverse geocode. Please select from the list."
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (error) => {
-        console.warn("Geolocation error", error);
-        setIsLoading(false);
-        setErrorMessage(
-          language === "tr"
-            ? "Konum izni reddedildi ya da konum alınamadı."
-            : "Location permission denied or retrieval failed."
-        );
-      },
-      { timeout: 8000 }
-    );
+    const result = await detectProvince();
+    setIsLoading(false);
+    if (result.ok) {
+      onSelectCity(result.city);
+      onClose();
+      return;
+    }
+    const messages = {
+      unsupported: ["Cihazınız konum özelliğini desteklemiyor.", "Location is not supported on this device."],
+      denied: ["Konum izni verilmedi. Listeden seçebilirsiniz.", "Location permission denied. Please pick from the list."],
+      unavailable: ["Konum alınamadı. Listeden seçebilirsiniz.", "Could not get your location. Please pick from the list."],
+      outside: ["Türkiye dışında görünüyorsunuz. Listeden seçebilirsiniz.", "You seem to be outside Türkiye. Please pick from the list."]
+    } as const;
+    setErrorMessage(messages[result.reason][language === "tr" ? 0 : 1]);
   };
 
-  const filteredCities = POPULAR_TURKISH_CITIES.filter((city) =>
-    city.toLowerCase().replace(/i̇/g, "i").includes(searchQuery.toLowerCase().replace(/i̇/g, "i"))
-  );
+  // Without a search: the cities with restaurant data. With a search: all 81 provinces.
+  const normalize = (v: string) => v.toLocaleLowerCase("tr-TR").replace(/i̇/g, "i");
+  const filteredCities = searchQuery.trim()
+    ? PROVINCES.map((p) => p.name).filter((city) => normalize(city).includes(normalize(searchQuery.trim())))
+    : POPULAR_TURKISH_CITIES;
 
   return (
     <div className="bottom-sheet-backdrop" onClick={onClose} style={{ display: "flex", alignItems: "flex-end" }}>
