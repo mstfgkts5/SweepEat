@@ -1,12 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Compass, Heart, User, MapPin, Sparkles } from "lucide-react";
 import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
 import ModeIntro from "./components/ModeIntro";
+import CourseToggle from "./components/CourseToggle";
 import { LikedScreen, ProfileScreen, TournamentScreen, WinnerScreen } from "./components/ExtraScreens";
-import { allFoodItems as mockFoodItems, sortByModeRank, pickLocalDishes } from "./data/allFood";
+import { allFoodItems as mockFoodItems, sortByModeRank, pickLocalDishes, filterByCourse } from "./data/allFood";
+import type { Course } from "./data/allFood";
+import { recommend, rankTypes } from "./data/recommend";
+import { DISH_TYPE_LABELS } from "./data/dishTypes";
+import { loadRecentSelections, addRecentSelection } from "./data/selectionHistory";
 import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
@@ -34,6 +39,12 @@ export default function App() {
   const [activePersona, setActivePersona] = useState<Persona>("gourmet");
   // Mode intro: after picking a mode, show which mode was picked before the dishes
   const [modeIntro, setModeIntro] = useState<Persona | null>(null);
+
+  // Main dishes by default; the "Tatlılar" button shows only desserts.
+  const [course, setCourse] = useState<Course>("main");
+  // Last 5 dish selections (right swipe / arena champion), saved on the device.
+  const [recentSelections, setRecentSelections] = useState<string[]>(() => loadRecentSelections());
+  const rememberSelection = (item: MenuItem) => setRecentSelections((prev) => addRecentSelection(prev, item.id));
 
   const handleSelectMode = (p: Persona) => {
     setActivePersona(p);
@@ -94,6 +105,7 @@ export default function App() {
     setSwipedIds((prev) => [...prev, item.id]);
 
     if (direction === "right") {
+      rememberSelection(item);
       setLikedPool((prev) => {
         if (prev.find((x) => x.id === item.id)) return prev;
         return [...prev, item];
@@ -112,19 +124,44 @@ export default function App() {
     setActiveTab("explore");
   };
 
-  const getFilteredPool = () => {
-    const unswiped = foodPool.filter((x) => !swipedIds.includes(x.id));
-    if (activePersona === "zero_waste") return unswiped.filter((x) => getSurplusDeal(x) !== null);
-    const inMode = unswiped.filter((x) => x.modes.includes(activePersona));
-    // Most-preferred dishes first; after "reset" the deck is shuffled on purpose.
-    const ordered = foodPool === mockFoodItems ? sortByModeRank(inMode, activePersona) : inMode;
+  // Dishes of the active mode, most preferred first.
+  // `rank` = false keeps the given order (after "reset" the deck is shuffled on purpose).
+  const getModePool = (items: MenuItem[], rank: boolean): MenuItem[] => {
+    if (activePersona === "zero_waste") return items.filter((x) => getSurplusDeal(x) !== null);
+    const inMode = items.filter((x) => x.modes.includes(activePersona));
+    const ordered = rank ? sortByModeRank(inMode, activePersona) : inMode;
     if (activePersona !== "tourist") return ordered;
     // Tourist mode: the selected city's own dishes come first (e.g. Diyarbakır starts with
     // kaburga dolması, not kumpir), then the rest of the Tourist list.
-    const local = pickLocalDishes(unswiped, userCity);
+    const local = pickLocalDishes(items, userCity);
     const localIds = new Set(local.map((x) => x.id));
     return [...local, ...ordered.filter((x) => !localIds.has(x.id))];
   };
+
+  const unswipedModePool = getModePool(
+    foodPool.filter((x) => !swipedIds.includes(x.id)),
+    foodPool === mockFoodItems
+  );
+  const courseCounts = {
+    main: filterByCourse(unswipedModePool, "main").length,
+    dessert: filterByCourse(unswipedModePool, "dessert").length
+  };
+  const getFilteredPool = () => filterByCourse(unswipedModePool, course);
+
+  // "Sana Özel Öneriler": from the whole menu of the active mode and course,
+  // weighted by the types of the last 5 selections (see data/recommend.ts).
+  const recommendations = useMemo(() => {
+    const candidates = filterByCourse(getModePool(mockFoodItems, true), course);
+    return recommend(candidates, recentSelections, 10);
+    // getModePool only depends on activePersona and userCity
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePersona, userCity, course, recentSelections]);
+  const topType = rankTypes(
+    recentSelections.map((id) => mockFoodItems.find((x) => x.id === id)).filter((x): x is MenuItem => x !== undefined)
+  )[0];
+  const recoSubtitle = topType
+    ? t.recoSubtitlePersonal.replace("{type}", DISH_TYPE_LABELS[language][topType].toLocaleLowerCase(language === "tr" ? "tr-TR" : "en-US"))
+    : t.recoSubtitlePopular;
 
   const renderActiveContent = () => {
     if (isTournamentActive) {
@@ -135,6 +172,7 @@ export default function App() {
           showCarbon={carbonVisible}
           onCancel={() => setIsTournamentActive(false)}
           onFinish={(champ) => {
+            rememberSelection(champ);
             setTournamentChampion({ item: champ, commentary: "" });
             setIsTournamentActive(false);
           }}
@@ -165,6 +203,7 @@ export default function App() {
       case "explore":
         return (
           <div className="deck-container">
+            <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
             <SwipeDeck
               items={getFilteredPool()}
               onSwipe={handleSwipe}
@@ -179,6 +218,11 @@ export default function App() {
         return (
           <LikedScreen
             likedPool={likedPool}
+            course={course}
+            onChangeCourse={setCourse}
+            recommendations={recommendations}
+            recoSubtitle={recoSubtitle}
+            onOpenItem={(item) => setSelectedInsightItem(item)}
             onRemove={handleRemoveLiked}
             onStartTournament={() => setIsTournamentActive(true)}
             language={language}

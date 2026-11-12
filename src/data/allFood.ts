@@ -11,6 +11,7 @@ import { popularFoodItems } from "./popularFood";
 import { MODE_LISTS, KEY_BY_ID, NAME_OVERRIDES } from "./modeLists";
 import type { Mode } from "./modeLists";
 import { localDishKeys } from "./localDishes";
+import { dishTypeFor, isDessertType } from "./dishTypes";
 
 // Key of a dish = its photo file name without ".jpg" (see modeLists.ts).
 const keyOf = (item: MenuItem): string => {
@@ -49,7 +50,8 @@ export const allFoodItems: MenuItem[] = [...byKey.entries()]
     KEY_BY_ITEM_ID.set(item.id, key);
     // A dish with a web photo uses a local copy once public/images/<key>.jpg exists (works offline).
     const imageUrl = !item.imageUrl.startsWith("/images/") && PHOTOS.has(`${key}.jpg`) ? `/images/${key}.jpg` : item.imageUrl;
-    return { ...item, ...NAME_OVERRIDES[key], imageUrl, modes };
+    const merged = { ...item, ...NAME_OVERRIDES[key], imageUrl, modes };
+    return { ...merged, dishType: dishTypeFor(key, merged.category, merged.isVegan) };
   })
   .filter((item) => item.modes.length > 0 && hasPhoto(item));
 
@@ -75,3 +77,9 @@ export const pickLocalDishes = (pool: MenuItem[], city: string): MenuItem[] => {
     .filter((item): item is MenuItem => item !== undefined)
     .slice(0, LOCAL_FIRST_COUNT);
 };
+
+// Desserts are shown separately (the "Tatlılar" button); everything else is a main dish.
+export type Course = "main" | "dessert";
+export const isDessert = (item: MenuItem): boolean => isDessertType(item.dishType);
+export const filterByCourse = (items: MenuItem[], course: Course): MenuItem[] =>
+  items.filter((item) => isDessert(item) === (course === "dessert"));

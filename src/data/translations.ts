@@ -40,6 +40,13 @@ export const translations = {
     likedRequiredText: "En az 4 yemek gerekir",
     likedPoolLabel: "Beğeni Havuzu ({count} Yemek)",
     likedEmptyText: "Henüz beğendiğin bir yemek yok.",
+    // Course toggle & personal recommendations
+    courseMain: "Ana Yemekler",
+    courseDessert: "Tatlılar",
+    courseDessertEmpty: "Bu listede tatlı yok.",
+    recoTitle: "Sana Özel Öneriler",
+    recoSubtitlePersonal: "Son seçimlerine göre: en çok {type}",
+    recoSubtitlePopular: "Henüz seçim yok, en popüler lezzetler",
 
     // Profile Screen
     profileHeader: "Kaydırak",
@@ -132,6 +139,13 @@ export const translations = {
     likedRequiredText: "At least 4 dishes required",
     likedPoolLabel: "Like Pool ({count} Dishes)",
     likedEmptyText: "No liked foods yet.",
+    // Course toggle & personal recommendations
+    courseMain: "Main Dishes",
+    courseDessert: "Desserts",
+    courseDessertEmpty: "No desserts in this list.",
+    recoTitle: "Picked For You",
+    recoSubtitlePersonal: "Based on your last picks: mostly {type}",
+    recoSubtitlePopular: "No picks yet, most popular dishes",
 
     // Profile Screen
     profileHeader: "Kaydırak",
