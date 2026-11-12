@@ -41,6 +41,16 @@ const RANK: Record<Mode, Map<string, number>> = Object.fromEntries(
 // Original names: the curated restaurant lists are keyed by them.
 const ORIGINAL_NAME = new Map<string, string>();
 
+// Every name a dish has had in the source sets (popularFood renamed some dishes, e.g.
+// "Gaziantep Katmeri / Baklava" -> "Fıstıklı Katmer"); restaurant lists may use any of them.
+const ALL_NAMES_BY_KEY = new Map<string, string[]>();
+for (const item of [...popularFoodItems, ...mockFoodItems, ...extraFoodItems]) {
+  const key = keyOf(item);
+  const names = ALL_NAMES_BY_KEY.get(key) ?? [];
+  if (!names.includes(item.nameTr)) names.push(item.nameTr);
+  ALL_NAMES_BY_KEY.set(key, names);
+}
+
 const KEY_BY_ITEM_ID = new Map<string, string>();
 
 export const allFoodItems: MenuItem[] = [...byKey.entries()]
@@ -66,6 +76,15 @@ export const sortByModeRank = (items: MenuItem[], persona: Persona): MenuItem[] 
 
 // Name to look a dish up in the curated restaurant lists.
 export const restaurantLookupName = (item: MenuItem): string => ORIGINAL_NAME.get(item.id) ?? item.nameTr;
+
+// Key of a dish in the menu (photo file name without ".jpg").
+export const dishKeyOf = (item: MenuItem): string => KEY_BY_ITEM_ID.get(item.id) ?? keyOf(item);
+
+// All names to try in the curated restaurant lists: shown name first, then older names.
+export const restaurantLookupNames = (item: MenuItem): string[] => {
+  const names = [item.nameTr, restaurantLookupName(item), ...(ALL_NAMES_BY_KEY.get(dishKeyOf(item)) ?? [])];
+  return [...new Set(names)];
+};
 
 // Tourist mode: the dishes the city (and its region) is known for, in local order.
 // Taken from the whole menu, so a local dish shows even if it is not in the Tourist list.

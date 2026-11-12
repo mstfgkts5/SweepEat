@@ -1929,3 +1929,28 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Restaurant suggestion: how well the place fits the dish */
+.restaurant-match-chip {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin: 2px 0;
+}
+.restaurant-match-chip.dish {
+  background-color: var(--emerald-green-light);
+  color: var(--emerald-green);
+}
+.restaurant-match-chip.kind {
+  background-color: var(--accent-orange-light);
+  color: var(--accent-text);
+}
+.restaurant-match-chip.general {
+  background-color: #EEF0F3;
+  color: var(--text-secondary);
+}
+.restaurant-city-note {
+  color: var(--accent-text);
+}

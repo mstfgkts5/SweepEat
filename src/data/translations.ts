@@ -94,7 +94,7 @@ export const translations = {
     winnerOrderBtn: "Sipariş Ver",
     winnerReturnBtn: "Keşfetmeye Geri Dön",
     winnerTabCommentary: "Hakem Yorumu",
-    winnerTabRestaurants: "En İyi 3 Restoran",
+    winnerTabRestaurants: "En İyi 5 Restoran",
     winnerNoRestaurants: "Bu ilde uygun mekan bulunamadı.",
     winnerGoogleMapBtn: "Haritada Aç"
   },
@@ -193,7 +193,7 @@ export const translations = {
     winnerOrderBtn: "Order Now",
     winnerReturnBtn: "Return to Exploring",
     winnerTabCommentary: "Referee Review",
-    winnerTabRestaurants: "Top 3 Restaurants",
+    winnerTabRestaurants: "Top 5 Restaurants",
     winnerNoRestaurants: "No suitable places found in this city.",
     winnerGoogleMapBtn: "Open in Maps"
   }
