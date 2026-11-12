@@ -7,6 +7,9 @@ import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMP
 import type { ImpactStats } from "../data/sustainability";
 import { RATING_CHECKED_AT } from "../data/verifiedRestaurants";
 import { generateTopRestaurants } from "../data/restaurantMatch";
+import { buildRound, roundKind, roundCount } from "../data/bracket";
+import SlideCelebration from "./SlideCelebration";
+import { prefersReducedMotion, PICK_SLIDE_MS } from "../data/motion";
 import { restaurantCityFor } from "../data/provinces";
 import { restaurantLookupNames, dishKeyOf, filterByCourse } from "../data/allFood";
 import type { Course } from "../data/allFood";
@@ -371,74 +374,85 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
-  // We need to establish a power of 2 bracket size (e.g. 4 or 8)
-  const size = likedPool.length >= 8 ? 8 : 4;
-  const initialItems = likedPool.slice(0, size);
-
-  // States
-  const [roundItems, setRoundItems] = useState<MenuItem[]>(initialItems);
+  // Every liked dish plays (see data/bracket.ts): pairs, plus one three-way duel when the count is odd.
+  const [roundItems, setRoundItems] = useState<MenuItem[]>(() => likedPool.slice());
   const [nextRoundWinners, setNextRoundWinners] = useState<MenuItem[]>([]);
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  // Kaydırak animation: the picked card slides away; the champion gets the full slide.
+  const [picked, setPicked] = useState<MenuItem | null>(null);
+  const [champion, setChampion] = useState<MenuItem | null>(null);
 
-  // Current pair
-  const itemA = roundItems[currentMatchIndex * 2];
-  const itemB = roundItems[currentMatchIndex * 2 + 1];
+  const matches = buildRound(roundItems);
+  const currentMatch = matches[currentMatchIndex] ?? [];
 
   const getRoundLabel = () => {
-    const totalMatchesInRound = roundItems.length / 2;
-    if (totalMatchesInRound === 4) return t.tourRoundQuarter;
-    if (totalMatchesInRound === 2) return t.tourRoundSemi;
-    return t.tourRoundFinal;
+    const kind = roundKind(matches.length);
+    if (kind === "final") return t.tourRoundFinal;
+    if (kind === "semi") return t.tourRoundSemi;
+    if (kind === "quarter") return t.tourRoundQuarter;
+    return t.tourRoundN.replace("{n}", String(roundCount(likedPool.length) - roundCount(roundItems.length) + 1));
   };
 
-  const handleSelectWinner = (winner: MenuItem) => {
+  const finishWithChampion = (winner: MenuItem) => {
+    confetti({
+      particleCount: 120,
+      spread: 70,
+      origin: { y: 0.45 },
+      colors: ["#2A9D8F", "#E9C46A", "#E63946", "#1D2D44"]
+    });
+    onFinish(winner);
+  };
+
+  const advance = (winner: MenuItem) => {
     const updatedWinners = [...nextRoundWinners, winner];
-    setNextRoundWinners(updatedWinners);
-
-    const totalMatchesInRound = roundItems.length / 2;
-    
-    if (currentMatchIndex + 1 < totalMatchesInRound) {
-      // Advance to next match of current round
+    if (currentMatchIndex + 1 < matches.length) {
+      setNextRoundWinners(updatedWinners);
       setCurrentMatchIndex((prev) => prev + 1);
+    } else if (updatedWinners.length === 1) {
+      // Champion decided: the full slide animation, then the winner screen.
+      if (prefersReducedMotion()) finishWithChampion(winner);
+      else setChampion(winner);
     } else {
-      // Round completed!
-      if (updatedWinners.length === 1) {
-        // Champion decided!
-        const champion = updatedWinners[0];
-        
-        // Trigger confetti
-        confetti({
-          particleCount: 120,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#2A9D8F", "#E9C46A", "#E63946", "#1D2D44"]
-        });
-
-        onFinish(champion);
-      } else {
-        // Start next round
-        setRoundItems(updatedWinners);
-        setNextRoundWinners([]);
-        setCurrentMatchIndex(0);
-      }
+      setRoundItems(updatedWinners);
+      setNextRoundWinners([]);
+      setCurrentMatchIndex(0);
     }
   };
 
-  if (!itemA || !itemB) return null;
+  const handleSelectWinner = (winner: MenuItem) => {
+    if (picked || champion) return; // no double picks while animating
+    const isFinalPick = currentMatchIndex + 1 >= matches.length && nextRoundWinners.length === 0;
+    if (prefersReducedMotion() || isFinalPick) {
+      advance(winner);
+      return;
+    }
+    setPicked(winner);
+    setTimeout(() => {
+      setPicked(null);
+      advance(winner);
+    }, PICK_SLIDE_MS);
+  };
 
-  // Carbon comparison for the current duel (only rendered when labels are on)
-  const carbonA = estimateCarbon(itemA);
-  const carbonB = estimateCarbon(itemB);
-  const renderDuelCarbon = (own: typeof carbonA, other: typeof carbonA) => {
+  if (champion) {
+    return <SlideCelebration item={champion} language={language} onLanded={() => finishWithChampion(champion)} />;
+  }
+
+  if (currentMatch.length < 2) return null;
+
+  // Carbon comparison (only rendered when labels are on): the lowest one gets the eco hint.
+  const carbons = currentMatch.map((item) => estimateCarbon(item));
+  const lowestKg = Math.min(...carbons.map((c) => c.kg));
+  const renderDuelCarbon = (own: (typeof carbons)[number]) => {
     if (!showCarbon) return null;
     return (
       <div className="duel-carbon-row">
         <span className="carbon-grade-chip" style={{ backgroundColor: CARBON_GRADE_COLORS[own.grade] }}>{own.grade}</span>
         <span>{own.kg} kg CO₂e</span>
-        {own.kg < other.kg && <span className="duel-eco-hint">🌱 {eco.duelEcoHint}</span>}
+        {own.kg === lowestKg && carbons.some((c) => c.kg > lowestKg) && <span className="duel-eco-hint">🌱 {eco.duelEcoHint}</span>}
       </div>
     );
   };
+  const isTriple = currentMatch.length === 3;
 
   return (
     <div className="tournament-screen">
@@ -446,30 +460,26 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
         <span className="tournament-round-badge">{getRoundLabel()}</span>
         <h2 className="tournament-heading">{t.tourHeader}</h2>
         <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-          {t.tourSub}
+          {isTriple ? t.tourSubTriple : t.tourSub}
         </span>
       </div>
 
-      <div className="tournament-vs-container">
-        {/* Item A */}
-        <div className="duel-card" onClick={() => handleSelectWinner(itemA)}>
-          <img src={itemA.imageUrl} alt={language === "tr" ? itemA.nameTr : itemA.nameEn} className="duel-card-img" />
-          <div className="duel-card-info">
-            <span className="duel-card-name">{language === "tr" ? itemA.nameTr : itemA.nameEn}</span>
-            {renderDuelCarbon(carbonA, carbonB)}
-          </div>
-        </div>
-
-        <div className="tournament-vs-circle">VS</div>
-
-        {/* Item B */}
-        <div className="duel-card" onClick={() => handleSelectWinner(itemB)}>
-          <img src={itemB.imageUrl} alt={language === "tr" ? itemB.nameTr : itemB.nameEn} className="duel-card-img" />
-          <div className="duel-card-info">
-            <span className="duel-card-name">{language === "tr" ? itemB.nameTr : itemB.nameEn}</span>
-            {renderDuelCarbon(carbonB, carbonA)}
-          </div>
-        </div>
+      <div className={`tournament-vs-container ${isTriple ? "triple" : ""}`} key={`${roundItems.length}-${currentMatchIndex}`}>
+        {currentMatch.map((item, i) => (
+          <React.Fragment key={item.id}>
+            {i > 0 && <div className="tournament-vs-circle">VS</div>}
+            <div
+              className={`duel-card ${picked ? (picked.id === item.id ? "slide-picked" : "slide-dropped") : ""}`}
+              onClick={() => handleSelectWinner(item)}
+            >
+              <img src={item.imageUrl} alt={language === "tr" ? item.nameTr : item.nameEn} className="duel-card-img" />
+              <div className="duel-card-info">
+                <span className="duel-card-name">{language === "tr" ? item.nameTr : item.nameEn}</span>
+                {renderDuelCarbon(carbons[i])}
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       <button className="secondary-btn" onClick={onCancel} style={{ width: "100%", padding: "10px 0" }}>

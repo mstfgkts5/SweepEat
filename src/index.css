@@ -1958,8 +1958,9 @@ body {
 /* Detected-province toast */
 .city-toast {
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 64px);
+  top: calc(env(safe-area-inset-top, 0px) + 58px);
   left: 50%;
+  pointer-events: none;
   transform: translateX(-50%);
   z-index: 60;
   display: flex;
@@ -1978,4 +1979,174 @@ body {
 @keyframes city-toast-in {
   from { opacity: 0; transform: translate(-50%, -8px); }
   to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ==========================================
+   Lezzet Arenası: three-way duel + kaydırak animations
+   ========================================== */
+.tournament-vs-container.triple {
+  gap: 10px;
+  margin: 14px 0;
+}
+.tournament-vs-container.triple .duel-card {
+  padding: 10px 12px;
+  gap: 12px;
+  border-radius: 16px;
+}
+.tournament-vs-container.triple .duel-card-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+}
+.tournament-vs-container.triple .tournament-vs-circle {
+  width: 34px;
+  height: 34px;
+  font-size: 12px;
+  border-width: 3px;
+  margin: -18px 0;
+}
+
+/* The card that wins a match slides down a slide curve and out */
+.duel-card.slide-picked {
+  pointer-events: none;
+  border-color: var(--emerald-green);
+  will-change: transform, opacity;
+  animation: duel-slide-out 0.6s cubic-bezier(0.55, 0, 0.75, 0.45) forwards;
+}
+.duel-card.slide-dropped {
+  pointer-events: none;
+  animation: duel-fade 0.35s ease-out forwards;
+}
+@keyframes duel-slide-out {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  25% { transform: translate(-6px, -10px) rotate(-3deg); opacity: 1; }
+  100% { transform: translate(120%, 140%) rotate(24deg) scale(0.7); opacity: 0; }
+}
+@keyframes duel-fade {
+  to { opacity: 0.25; transform: scale(0.96); }
+}
+
+/* Champion: full kaydırak overlay */
+.slide-celebration {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: radial-gradient(circle at 50% 40%, #24385A 0%, var(--navy) 60%, var(--navy-deep, #16233A) 100%);
+  animation: slide-overlay-in 0.25s ease-out;
+  cursor: pointer;
+}
+@keyframes slide-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.slide-stage {
+  position: relative;
+  width: 300px;
+  height: 400px;
+  max-width: 90vw;
+}
+.slide-svg {
+  position: absolute;
+  inset: 0;
+  width: 300px;
+  height: 400px;
+  overflow: visible;
+}
+.slide-ladder line {
+  stroke: #E9C46A;
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.slide-platform {
+  fill: #2A9D8F;
+}
+.slide-chute {
+  fill: none;
+  stroke: #E63946;
+  stroke-width: 30;
+  stroke-linecap: round;
+}
+.slide-chute-stripe {
+  fill: none;
+  stroke: #FF8A93;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 18 14;
+  opacity: 0.8;
+}
+.slide-ground {
+  fill: rgba(0, 0, 0, 0.25);
+}
+.slide-rider {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 78px;
+  height: 78px;
+  margin: -39px 0 0 -39px;
+  offset-path: path("M 92 52 C 180 62 150 232 262 312");
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+  will-change: offset-distance, transform;
+  animation: slide-ride 1.1s cubic-bezier(0.5, 0, 0.9, 0.6) 0.1s forwards, slide-land 0.35s ease-out 1.2s forwards;
+}
+.slide-rider img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 4px #2A9D8F, 0 10px 24px rgba(0, 0, 0, 0.35);
+  animation: slide-spin 1.1s linear 0.1s forwards;
+}
+@keyframes slide-ride {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+@keyframes slide-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(540deg); }
+}
+@keyframes slide-land {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-26px) scale(1.12); }
+  70% { transform: translateY(0) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
+}
+.slide-caption {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  padding: 0 24px;
+  opacity: 0;
+  animation: slide-caption-in 0.4s ease-out 1.1s forwards;
+}
+@keyframes slide-caption-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The champion photo "lands" on the winner screen */
+.winner-screen > .winner-image {
+  animation: winner-land 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes winner-land {
+  from { transform: translateY(-40px) scale(0.6); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duel-card.slide-picked,
+  .duel-card.slide-dropped,
+  .slide-rider,
+  .slide-rider img,
+  .winner-screen > .winner-image {
+    animation: none;
+  }
 }

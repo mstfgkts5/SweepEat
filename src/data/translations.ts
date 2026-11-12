@@ -85,6 +85,8 @@ export const translations = {
     tourRoundFinal: "FİNAL",
     tourHeader: "Lezzet Arenası (Düello)",
     tourSub: "Hangisini daha çok istiyorsun? Seç ve arenada ilerlet.",
+    tourSubTriple: "Üçlü düello! Üçünden birini seç, diğer ikisi elenir.",
+    tourRoundN: "{n}. Tur",
     tourCancel: "Arenayı Kapat",
 
     // Winner Screen
@@ -185,6 +187,8 @@ export const translations = {
     tourRoundFinal: "FINAL",
     tourHeader: "Flavor Arena (Duel)",
     tourSub: "Which one do you crave more? Select to advance in the arena.",
+    tourSubTriple: "Three-way duel! Pick one of the three; the other two are out.",
+    tourRoundN: "Round {n}",
     tourCancel: "Close Arena",
 
     // Winner Screen
