@@ -204,7 +204,29 @@ export const cityPlaces = (city: string): Place[] => {
     upsert(g.name, { address: g.address, district: g.district }, g.kinds, g.known);
   }
 
-  const places = [...byName.values()];
+  // The same shop is sometimes listed under a shorter and a longer name
+  // ("Zekeriya Usta" / "Katmerci Zekeriya Usta"): keep one, with everything known about both.
+  const all = [...byName.values()].sort((a, b) => a.order - b.order);
+  const places: Place[] = [];
+  for (const place of all) {
+    const key = norm(place.name);
+    const twin = places.find((p) => {
+      const other = norm(p.name);
+      const [short, long] = key.length <= other.length ? [key, other] : [other, key];
+      return short.split(" ").length >= 2 && ` ${long} `.includes(` ${short} `);
+    });
+    if (!twin) {
+      places.push(place);
+      continue;
+    }
+    twin.text += ` ${place.text}`;
+    for (const k of place.kinds) twin.kinds.add(k);
+    twin.curatedFor.push(...place.curatedFor);
+    if (twin.rating == null && place.rating != null) {
+      twin.rating = place.rating;
+      twin.reviews = place.reviews;
+    }
+  }
   placeCache.set(city, places);
   return places;
 };
@@ -233,7 +255,7 @@ const KEY_WORDS: Record<string, string[]> = {
   "ciger-sis": ["ciger"],
   "hamsi-tava": ["hamsi"],
   "hamsili-pilav": ["hamsi"],
-  "balik-ekmek": ["balik ekmek"],
+  "balik-ekmek": ["balik ekmek", "uskumru ekmek", "ekmek arasi sardalya"],
   "midye-dolma": ["midye"],
   "midye-tava": ["midye"],
   "kalamar-tava": ["kalamar"],
@@ -395,9 +417,11 @@ const tokensOf = (name: string): string[] =>
 
 const stem = (w: string): string => (w.length > 6 ? w.slice(0, w.length - 2) : w);
 
+// Words that name the dish: the hand-picked ones when there are, otherwise the
+// distinctive words of its names ("Fırında Mücver" -> "mucver").
 const dishKeywords = (q: DishQuery): string[] => {
   const words = new Set<string>(KEY_WORDS[q.key] ?? []);
-  for (const n of q.names) for (const t of tokensOf(n)) words.add(stem(t));
+  if (words.size === 0) for (const n of q.names) for (const t of tokensOf(n)) words.add(stem(t));
   return [...words].map(norm).filter((w) => w.length >= 3);
 };
 
