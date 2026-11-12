@@ -101,11 +101,12 @@ export default function App() {
     };
   }, []);
 
+  // The toast stays 3 s once the splash screen is gone.
   useEffect(() => {
-    if (!cityToast) return;
+    if (!cityToast || showSplash) return;
     const timer = setTimeout(() => setCityToast(null), 3000);
     return () => clearTimeout(timer);
-  }, [cityToast]);
+  }, [cityToast, showSplash]);
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
   // Splash Screen Timeout
