@@ -412,7 +412,8 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
         confetti({
           particleCount: 120,
           spread: 70,
-          origin: { y: 0.6 }
+          origin: { y: 0.6 },
+          colors: ["#2A9D8F", "#E9C46A", "#E63946", "#1D2D44"]
         });
 
         onFinish(champion);
