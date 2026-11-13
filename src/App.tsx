@@ -12,6 +12,7 @@ import type { Course } from "./data/allFood";
 import { recommend, rankTypes } from "./data/recommend";
 import { DISH_TYPE_LABELS } from "./data/dishTypes";
 import { loadRecentSelections, addRecentSelection } from "./data/selectionHistory";
+import { loadSavedCity, saveCity, detectProvince, DEFAULT_CITY } from "./data/location";
 import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
@@ -76,7 +77,36 @@ export default function App() {
   const [selectedInsightItem, setSelectedInsightItem] = useState<MenuItem | null>(null);
 
   // Geolocation & Location Search
-  const [userCity, setUserCity] = useState<string>("İstanbul");
+  // Starts from the last known province; replaced by the detected one when the app opens.
+  const [userCity, setUserCityState] = useState<string>(() => loadSavedCity() ?? DEFAULT_CITY);
+  const [cityToast, setCityToast] = useState<string | null>(null);
+  const setUserCity = (city: string) => {
+    setUserCityState(city);
+    saveCity(city);
+  };
+
+  // Detect the province on start; on failure (no permission, no signal) keep the saved one.
+  useEffect(() => {
+    let cancelled = false;
+    detectProvince().then((result) => {
+      if (cancelled || !result.ok) return;
+      setUserCityState((current) => {
+        if (current !== result.city) setCityToast(result.city);
+        return result.city;
+      });
+      saveCity(result.city);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // The toast stays 3 s once the splash screen is gone.
+  useEffect(() => {
+    if (!cityToast || showSplash) return;
+    const timer = setTimeout(() => setCityToast(null), 3000);
+    return () => clearTimeout(timer);
+  }, [cityToast, showSplash]);
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
   // Splash Screen Timeout
@@ -280,6 +310,13 @@ export default function App() {
               <User size={16} />
             </button>
           </header>
+        )}
+
+        {cityToast && !showSplash && (
+          <div className="city-toast" role="status">
+            <MapPin size={14} />
+            <span>{t.cityDetected.replace("{city}", cityToast)}</span>
+          </div>
         )}
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", width: '100%', height: '100%' }}>

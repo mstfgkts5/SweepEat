@@ -5,12 +5,13 @@ import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
 import type { ImpactStats } from "../data/sustainability";
-import { getVerifiedRestaurant, RATING_CHECKED_AT } from "../data/verifiedRestaurants";
-import { rankByRating, hasTrustedRating } from "../data/ranking";
-import { REAL_RESTAURANTS_DB, FIT_ISTANBUL_RESTAURANTS, FIT_ANKARA_RESTAURANTS, FIT_IZMIR_RESTAURANTS, FIT_MERSIN_RESTAURANTS, FIT_ESKISEHIR_RESTAURANTS, FIT_ADANA_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, CHEAT_GAZIANTEP_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS, VEGAN_ADANA_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS } from "../data/realRestaurants";
-import type { RestaurantCategory, RealRestaurant } from "../data/realRestaurants";
-import { EXTRA_CITY_RESTAURANTS, getExtraCityPlace } from "../data/extraCities";
-import { restaurantLookupName, filterByCourse } from "../data/allFood";
+import { RATING_CHECKED_AT } from "../data/verifiedRestaurants";
+import { generateTopRestaurants } from "../data/restaurantMatch";
+import { buildRound, roundKind, roundCount } from "../data/bracket";
+import SlideCelebration from "./SlideCelebration";
+import { prefersReducedMotion, PICK_SLIDE_MS } from "../data/motion";
+import { restaurantCityFor } from "../data/provinces";
+import { restaurantLookupNames, dishKeyOf, filterByCourse } from "../data/allFood";
 import type { Course } from "../data/allFood";
 import CourseToggle from "./CourseToggle";
 import Recommendations from "./Recommendations";
@@ -373,74 +374,85 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
-  // We need to establish a power of 2 bracket size (e.g. 4 or 8)
-  const size = likedPool.length >= 8 ? 8 : 4;
-  const initialItems = likedPool.slice(0, size);
-
-  // States
-  const [roundItems, setRoundItems] = useState<MenuItem[]>(initialItems);
+  // Every liked dish plays (see data/bracket.ts): pairs, plus one three-way duel when the count is odd.
+  const [roundItems, setRoundItems] = useState<MenuItem[]>(() => likedPool.slice());
   const [nextRoundWinners, setNextRoundWinners] = useState<MenuItem[]>([]);
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  // Kaydırak animation: the picked card slides away; the champion gets the full slide.
+  const [picked, setPicked] = useState<MenuItem | null>(null);
+  const [champion, setChampion] = useState<MenuItem | null>(null);
 
-  // Current pair
-  const itemA = roundItems[currentMatchIndex * 2];
-  const itemB = roundItems[currentMatchIndex * 2 + 1];
+  const matches = buildRound(roundItems);
+  const currentMatch = matches[currentMatchIndex] ?? [];
 
   const getRoundLabel = () => {
-    const totalMatchesInRound = roundItems.length / 2;
-    if (totalMatchesInRound === 4) return t.tourRoundQuarter;
-    if (totalMatchesInRound === 2) return t.tourRoundSemi;
-    return t.tourRoundFinal;
+    const kind = roundKind(matches.length);
+    if (kind === "final") return t.tourRoundFinal;
+    if (kind === "semi") return t.tourRoundSemi;
+    if (kind === "quarter") return t.tourRoundQuarter;
+    return t.tourRoundN.replace("{n}", String(roundCount(likedPool.length) - roundCount(roundItems.length) + 1));
   };
 
-  const handleSelectWinner = (winner: MenuItem) => {
+  const finishWithChampion = (winner: MenuItem) => {
+    confetti({
+      particleCount: 120,
+      spread: 70,
+      origin: { y: 0.45 },
+      colors: ["#2A9D8F", "#E9C46A", "#E63946", "#1D2D44"]
+    });
+    onFinish(winner);
+  };
+
+  const advance = (winner: MenuItem) => {
     const updatedWinners = [...nextRoundWinners, winner];
-    setNextRoundWinners(updatedWinners);
-
-    const totalMatchesInRound = roundItems.length / 2;
-    
-    if (currentMatchIndex + 1 < totalMatchesInRound) {
-      // Advance to next match of current round
+    if (currentMatchIndex + 1 < matches.length) {
+      setNextRoundWinners(updatedWinners);
       setCurrentMatchIndex((prev) => prev + 1);
+    } else if (updatedWinners.length === 1) {
+      // Champion decided: the full slide animation, then the winner screen.
+      if (prefersReducedMotion()) finishWithChampion(winner);
+      else setChampion(winner);
     } else {
-      // Round completed!
-      if (updatedWinners.length === 1) {
-        // Champion decided!
-        const champion = updatedWinners[0];
-        
-        // Trigger confetti
-        confetti({
-          particleCount: 120,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#2A9D8F", "#E9C46A", "#E63946", "#1D2D44"]
-        });
-
-        onFinish(champion);
-      } else {
-        // Start next round
-        setRoundItems(updatedWinners);
-        setNextRoundWinners([]);
-        setCurrentMatchIndex(0);
-      }
+      setRoundItems(updatedWinners);
+      setNextRoundWinners([]);
+      setCurrentMatchIndex(0);
     }
   };
 
-  if (!itemA || !itemB) return null;
+  const handleSelectWinner = (winner: MenuItem) => {
+    if (picked || champion) return; // no double picks while animating
+    const isFinalPick = currentMatchIndex + 1 >= matches.length && nextRoundWinners.length === 0;
+    if (prefersReducedMotion() || isFinalPick) {
+      advance(winner);
+      return;
+    }
+    setPicked(winner);
+    setTimeout(() => {
+      setPicked(null);
+      advance(winner);
+    }, PICK_SLIDE_MS);
+  };
 
-  // Carbon comparison for the current duel (only rendered when labels are on)
-  const carbonA = estimateCarbon(itemA);
-  const carbonB = estimateCarbon(itemB);
-  const renderDuelCarbon = (own: typeof carbonA, other: typeof carbonA) => {
+  if (champion) {
+    return <SlideCelebration item={champion} language={language} onLanded={() => finishWithChampion(champion)} />;
+  }
+
+  if (currentMatch.length < 2) return null;
+
+  // Carbon comparison (only rendered when labels are on): the lowest one gets the eco hint.
+  const carbons = currentMatch.map((item) => estimateCarbon(item));
+  const lowestKg = Math.min(...carbons.map((c) => c.kg));
+  const renderDuelCarbon = (own: (typeof carbons)[number]) => {
     if (!showCarbon) return null;
     return (
       <div className="duel-carbon-row">
         <span className="carbon-grade-chip" style={{ backgroundColor: CARBON_GRADE_COLORS[own.grade] }}>{own.grade}</span>
         <span>{own.kg} kg CO₂e</span>
-        {own.kg < other.kg && <span className="duel-eco-hint">🌱 {eco.duelEcoHint}</span>}
+        {own.kg === lowestKg && carbons.some((c) => c.kg > lowestKg) && <span className="duel-eco-hint">🌱 {eco.duelEcoHint}</span>}
       </div>
     );
   };
+  const isTriple = currentMatch.length === 3;
 
   return (
     <div className="tournament-screen">
@@ -448,30 +460,26 @@ export const TournamentScreen: React.FC<TournamentScreenProps> = ({
         <span className="tournament-round-badge">{getRoundLabel()}</span>
         <h2 className="tournament-heading">{t.tourHeader}</h2>
         <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-          {t.tourSub}
+          {isTriple ? t.tourSubTriple : t.tourSub}
         </span>
       </div>
 
-      <div className="tournament-vs-container">
-        {/* Item A */}
-        <div className="duel-card" onClick={() => handleSelectWinner(itemA)}>
-          <img src={itemA.imageUrl} alt={language === "tr" ? itemA.nameTr : itemA.nameEn} className="duel-card-img" />
-          <div className="duel-card-info">
-            <span className="duel-card-name">{language === "tr" ? itemA.nameTr : itemA.nameEn}</span>
-            {renderDuelCarbon(carbonA, carbonB)}
-          </div>
-        </div>
-
-        <div className="tournament-vs-circle">VS</div>
-
-        {/* Item B */}
-        <div className="duel-card" onClick={() => handleSelectWinner(itemB)}>
-          <img src={itemB.imageUrl} alt={language === "tr" ? itemB.nameTr : itemB.nameEn} className="duel-card-img" />
-          <div className="duel-card-info">
-            <span className="duel-card-name">{language === "tr" ? itemB.nameTr : itemB.nameEn}</span>
-            {renderDuelCarbon(carbonB, carbonA)}
-          </div>
-        </div>
+      <div className={`tournament-vs-container ${isTriple ? "triple" : ""}`} key={`${roundItems.length}-${currentMatchIndex}`}>
+        {currentMatch.map((item, i) => (
+          <React.Fragment key={item.id}>
+            {i > 0 && <div className="tournament-vs-circle">VS</div>}
+            <div
+              className={`duel-card ${picked ? (picked.id === item.id ? "slide-picked" : "slide-dropped") : ""}`}
+              onClick={() => handleSelectWinner(item)}
+            >
+              <img src={item.imageUrl} alt={language === "tr" ? item.nameTr : item.nameEn} className="duel-card-img" />
+              <div className="duel-card-info">
+                <span className="duel-card-name">{language === "tr" ? item.nameTr : item.nameEn}</span>
+                {renderDuelCarbon(carbons[i])}
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       <button className="secondary-btn" onClick={onCancel} style={{ width: "100%", padding: "10px 0" }}>
@@ -496,206 +504,6 @@ interface WinnerScreenProps {
   onRescue?: (item: MenuItem) => void;
 }
 
-interface MockRestaurant {
-  id: string;
-  name: string;
-  rating: number | null; // Google rating checked by hand; null = not checked
-  reviewCount: number | null;
-  area: string;
-  comment: string;
-  isFoodAvailable: boolean;
-  address?: string;
-  mapsUri?: string;
-}
-
-const getCategoryFromFoodName = (foodNameTr: string): RestaurantCategory => {
-  const nameLower = foodNameTr.toLowerCase();
-  if (nameLower.includes("burger")) return "burger";
-  if (
-    nameLower.includes("kebap") ||
-    nameLower.includes("tandır") ||
-    nameLower.includes("köfte") ||
-    nameLower.includes("et ") ||
-    nameLower.includes("döner") ||
-    nameLower.includes("saray")
-  ) return "kebab";
-  if (
-    nameLower.includes("salata") ||
-    nameLower.includes("kinoa") ||
-    nameLower.includes("avokado") ||
-    nameLower.includes("bowl") ||
-    nameLower.includes("vegan") ||
-    nameLower.includes("sebze") ||
-    nameLower.includes("acai")
-  ) return "vegan";
-  if (nameLower.includes("çorba")) return "soup";
-  if (
-    nameLower.includes("makarna") ||
-    nameLower.includes("pasta") ||
-    nameLower.includes("lazanya") ||
-    nameLower.includes("pizza")
-  ) return "pasta";
-  if (
-    nameLower.includes("tatlı") ||
-    nameLower.includes("waffle") ||
-    nameLower.includes("pancake") ||
-    nameLower.includes("dondurma") ||
-    nameLower.includes("cheesecake")
-  ) return "dessert";
-  return "general";
-};
-
-const isFoodAvailableInRestaurant = (
-  foodNameTr: string,
-  foodNameEn: string,
-  rest: RealRestaurant
-): boolean => {
-  const cleanText = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  };
-
-  const restName = cleanText(rest.name);
-  const commentTr = cleanText(rest.commentTr);
-  const commentEn = cleanText(rest.commentEn);
-
-  const getKeywords = (tr: string, _en: string) => {
-    const trLower = tr.toLowerCase();
-    if (trLower.includes("adana kebap")) return ["adana", "kebap"];
-    if (trLower.includes("iskender")) return ["iskender", "döner", "doner"];
-    if (trLower.includes("lahmacun")) return ["lahmacun"];
-    if (trLower.includes("burger") || trLower.includes("hamburger")) return ["burger", "hamburger"];
-    if (trLower.includes("pizza")) return ["pizza"];
-    if (trLower.includes("makarna") || trLower.includes("fettuccine") || trLower.includes("lazanya")) return ["makarna", "pasta", "fettuccine", "lazanya"];
-    if (trLower.includes("salata") || trLower.includes("kinoa")) return ["salata", "kase", "bowl", "salad"];
-    if (trLower.includes("çorba")) return ["çorba", "corba", "beyran", "paça", "paca", "işkembe"];
-    if (trLower.includes("somon") || trLower.includes("karides") || trLower.includes("balık")) return ["balık", "somon", "karides", "deniz", "fish", "shrimp", "seafood"];
-    if (trLower.includes("tatlı") || trLower.includes("cheesecake") || trLower.includes("künefe") || trLower.includes("baklava") || trLower.includes("dondurma") || trLower.includes("mus") || trLower.includes("kerebiç")) {
-      return ["tatlı", "baklava", "künefe", "kunefe", "dondurma", "cheesecake", "pastane", "mus", "mousse", "kerebiç", "şambali", "helva"];
-    }
-    if (trLower.includes("tavuk")) return ["tavuk", "chicken", "kanat", "wings"];
-    if (trLower.includes("humus") || trLower.includes("falafel")) return ["humus", "falafel"];
-    if (trLower.includes("sarma") || trLower.includes("dolma")) return ["sarma", "dolma", "yaprak"];
-    if (trLower.includes("imam bayıldı") || trLower.includes("barbunya") || trLower.includes("sote") || trLower.includes("tencere") || trLower.includes("ev yemeği")) {
-      return ["imam bayıldı", "barbunya", "pilaki", "ev yemeği", "tencere", "sote", "tandır"];
-    }
-    return trLower.split(" ");
-  };
-
-  const keywords = getKeywords(foodNameTr, foodNameEn);
-  
-  return keywords.some(keyword => {
-    const kw = cleanText(keyword);
-    if (kw.length <= 2) return false;
-    return (
-      restName.includes(kw) ||
-      commentTr.includes(kw) ||
-      commentEn.includes(kw)
-    );
-  });
-};
-
-const normalizeTurkish = (str: string): string => {
-  if (!str) return "";
-  return str
-    .toLowerCase()
-    .replace(/i̇/g, "i")
-    .replace(/ı/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c")
-    .trim();
-};
-
-const findCuratedRestaurants = (foodNameTr: string, city: string): RealRestaurant[] | null => {
-  const normCity = normalizeTurkish(city);
-  let dbList: Record<string, RealRestaurant[]>[] = [];
-  if (normCity === "istanbul" || normCity === "istanbul ili") {
-    dbList = [FIT_ISTANBUL_RESTAURANTS, CHEAT_ISTANBUL_RESTAURANTS, ECONOMIC_ISTANBUL_RESTAURANTS, GOURMET_ISTANBUL_RESTAURANTS, VEGAN_ISTANBUL_RESTAURANTS];
-  } else if (normCity === "ankara" || normCity === "ankara ili") {
-    dbList = [FIT_ANKARA_RESTAURANTS, CHEAT_ANKARA_RESTAURANTS, ECONOMIC_ANKARA_RESTAURANTS, GOURMET_ANKARA_RESTAURANTS, VEGAN_ANKARA_RESTAURANTS];
-  } else if (normCity === "izmir" || normCity === "izmir ili") {
-    dbList = [FIT_IZMIR_RESTAURANTS, CHEAT_IZMIR_RESTAURANTS, ECONOMIC_IZMIR_RESTAURANTS, GOURMET_IZMIR_RESTAURANTS, VEGAN_IZMIR_RESTAURANTS];
-  } else if (normCity === "mersin" || normCity === "mersin ili") {
-    dbList = [FIT_MERSIN_RESTAURANTS, CHEAT_MERSIN_RESTAURANTS, ECONOMIC_MERSIN_RESTAURANTS, GOURMET_MERSIN_RESTAURANTS, VEGAN_MERSIN_RESTAURANTS];
-  } else if (normCity === "gaziantep" || normCity === "gaziantep ili") {
-    dbList = [CHEAT_GAZIANTEP_RESTAURANTS, ECONOMIC_GAZIANTEP_RESTAURANTS, GOURMET_GAZIANTEP_RESTAURANTS, VEGAN_GAZIANTEP_RESTAURANTS];
-  } else if (normCity === "eskisehir" || normCity === "eskisehir ili") {
-    dbList = [FIT_ESKISEHIR_RESTAURANTS, CHEAT_ESKISEHIR_RESTAURANTS, ECONOMIC_ESKISEHIR_RESTAURANTS, GOURMET_ESKISEHIR_RESTAURANTS, VEGAN_ESKISEHIR_RESTAURANTS];
-  } else if (normCity === "adana" || normCity === "adana ili") {
-    dbList = [FIT_ADANA_RESTAURANTS, CHEAT_ADANA_RESTAURANTS, ECONOMIC_ADANA_RESTAURANTS, GOURMET_ADANA_RESTAURANTS, VEGAN_ADANA_RESTAURANTS];
-  }
-
-  if (dbList.length === 0) return null;
-
-  const cleanName = foodNameTr.toLowerCase().trim();
-  for (const db of dbList) {
-    for (const key of Object.keys(db)) {
-      const cleanKey = key.toLowerCase().trim();
-      if (cleanName.includes(cleanKey) || cleanKey.includes(cleanName)) {
-        return db[key];
-      }
-    }
-  }
-  return null;
-};
-
-// Only restaurants that really exist (found on OpenStreetMap) are shown, with
-// their real address. Stars appear only where the Google rating was checked by hand.
-const toVerifiedList = (pool: RealRestaurant[], city: string, language: "tr" | "en"): MockRestaurant[] => {
-  const seen = new Set<string>();
-  const verified = pool
-    .filter((rest) => (seen.has(rest.name) ? false : (seen.add(rest.name), true)))
-    // Diyarbakır / Kahramanmaraş come from extraCities.ts (address from published guides, no rating)
-    .map((rest) => ({ rest, v: getVerifiedRestaurant(city, rest.name) ?? getExtraCityPlace(city, rest.name) }))
-    .filter((x): x is { rest: RealRestaurant; v: NonNullable<typeof x.v> } => x.v !== null);
-
-  // Trusted ratings first, best Bayesian score (rating weighed by review count) first;
-  // the rest keep list order. See src/data/ranking.ts.
-  const ranked = rankByRating(verified, (x) => ({ rating: x.v.rating, reviews: x.v.reviews }));
-
-  return ranked.slice(0, 3).map(({ rest, v }, index) => ({
-    id: `${index + 1}`,
-    // "(Karaköy)" / "(Meze Reyonu)" hints come from the old list and can contradict the real address.
-    name: rest.name.split("(")[0].trim(),
-    // Stars only when enough reviews back them up
-    rating: hasTrustedRating(v.rating, v.reviews) ? (v.rating as number) : null,
-    reviewCount: hasTrustedRating(v.rating, v.reviews) ? (v.reviews as number) : null,
-    area: v.district || rest.area,
-    address: v.address,
-    mapsUri: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rest.name.split("(")[0].trim()} ${v.address || v.district} ${city}`)}`,
-    comment: language === "tr" ? rest.commentTr : rest.commentEn,
-    isFoodAvailable: true
-  }));
-};
-
-const generateTopRestaurants = (
-  foodNameTr: string,
-  foodNameEn: string,
-  city: string,
-  language: "tr" | "en"
-): MockRestaurant[] => {
-  const normCity = normalizeTurkish(city);
-  const curated = findCuratedRestaurants(foodNameTr, city) || [];
-  const fromCurated = toVerifiedList(curated, city, language);
-  if (fromCurated.length >= 3) return fromCurated;
-
-  // Top up from the city's general list (same food category) if the dish list had too few real places.
-  const cityDb = { ...REAL_RESTAURANTS_DB, ...EXTRA_CITY_RESTAURANTS };
-  const matchedCityKey = Object.keys(cityDb).find((key) => normalizeTurkish(key) === normCity);
-  if (!matchedCityKey) return fromCurated;
-  const cityData = cityDb[matchedCityKey];
-  const category = getCategoryFromFoodName(foodNameTr);
-  // Only places known to serve this dish; never pad the list with unrelated restaurants.
-  const preferred = (cityData[category] || []).filter((rest) => isFoodAvailableInRestaurant(foodNameTr, foodNameEn, rest));
-  return toVerifiedList([...curated, ...preferred], city, language);
-};
-
 export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   champion,
   commentary,
@@ -717,10 +525,17 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   // Local data only: no network, no API key.
   const restaurants = useMemo(
     // Look up with the dish's original name: the curated restaurant lists are keyed by it.
-    () => generateTopRestaurants(restaurantLookupName(champion), champion.nameEn, userCity, language),
+    () =>
+      generateTopRestaurants(
+        { key: dishKeyOf(champion), names: restaurantLookupNames(champion), nameEn: champion.nameEn, dishType: champion.dishType, category: champion.category },
+        userCity,
+        language
+      ),
     [champion, userCity, language]
   );
   const isLoadingRestaurants = false;
+  // Provinces without restaurant data use the nearest city that has it.
+  const restaurantCity = restaurantCityFor(userCity);
 
   const handleOrder = () => {
     const name = language === "tr" ? champion.nameTr : champion.nameEn;
@@ -755,7 +570,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           onClick={() => setActiveTabSection("restaurants")}
         >
           <Trophy size={13} />
-          <span>{t.winnerTabRestaurants} ({userCity})</span>
+          <span>{t.winnerTabRestaurants} ({restaurantCityFor(userCity)})</span>
         </button>
       </div>
 
@@ -839,16 +654,30 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             </div>
           ) : (
             <>
+            {restaurantCity !== userCity && (
+              <span className="restaurant-source-note restaurant-city-note">
+                {language === "tr"
+                  ? `${userCity} için henüz restoran verimiz yok; en yakın şehir ${restaurantCity} gösteriliyor.`
+                  : `No restaurant data for ${userCity} yet; showing the nearest city, ${restaurantCity}.`}
+              </span>
+            )}
             <span className="restaurant-source-note">
               {language === "tr"
-                ? `Adresler OpenStreetMap'ten doğrulandı. Yıldızlar: Google puanı, ${RATING_CHECKED_AT} elle kontrol.`
-                : `Addresses verified on OpenStreetMap. Stars: Google rating, checked by hand ${RATING_CHECKED_AT}.`}
+                ? `Gerçek mekanlar: adresler OpenStreetMap ve yayımlanmış şehir rehberlerinden. Yıldızlar: Google puanı, ${RATING_CHECKED_AT} elle kontrol.`
+                : `Real places: addresses from OpenStreetMap and published city guides. Stars: Google rating, checked by hand ${RATING_CHECKED_AT}.`}
             </span>
             {restaurants.map((rest, idx) => (
               <div key={rest.id} className="winner-restaurant-card">
                 <div className="restaurant-rank-badge">#{idx + 1}</div>
                 <div className="restaurant-info-box">
                   <span className="restaurant-name-text">{rest.name}</span>
+                  <span className={`restaurant-match-chip ${rest.match}`}>
+                    {rest.match === "dish"
+                      ? language === "tr" ? "Bu yemekle bilinir" : "Known for this dish"
+                      : rest.match === "kind"
+                        ? language === "tr" ? "Benzer mutfak" : "Similar cuisine"
+                        : language === "tr" ? "Genel öneri" : "General pick"}
+                  </span>
                   <div className="restaurant-meta-detail">
                     {rest.area && <span>{rest.area}</span>}
                     {rest.area && rest.rating !== null && <span>•</span>}
@@ -879,7 +708,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                 <button
                   className="restaurant-maps-btn"
                   onClick={() => {
-                    const query = encodeURIComponent(`${rest.name} ${rest.area} ${userCity}`);
+                    const query = encodeURIComponent(`${rest.name} ${rest.area} ${restaurantCity}`);
                     const url = rest.mapsUri || `https://www.google.com/maps/search/?api=1&query=${query}`;
                     window.open(url, "_blank");
                   }}

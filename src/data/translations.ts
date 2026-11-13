@@ -76,6 +76,7 @@ export const translations = {
     locationModalSub: "Yemeklerin ve restoranların Türkiye genelinde senin ilinde aranması için konumunu belirle.",
     locationModalAuto: "Konumumu Otomatik Bul",
     locationModalLoading: "Konum bulunuyor...",
+    cityDetected: "Konumun: {city}. Yemekler buradan başlıyor.",
     locationSearchPlaceholder: "İl ara...",
 
     // Tournament / Duello Screen
@@ -84,6 +85,8 @@ export const translations = {
     tourRoundFinal: "FİNAL",
     tourHeader: "Lezzet Arenası (Düello)",
     tourSub: "Hangisini daha çok istiyorsun? Seç ve arenada ilerlet.",
+    tourSubTriple: "Üçlü düello! Üçünden birini seç, diğer ikisi elenir.",
+    tourRoundN: "{n}. Tur",
     tourCancel: "Arenayı Kapat",
 
     // Winner Screen
@@ -94,7 +97,7 @@ export const translations = {
     winnerOrderBtn: "Sipariş Ver",
     winnerReturnBtn: "Keşfetmeye Geri Dön",
     winnerTabCommentary: "Hakem Yorumu",
-    winnerTabRestaurants: "En İyi 3 Restoran",
+    winnerTabRestaurants: "En İyi 5 Restoran",
     winnerNoRestaurants: "Bu ilde uygun mekan bulunamadı.",
     winnerGoogleMapBtn: "Haritada Aç"
   },
@@ -175,6 +178,7 @@ export const translations = {
     locationModalSub: "Set your city to search for dishes and restaurants within Turkey in your current area.",
     locationModalAuto: "Detect Location Automatically",
     locationModalLoading: "Locating...",
+    cityDetected: "You are in {city}. Dishes start from here.",
     locationSearchPlaceholder: "Search city...",
 
     // Tournament / Duello Screen
@@ -183,6 +187,8 @@ export const translations = {
     tourRoundFinal: "FINAL",
     tourHeader: "Flavor Arena (Duel)",
     tourSub: "Which one do you crave more? Select to advance in the arena.",
+    tourSubTriple: "Three-way duel! Pick one of the three; the other two are out.",
+    tourRoundN: "Round {n}",
     tourCancel: "Close Arena",
 
     // Winner Screen
@@ -193,7 +199,7 @@ export const translations = {
     winnerOrderBtn: "Order Now",
     winnerReturnBtn: "Return to Exploring",
     winnerTabCommentary: "Referee Review",
-    winnerTabRestaurants: "Top 3 Restaurants",
+    winnerTabRestaurants: "Top 5 Restaurants",
     winnerNoRestaurants: "No suitable places found in this city.",
     winnerGoogleMapBtn: "Open in Maps"
   }
