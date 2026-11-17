@@ -63,7 +63,10 @@ export const allFoodItems: MenuItem[] = [...byKey.entries()]
     const merged = { ...item, ...NAME_OVERRIDES[key], imageUrl, modes };
     return { ...merged, dishType: dishTypeFor(key, merged.category, merged.isVegan) };
   })
-  .filter((item) => item.modes.length > 0 && hasPhoto(item));
+  .filter((item) => item.modes.length > 0 && hasPhoto(item))
+  // Relative photo paths, so the app also works when served from a sub-folder
+  // (e.g. GitHub Pages: mstfgkts5.github.io/SweepEat/), not only from the site root.
+  .map((item) => (item.imageUrl.startsWith("/images/") ? { ...item, imageUrl: item.imageUrl.slice(1) } : item));
 
 // Order a list of dishes by how preferred they are in the given mode.
 // Zero Waste has no list of its own; its order is left as is.
