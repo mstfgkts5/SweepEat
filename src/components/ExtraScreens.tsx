@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout } from "lucide-react";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight } from "lucide-react";
 import type { MenuItem, Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
@@ -131,6 +131,7 @@ interface ProfileScreenProps {
   showCarbonLabels?: boolean;
   setShowCarbonLabels?: (value: boolean) => void;
   impact?: ImpactStats;
+  onShowGuide?: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
@@ -140,7 +141,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   setLanguage,
   showCarbonLabels = false,
   setShowCarbonLabels,
-  impact = EMPTY_IMPACT
+  impact = EMPTY_IMPACT,
+  onShowGuide
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -342,12 +344,23 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
+      {onShowGuide && (
+        <button className="setting-card guide-link" onClick={onShowGuide}>
+          <span className="setting-info">
+            <span className="setting-icon" style={{ color: "var(--emerald-green)", backgroundColor: "var(--emerald-green-light)" }}>
+              <BookOpen size={18} />
+            </span>
+            <span className="setting-title">{language === "tr" ? "Kullanım rehberini göster" : "Show the how-to guide"}</span>
+          </span>
+          <ChevronRight size={18} color="var(--text-light)" />
+        </button>
+      )}
 
       <span className="section-label">{t.profileAppInfoLabel}</span>
       <div className="setting-card" style={{ gap: "16px" }}>
         <div className="setting-row" style={{ borderBottom: "none" }}>
           <span className="setting-title" style={{ fontWeight: 500 }}>{t.profileVersionLabel}</span>
-          <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>v1.0.0 (Web)</span>
+          <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>v1.2.1</span>
         </div>
       </div>
     </div>
