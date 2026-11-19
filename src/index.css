@@ -1351,7 +1351,9 @@ body {
 /* Winner Tab Bar */
 .winner-tabs-container {
   display: flex;
-  background-color: #f3f4f6;
+  /* logo orange, light: the tab row stands out from the confetti background */
+  background-color: #FDE3C8;
+  border: 1px solid #F7C38F;
   padding: 4px;
   border-radius: 14px;
   width: 100%;
@@ -1366,7 +1368,7 @@ body {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #6B3A0C;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
@@ -1376,10 +1378,11 @@ body {
   transition: all 0.2s ease;
 }
 
+/* Selected tab: the logo's orange gradient with navy text (high contrast) */
 .winner-tab-btn.active {
-  background-color: var(--card-white);
-  color: var(--navy);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #F07A2C 0%, #FDB443 100%);
+  color: #1D2D44;
+  box-shadow: 0 4px 12px rgba(240, 122, 44, 0.35);
 }
 
 /* Winner Scrollable Restaurant List */
