@@ -4,4 +4,6 @@
     <string name="title_activity_main">Kaydırak</string>
     <string name="package_name">com.mustafagoktas.sweepeat</string>
     <string name="custom_url_scheme">com.mustafagoktas.sweepeat</string>
+    <!-- AdMob application ID (ca-app-pub-XXXX~YYYY). This is Google's test ID: replace it with Kaydırak's real ID from AdMob before release. -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
 </resources>

@@ -360,7 +360,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       <div className="setting-card" style={{ gap: "16px" }}>
         <div className="setting-row" style={{ borderBottom: "none" }}>
           <span className="setting-title" style={{ fontWeight: 500 }}>{t.profileVersionLabel}</span>
-          <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>v1.2.1</span>
+          <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>v1.3.0</span>
         </div>
       </div>
     </div>

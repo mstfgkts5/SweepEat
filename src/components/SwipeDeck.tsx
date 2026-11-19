@@ -3,6 +3,12 @@ import { X, Heart, Sparkles, Star } from "lucide-react";
 import type { MenuItem } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
+import { adDue, adsSupported } from "../ads/ads";
+import AdCard from "./AdCard";
+
+// Dishes swiped since the last ad card. Kept outside the component so switching tabs
+// (which unmounts the deck) does not reset it.
+let swipesSinceAdStore = 0;
 
 // Typical price band for a dish (prices differ by restaurant): about -10% / +20%, rounded to 10 TL.
 const round10 = (n: number) => Math.max(10, Math.round(n / 10) * 10);
@@ -19,6 +25,8 @@ interface SwipeDeckProps {
   language: "tr" | "en";
   showCarbon?: boolean;
   zeroWaste?: boolean;
+  // Something covers the deck (dish detail, guide): a native ad must hide meanwhile.
+  adsPaused?: boolean;
 }
 
 export const SwipeDeck: React.FC<SwipeDeckProps> = ({
@@ -27,7 +35,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   onOpenInsight,
   language,
   showCarbon = false,
-  zeroWaste = false
+  zeroWaste = false,
+  adsPaused = false
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -35,6 +44,12 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [swipeOutcome, setSwipeOutcome] = useState<"left" | "right" | null>(null);
+  const [swipesSinceAd, setSwipesSinceAdState] = useState(swipesSinceAdStore);
+  const [adSerial, setAdSerial] = useState(0);
+  const setSwipesSinceAd = (n: number) => {
+    swipesSinceAdStore = n;
+    setSwipesSinceAdState(n);
+  };
 
   const startPos = useRef({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
@@ -87,6 +102,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     setTimeout(() => {
       onSwipe(activeItem, direction);
       setCurrentIndex((prev) => prev + 1);
+      setSwipesSinceAd(swipesSinceAdStore + 1);
       setDragOffset({ x: 0, y: 0 });
       setSwipeOutcome(null);
     }, 300);
@@ -134,6 +150,21 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       window.removeEventListener("touchend", handleGlobalTouchEnd);
     };
   }, [isDragging, dragOffset]);
+
+  // Every few dishes an ad card comes before the next dish (Android/iOS app only, never on the web).
+  if (activeItem && adsSupported() && adDue(swipesSinceAd)) {
+    return (
+      <AdCard
+        slotKey={`swipe-ad-${adSerial}`}
+        language={language}
+        paused={adsPaused}
+        onDone={() => {
+          setSwipesSinceAd(0);
+          setAdSerial((n) => n + 1);
+        }}
+      />
+    );
+  }
 
   if (!activeItem) {
     return (
