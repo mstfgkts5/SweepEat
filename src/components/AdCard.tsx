@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Crown } from "lucide-react";
 import { AD_FEED_ID, nativeAdUnitId, prepareAds } from "../ads/ads";
 
 interface AdCardProps {
@@ -20,6 +20,7 @@ const AdCard: React.FC<AdCardProps> = ({ slotKey, language, paused, onDone }) =>
   const slotRef = useRef<HTMLDivElement>(null);
   const feedRef = useRef<import("@capacitor-community/admob").NativeAdFeed | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [plusTapped, setPlusTapped] = useState(false);
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
 
@@ -100,7 +101,14 @@ const AdCard: React.FC<AdCardProps> = ({ slotKey, language, paused, onDone }) =>
         <div className="food-card ad-card">
           <div className="ad-card-head">
             <span className="ad-card-label">{tr ? "Reklam" : "Ad"}</span>
-            <span className="ad-card-note">{tr ? "Kaydırak'ı ücretsiz tutan reklam" : "This ad keeps Kaydırak free"}</span>
+            {/* Kaydırak Plus (ad-free) is not on sale yet: the link says "coming soon" in place,
+                no popup, because a popup would sit under Google's ad view. */}
+            <button className="ad-card-plus" onClick={() => setPlusTapped(true)} aria-live="polite">
+              <Crown size={14} />
+              {plusTapped
+                ? (tr ? "Kaydırak Plus çok yakında!" : "Kaydırak Plus is coming soon!")
+                : (tr ? "Reklamsız deneyim için Kaydırak Plus" : "Go ad-free with Kaydırak Plus")}
+            </button>
           </div>
           {/* The plugin draws Google's ad over this box. */}
           <div ref={slotRef} className="ad-card-slot">
