@@ -555,6 +555,8 @@ interface WinnerScreenProps {
   averageCarbon?: number;
   zeroWaste?: boolean;
   onRescue?: (item: MenuItem) => void;
+  // Heading over the dish (default: arena champion).
+  label?: string;
 }
 
 export const WinnerScreen: React.FC<WinnerScreenProps> = ({
@@ -566,7 +568,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   showCarbon = false,
   averageCarbon = 0,
   zeroWaste = false,
-  onRescue
+  onRescue,
+  label
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -604,7 +607,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
       <div className="winner-crown">
         <Award size={36} />
       </div>
-      <span className="winner-subtitle">{t.winnerLabel}</span>
+      <span className="winner-subtitle">{label ?? t.winnerLabel}</span>
       <h2 className="winner-title">{language === "tr" ? champion.nameTr : champion.nameEn}</h2>
 
       <img src={champion.imageUrl} alt={language === "tr" ? champion.nameTr : champion.nameEn} className="winner-image" />

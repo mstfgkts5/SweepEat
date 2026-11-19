@@ -12,8 +12,14 @@ interface PlusSheetProps {
 const TEXT = {
   tr: {
     title: "Kaydırak Plus",
-    lead: "Yemekleri reklamsız kaydır.",
-    perks: ["Kaydırma ekranında reklam kartı yok", "Kaydırak'ın geliştirilmesine destek olursun"],
+    lead: "Daha rahat seç, arkadaşlarınla birlikte karar ver.",
+    perks: [
+      "Reklam kartı yok: yemekleri reklamsız kaydır",
+      "Geri al: yanlışlıkla kaydırdığın yemeği geri getir",
+      "Grup Masası: masayı sen aç, arkadaşların kendi telefonlarından ücretsiz katılsın, ortak favoriyi birlikte bulun",
+      "Fiyat etiketleri: her yemekte fiyat aralığını gör",
+      "Kaydırak'ın geliştirilmesine destek olursun"
+    ],
     monthly: "Aylık",
     yearly: "Yıllık",
     perMonth: "/ ay",
@@ -31,8 +37,14 @@ const TEXT = {
   },
   en: {
     title: "Kaydırak Plus",
-    lead: "Swipe dishes with no ads.",
-    perks: ["No ad cards while swiping", "You support Kaydırak's development"],
+    lead: "Choose more easily and decide together with friends.",
+    perks: [
+      "No ad cards: swipe dishes without ads",
+      "Undo: bring back a dish you swiped by mistake",
+      "Group Table: you open the table, friends join free from their own phones, and you find the shared favourite",
+      "Price tags: see the price range of every dish",
+      "You support Kaydırak's development"
+    ],
     monthly: "Monthly",
     yearly: "Yearly",
     perMonth: "/ month",
@@ -94,7 +106,7 @@ const PlusSheet: React.FC<PlusSheetProps> = ({ language, isPlus, onPlusChange, o
 
   return (
     <>
-      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div className="bottom-sheet-backdrop plus-backdrop" onClick={onClose} />
       <div className="bottom-sheet plus-sheet" role="dialog" aria-modal="true" aria-label={t.title}>
         <div className="bottom-sheet-handle" onClick={onClose} />
         <div className="bottom-sheet-header">

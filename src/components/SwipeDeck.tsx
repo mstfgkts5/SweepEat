@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Heart, Sparkles, Star } from "lucide-react";
+import { X, Heart, Sparkles, Star, RotateCcw, Lock } from "lucide-react";
 import type { MenuItem } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
@@ -30,6 +30,13 @@ interface SwipeDeckProps {
   // false for Kaydırak Plus members: no ad cards.
   adsEnabled?: boolean;
   onOpenPlus?: () => void;
+  // Kaydırak Plus: price ranges and undo. Others see a lock that opens the Plus sheet.
+  isPlus?: boolean;
+  // Undo the last swipe (the button only shows when this is given).
+  onUndo?: () => void;
+  canUndo?: boolean;
+  // false hides the "Yapay Zeka Analizi" button (Grup Masası).
+  showInsight?: boolean;
 }
 
 export const SwipeDeck: React.FC<SwipeDeckProps> = ({
@@ -41,7 +48,11 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   zeroWaste = false,
   adsPaused = false,
   adsEnabled = true,
-  onOpenPlus = () => undefined
+  onOpenPlus = () => undefined,
+  isPlus = false,
+  onUndo,
+  canUndo = false,
+  showInsight = true
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -276,7 +287,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
             )}
 
             {/* AI Insight Button (Center-Bottom of the Image) */}
-            <div
+            {showInsight && <div
               className="ai-insight-btn-wrapper"
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -286,7 +297,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <Sparkles size={13} />
                 {t.swipeAiInsight}
               </button>
-            </div>
+            </div>}
           </div>
 
           {/* Details (white area under the photo) */}
@@ -300,7 +311,19 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <span className="card-review-count">({activeItem.reviewCount})</span>
               </div>
               <span className="card-meta-dot">•</span>
-              <span className="card-price-range">{priceRange(activeItem.price)}</span>
+              {isPlus ? (
+                <span className="card-price-range">{priceRange(activeItem.price)}</span>
+              ) : (
+                <button
+                  className="price-lock"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onClick={onOpenPlus}
+                  aria-label={language === "tr" ? "Fiyat aralığı Kaydırak Plus ile" : "Price range with Kaydırak Plus"}
+                >
+                  <Lock size={11} /> ₺ Plus
+                </button>
+              )}
               {showCarbon && (() => {
                 const c = estimateCarbon(activeItem);
                 return (
@@ -349,10 +372,25 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
       {/* Swipe Control Buttons */}
       <div className="swipe-controls">
-        <button className="control-btn dislike" onClick={() => triggerSwipe("left")}>
+        <button className="control-btn dislike" onClick={() => triggerSwipe("left")} aria-label={language === "tr" ? "Geç" : "Skip"}>
           <X size={24} strokeWidth={3} />
         </button>
-        <button className="control-btn like" onClick={() => triggerSwipe("right")}>
+        {onUndo && (
+          <button
+            className={`control-btn undo ${isPlus && !canUndo ? "idle" : ""}`}
+            onClick={() => {
+              if (!isPlus) return onOpenPlus();
+              if (!canUndo) return;
+              setSwipesSinceAd(Math.max(0, swipesSinceAdStore - 1));
+              onUndo();
+            }}
+            aria-label={language === "tr" ? "Son kaydırmayı geri al" : "Undo last swipe"}
+          >
+            <RotateCcw size={20} strokeWidth={2.6} />
+            {!isPlus && <span className="undo-lock"><Lock size={10} /></span>}
+          </button>
+        )}
+        <button className="control-btn like" onClick={() => triggerSwipe("right")} aria-label={language === "tr" ? "Beğen" : "Like"}>
           <Heart size={24} strokeWidth={3} fill="white" />
         </button>
       </div>

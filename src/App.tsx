@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { Compass, Heart, User, MapPin, Sparkles } from "lucide-react";
+import { Compass, Heart, User, MapPin, Sparkles, Users } from "lucide-react";
 import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
@@ -23,6 +23,7 @@ import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
 import { checkPlus, loadSavedPlus } from "./plus/plus";
 import PlusSheet from "./components/PlusSheet";
+import GroupScreen from "./components/GroupScreen";
 import AuthScreen, { type AuthMode } from "./components/AuthScreen";
 import {
   supabase,
@@ -52,7 +53,7 @@ export default function App() {
   };
   const [activeTab, setActiveTab] = useState<TabType>("explore");
   const [isTournamentActive, setIsTournamentActive] = useState(false);
-  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string } | null>(null);
+  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string; label?: string } | null>(null);
 
   // Localization
   const [language, setLanguage] = useState<"tr" | "en">("tr");
@@ -275,8 +276,12 @@ export default function App() {
     setStatusBarStyle();
   }, []);
 
+  // Last swipes, newest last, for "geri al" (Kaydırak Plus).
+  const [swipeHistory, setSwipeHistory] = useState<{ item: MenuItem; direction: "left" | "right" }[]>([]);
+
   const handleSwipe = (item: MenuItem, direction: "left" | "right") => {
     setSwipedIds((prev) => [...prev, item.id]);
+    setSwipeHistory((prev) => [...prev.slice(-19), { item, direction }]);
 
     if (direction === "right") {
       rememberSelection(item);
@@ -287,6 +292,31 @@ export default function App() {
     }
   };
 
+  // Undo the last swipe: the dish comes back to the top of the deck and, if it was liked,
+  // leaves the liked list and the recent picks again.
+  const handleUndoSwipe = () => {
+    const last = swipeHistory[swipeHistory.length - 1];
+    if (!last) return;
+    setSwipeHistory((prev) => prev.slice(0, -1));
+    setSwipedIds((prev) => {
+      const i = prev.lastIndexOf(last.item.id);
+      return i === -1 ? prev : [...prev.slice(0, i), ...prev.slice(i + 1)];
+    });
+    if (last.direction === "right") {
+      setLikedPool((prev) => prev.filter((x) => x.id !== last.item.id));
+      setRecentSelections((prev) => {
+        const i = prev.lastIndexOf(last.item.id);
+        if (i === -1) return prev;
+        const next = [...prev.slice(0, i), ...prev.slice(i + 1)];
+        saveRecentSelections(next);
+        return next;
+      });
+    }
+  };
+
+  // Grup Masası (each friend on their own phone).
+  const [showGroup, setShowGroup] = useState(false);
+
   const handleRemoveLiked = (item: MenuItem) => {
     setLikedPool((prev) => prev.filter((x) => x.id !== item.id));
   };
@@ -294,6 +324,7 @@ export default function App() {
   const handleRestartExplore = () => {
     setLikedPool([]);
     setSwipedIds([]);
+    setSwipeHistory([]);
     setFoodPool([...mockFoodItems].sort(() => Math.random() - 0.5));
     setActiveTab("explore");
   };
@@ -365,6 +396,7 @@ export default function App() {
           averageCarbon={AVERAGE_CARBON}
           zeroWaste={isZeroWaste}
           onRescue={handleRescue}
+          label={tournamentChampion.label}
           onRestart={() => {
             setTournamentChampion(null);
             handleRestartExplore();
@@ -377,7 +409,13 @@ export default function App() {
       case "explore":
         return (
           <div className="deck-container">
-            <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
+            <div className="deck-top-row">
+              <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
+              <button className="group-entry" onClick={() => setShowGroup(true)} aria-label={language === "tr" ? "Grup Masası" : "Group Table"}>
+                <Users size={18} />
+                <span>{language === "tr" ? "Grup" : "Group"}</span>
+              </button>
+            </div>
             <SwipeDeck
               items={getFilteredPool()}
               onSwipe={handleSwipe}
@@ -385,9 +423,12 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
-              adsPaused={showSplash || showOnboarding || showPlus || authScreen !== null || selectedInsightItem !== null}
+              adsPaused={showSplash || showOnboarding || showPlus || showGroup || authScreen !== null || selectedInsightItem !== null}
               adsEnabled={!isPlus}
               onOpenPlus={() => setShowPlus(true)}
+              isPlus={isPlus}
+              onUndo={handleUndoSwipe}
+              canUndo={swipeHistory.length > 0}
             />
           </div>
         );
@@ -549,6 +590,24 @@ export default function App() {
             initialMode={authScreen.mode}
             firstRun={authScreen.firstRun}
             onClose={closeAuthScreen}
+          />
+        )}
+
+        {!showSplash && !showOnboarding && showGroup && (
+          <GroupScreen
+            language={language}
+            isPlus={isPlus}
+            defaultName={authUser ? displayNameOf(authUser) : ""}
+            dishPool={filterByCourse(getModePool(mockFoodItems, true), "main")}
+            allItems={mockFoodItems}
+            city={userCity}
+            onOpenPlus={() => setShowPlus(true)}
+            onClose={() => setShowGroup(false)}
+            onPickWinner={(item) => {
+              setShowGroup(false);
+              setIsTournamentActive(false);
+              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Grup Masasının seçimi" : "The table's pick" });
+            }}
           />
         )}
 
