@@ -19,6 +19,7 @@ import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
+import { prepareAds } from "./ads/ads";
 
 const AVERAGE_CARBON = getAverageCarbon(mockFoodItems);
 
@@ -92,6 +93,13 @@ export default function App() {
     setUserCityState(city);
     saveCity(city);
   };
+
+  // App only: once the splash and the first-run guide are gone, ask for ad consent (where the law
+  // requires it) and start AdMob, so the first ad card does not stop the user mid-swipe.
+  useEffect(() => {
+    if (showSplash || showOnboarding) return;
+    prepareAds();
+  }, [showSplash, showOnboarding]);
 
   // Detect the province on start; on failure (no permission, no signal) keep the saved one.
   useEffect(() => {
@@ -251,6 +259,7 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
+              adsPaused={showSplash || showOnboarding || selectedInsightItem !== null}
             />
           </div>
         );

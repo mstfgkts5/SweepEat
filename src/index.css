@@ -2343,3 +2343,84 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ob-swipe-card, .ob-page, .onboarding { animation: none; }
 }
+
+/* Ad card in the swipe deck (app only). Google's native ad is drawn over .ad-card-slot. */
+.food-card.ad-card {
+  cursor: default;
+  border: 1px solid rgba(29, 45, 68, 0.12);
+}
+
+.ad-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 0;
+}
+
+.ad-card-label {
+  background-color: var(--navy, #1D2D44);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.ad-card-plus {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: #1D2D44;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #E9C46A;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ad-card-plus svg {
+  color: #D4A017;
+  flex-shrink: 0;
+}
+
+.ad-card-slot {
+  flex: 1;
+  min-height: 330px;
+  width: 100%;
+  border-radius: 20px;
+  background-color: #F1F3F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-card-loading {
+  font-size: 14px;
+  color: #4A5A70;
+}
+
+.ad-card-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+  padding: 0 26px;
+  border: none;
+  border-radius: 999px;
+  background-color: #E63946;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
