@@ -1,3 +1,4 @@
+import AccountSection from "./AccountSection";
 import React, { useState, useMemo } from "react";
 import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown } from "lucide-react";
 import type { MenuItem, Persona } from "../data/mockFood";
@@ -134,6 +135,11 @@ interface ProfileScreenProps {
   onShowGuide?: () => void;
   isPlus?: boolean;
   onOpenPlus?: () => void;
+  account?: { name: string; email: string } | null;
+  onSignIn?: () => void;
+  onSignUp?: () => void;
+  onSignOut?: () => Promise<void> | void;
+  onDeleteAccount?: () => Promise<void>;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
@@ -146,7 +152,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   impact = EMPTY_IMPACT,
   onShowGuide,
   isPlus = false,
-  onOpenPlus
+  onOpenPlus,
+  account = null,
+  onSignIn,
+  onSignUp,
+  onSignOut,
+  onDeleteAccount
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -348,6 +359,16 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
+      {onSignIn && onSignUp && onSignOut && onDeleteAccount && (
+        <AccountSection
+          language={language}
+          account={account}
+          onSignIn={onSignIn}
+          onSignUp={onSignUp}
+          onSignOut={onSignOut}
+          onDeleteAccount={onDeleteAccount}
+        />
+      )}
       {onOpenPlus && (
         <button className="setting-card guide-link" onClick={onOpenPlus}>
           <span className="setting-info">

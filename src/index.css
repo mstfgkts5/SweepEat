@@ -2544,3 +2544,390 @@ body {
   line-height: 1.5;
   color: #5A6A80;
 }
+
+/* Sign-in / sign-up screen (optional account) */
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background-color: #F8F9FA;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  animation: authIn 0.25s ease-out;
+}
+
+@keyframes authIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.auth-top {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 44px;
+}
+
+.auth-body {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-title {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #1D2D44;
+}
+
+.auth-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3A4A60;
+}
+
+.auth-lead:empty {
+  display: none;
+}
+
+.auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  border: 1.5px solid #C9D1DB;
+  border-radius: 16px;
+  background: #FFFFFF;
+  color: #1D2D44;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #5A6A80;
+  font-size: 13px;
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #D5DBE3;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1D2D44;
+}
+
+.auth-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1.5px solid #C9D1DB;
+  border-radius: 14px;
+  background: #FFFFFF;
+  color: #5A6A80;
+}
+
+.auth-input-wrap:focus-within {
+  border-color: #2A9D8F;
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.18);
+}
+
+.auth-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  color: #1D2D44;
+}
+
+.auth-eye {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  color: #5A6A80;
+  cursor: pointer;
+}
+
+.auth-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #FDECEE;
+  color: #A3202D;
+  font-size: 14px;
+}
+
+.auth-info {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #E6F4F2;
+  color: #1D5E56;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.auth-submit {
+  min-height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: #E63946;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+
+.auth-submit:disabled,
+.auth-google:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.auth-link {
+  min-height: 40px;
+  border: none;
+  background: none;
+  color: #3A4A60;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.auth-link.strong {
+  color: #1D2D44;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-terms {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #5A6A80;
+}
+
+.auth-guest {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #D5DBE3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.auth-guest-btn {
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1.5px solid #1D2D44;
+  border-radius: 999px;
+  background: transparent;
+  color: #1D2D44;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-guest p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5A6A80;
+}
+
+/* Profile > Hesap */
+.account-card {
+  gap: 12px;
+}
+
+.account-guest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-guest-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-sub {
+  font-size: 13px;
+  color: #5A6A80;
+  overflow-wrap: anywhere;
+}
+
+.account-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #1D2D44;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.account-primary,
+.account-secondary {
+  flex: 1 1 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 46px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-primary {
+  border: none;
+  background: #1D2D44;
+  color: #FFFFFF;
+}
+
+.account-secondary {
+  border: 1.5px solid #1D2D44;
+  background: transparent;
+  color: #1D2D44;
+}
+
+.account-secondary.wide {
+  flex: none;
+  width: 100%;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 2px;
+  border: none;
+  border-top: 1px solid #E3E7ED;
+  background: none;
+  color: #1D2D44;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-row.danger {
+  color: #B3261E;
+}
+
+.account-note {
+  margin: 0;
+  font-size: 13px;
+  color: #1D5E56;
+}
+
+.account-note.error {
+  color: #A3202D;
+}
+
+.account-delete-sheet {
+  position: fixed;
+  z-index: 9100;
+}
+
+.account-delete-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3A4A60;
+}
+
+.account-delete-confirm {
+  min-height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: #B3261E;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.account-delete-confirm:disabled {
+  opacity: 0.7;
+}
+
+.account-delete-backdrop {
+  position: fixed;
+  z-index: 9050;
+}
