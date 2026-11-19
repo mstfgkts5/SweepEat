@@ -16,14 +16,16 @@ import { DISH_TYPE_LABELS } from "./data/dishTypes";
 import { loadRecentSelections, addRecentSelection, saveRecentSelections } from "./data/selectionHistory";
 import { RECENT_LIMIT } from "./data/recommend";
 import { loadSavedCity, saveCity, detectProvince, DEFAULT_CITY } from "./data/location";
-import type { MenuItem, Persona } from "./data/mockFood";
+import { normalizePersona, type MenuItem, type Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
-import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact, EMPTY_IMPACT } from "./data/sustainability";
+import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact, EMPTY_IMPACT, ecoText } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
 import { checkPlus, loadSavedPlus } from "./plus/plus";
 import PlusSheet from "./components/PlusSheet";
 import GroupScreen from "./components/GroupScreen";
+import MealPicker, { MEAL_ICONS } from "./components/MealPicker";
+import { filterByMeal, MEALS, MEAL_LABELS, type Meal } from "./data/meals";
 import AuthScreen, { type AuthMode } from "./components/AuthScreen";
 import {
   supabase,
@@ -58,14 +60,21 @@ export default function App() {
   // Localization
   const [language, setLanguage] = useState<"tr" | "en">("tr");
   const t = translations[language];
+  const modeTitle = (p: Persona): string =>
+    p === "zero_waste"
+      ? ecoText[language].zeroWasteTitle
+      : { everyday: t.profileEverydayTitle, fit: t.profileFitTitle, vegan: t.profileVeganTitle, tourist: t.profileTouristTitle }[p];
 
   // Data pools
   const [foodPool, setFoodPool] = useState<MenuItem[]>(mockFoodItems);
   const [likedPool, setLikedPool] = useState<MenuItem[]>([]);
   const [swipedIds, setSwipedIds] = useState<string[]>([]);
-  const [activePersona, setActivePersona] = useState<Persona>("gourmet");
+  const [activePersona, setActivePersona] = useState<Persona>("everyday");
   // Mode intro: after picking a mode, show which mode was picked before the dishes
   const [modeIntro, setModeIntro] = useState<Persona | null>(null);
+  // Öğün: asked when the app opens and after a mode change (see data/meals.ts).
+  const [meal, setMeal] = useState<Meal | null>(null);
+  const [mealPickerOpen, setMealPickerOpen] = useState(false);
 
   // Main dishes by default; the "Tatlılar" button shows only desserts.
   const [course, setCourse] = useState<Course>("main");
@@ -158,7 +167,8 @@ export default function App() {
     loadRemoteState(authUser.id)
       .then((remote) => {
         if (cancelled || !remote) return;
-        if (remote.persona) setActivePersona(remote.persona as Persona);
+        const mode = normalizePersona(remote.persona);
+        if (mode) setActivePersona(mode);
         if (remote.language === "tr" || remote.language === "en") setLanguage(remote.language);
         setRecentSelections((local) => {
           const merged = mergeRecent(remote.recent_selections ?? [], local, RECENT_LIMIT);
@@ -216,6 +226,8 @@ export default function App() {
   // Starts from the last known province; replaced by the detected one when the app opens.
   const [userCity, setUserCityState] = useState<string>(() => loadSavedCity() ?? DEFAULT_CITY);
   const [cityToast, setCityToast] = useState<string | null>(null);
+  // Phone position from the last location check: memory only, for Gündelik's closest restaurants.
+  const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
   const setUserCity = (city: string) => {
     setUserCityState(city);
     saveCity(city);
@@ -235,6 +247,7 @@ export default function App() {
     let cancelled = false;
     detectProvince().then((result) => {
       if (cancelled || !result.ok) return;
+      setUserPos({ lat: result.lat, lon: result.lon });
       setUserCityState((current) => {
         if (current !== result.city) setCityToast(result.city);
         return result.city;
@@ -343,24 +356,26 @@ export default function App() {
     return [...local, ...ordered.filter((x) => !localIds.has(x.id))];
   };
 
+  // Main dishes are limited to the chosen meal; desserts are not.
+  const forMeal = (items: MenuItem[]) => (meal ? filterByMeal(items, meal) : items);
   const unswipedModePool = getModePool(
     foodPool.filter((x) => !swipedIds.includes(x.id)),
     foodPool === mockFoodItems
   );
   const courseCounts = {
-    main: filterByCourse(unswipedModePool, "main").length,
+    main: forMeal(filterByCourse(unswipedModePool, "main")).length,
     dessert: filterByCourse(unswipedModePool, "dessert").length
   };
-  const getFilteredPool = () => filterByCourse(unswipedModePool, course);
+  const getFilteredPool = () => forMeal(filterByCourse(unswipedModePool, course));
 
   // "Sana Özel Öneriler": from the whole menu of the active mode and course,
   // weighted by the types of the last 5 selections (see data/recommend.ts).
   const recommendations = useMemo(() => {
-    const candidates = filterByCourse(getModePool(mockFoodItems, true), course);
+    const candidates = forMeal(filterByCourse(getModePool(mockFoodItems, true), course));
     return recommend(candidates, recentSelections, 10);
     // getModePool only depends on activePersona and userCity
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePersona, userCity, course, recentSelections]);
+  }, [activePersona, userCity, course, recentSelections, meal]);
   const topType = rankTypes(
     recentSelections.map((id) => mockFoodItems.find((x) => x.id === id)).filter((x): x is MenuItem => x !== undefined)
   )[0];
@@ -397,6 +412,7 @@ export default function App() {
           zeroWaste={isZeroWaste}
           onRescue={handleRescue}
           label={tournamentChampion.label}
+          near={activePersona === "everyday" ? userPos : null}
           onRestart={() => {
             setTournamentChampion(null);
             handleRestartExplore();
@@ -409,6 +425,16 @@ export default function App() {
       case "explore":
         return (
           <div className="deck-container">
+            {course === "main" && meal && (
+              <div className="meal-switch" role="tablist" aria-label={language === "tr" ? "Öğün" : "Meal"}>
+                {MEALS.map((m) => (
+                  <button key={m} role="tab" aria-selected={meal === m} className={`meal-chip ${meal === m ? "active" : ""}`} onClick={() => setMeal(m)}>
+                    {MEAL_ICONS[m]}
+                    <span>{MEAL_LABELS[language][m]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="deck-top-row">
               <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
               <button className="group-entry" onClick={() => setShowGroup(true)} aria-label={language === "tr" ? "Grup Masası" : "Group Table"}>
@@ -598,7 +624,7 @@ export default function App() {
             language={language}
             isPlus={isPlus}
             defaultName={authUser ? displayNameOf(authUser) : ""}
-            dishPool={filterByCourse(getModePool(mockFoodItems, true), "main")}
+            dishPool={forMeal(filterByCourse(getModePool(mockFoodItems, true), "main"))}
             allItems={mockFoodItems}
             city={userCity}
             onOpenPlus={() => setShowPlus(true)}
@@ -626,6 +652,18 @@ export default function App() {
           />
         )}
 
+        {!showSplash && !showOnboarding && !authScreen && !modeIntro && (mealPickerOpen || meal === null) && (
+          <MealPicker
+            language={language}
+            modeName={modeTitle(activePersona)}
+            current={mealPickerOpen ? meal : null}
+            onPick={(m) => {
+              setMeal(m);
+              setMealPickerOpen(false);
+            }}
+          />
+        )}
+
         {!showSplash && modeIntro && (
           <ModeIntro
             persona={modeIntro}
@@ -633,6 +671,7 @@ export default function App() {
             onDone={() => {
               setModeIntro(null);
               setActiveTab("explore");
+              setMealPickerOpen(true);
             }}
           />
         )}
@@ -640,7 +679,11 @@ export default function App() {
         {!showSplash && showLocationModal && (
           <LocationModal
             currentCity={userCity}
-            onSelectCity={(city) => setUserCity(city)}
+            onSelectCity={(city) => {
+              // A city picked by hand: the phone's position no longer says where the user eats.
+              setUserPos(null);
+              setUserCity(city);
+            }}
             onClose={() => setShowLocationModal(false)}
             language={language}
           />

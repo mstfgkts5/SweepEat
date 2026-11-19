@@ -4,6 +4,7 @@
 // Everything here is additive: existing modes keep working unchanged.
 // ==========================================
 import type { MenuItem, Persona } from "./mockFood";
+import { everydaySourceOf } from "./allFood";
 
 export type CarbonGrade = "A" | "B" | "C" | "D" | "E";
 
@@ -200,5 +201,6 @@ export const getPersonaInsight = (
   language: "tr" | "en"
 ): string => {
   if (persona === "zero_waste") return getZeroWasteInsight(item, language);
+  if (persona === "everyday") return item.aiInsights[language][everydaySourceOf(item)];
   return item.aiInsights[language][persona];
 };

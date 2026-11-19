@@ -28,7 +28,8 @@ export const saveCity = (city: string) => {
 };
 
 export type DetectResult =
-  | { ok: true; city: string }
+  // lat/lon: kept in memory only (Gündelik uses it for the closest restaurants), never saved or sent.
+  | { ok: true; city: string; lat: number; lon: number }
   | { ok: false; reason: "unsupported" | "denied" | "unavailable" | "outside" };
 
 // Ask the device for its position and return the province it is in.
@@ -41,7 +42,7 @@ export const detectProvince = (timeoutMs = 10000): Promise<DetectResult> =>
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const p = nearestProvince(pos.coords.latitude, pos.coords.longitude);
-        resolve(p ? { ok: true, city: p.name } : { ok: false, reason: "outside" });
+        resolve(p ? { ok: true, city: p.name, lat: pos.coords.latitude, lon: pos.coords.longitude } : { ok: false, reason: "outside" });
       },
       (err) => resolve({ ok: false, reason: err.code === err.PERMISSION_DENIED ? "denied" : "unavailable" }),
       // A province does not need GPS precision; a recent network position is enough.

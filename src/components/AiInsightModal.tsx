@@ -1,6 +1,6 @@
 import React from "react";
-import { X, Dumbbell, Flame, Wallet, Compass, Sparkles, Leaf, Landmark, Recycle } from "lucide-react";
-import type { MenuItem, Persona } from "../data/mockFood";
+import { X, Dumbbell, Utensils, Sparkles, Leaf, Landmark, Recycle } from "lucide-react";
+import { PERSONAS, type MenuItem, type Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { estimateCarbon, getPersonaInsight, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
 
@@ -30,12 +30,8 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
       switch (key) {
         case "fit":
           return "Fit & Diyet";
-        case "cheat_day":
-          return "Cheat Day";
-        case "economic":
-          return "Ekonomik";
-        case "gourmet":
-          return "Gurme";
+        case "everyday":
+          return "Gündelik";
         case "vegan":
           return "Vegan";
         case "tourist":
@@ -49,12 +45,8 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
       switch (key) {
         case "fit":
           return "Fit & Diet";
-        case "cheat_day":
-          return "Cheat Day";
-        case "economic":
-          return "Economic";
-        case "gourmet":
-          return "Gourmet";
+        case "everyday":
+          return "Everyday";
         case "vegan":
           return "Vegan";
         case "tourist":
@@ -71,12 +63,8 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
     switch (key) {
       case "fit":
         return <Dumbbell size={18} />;
-      case "cheat_day":
-        return <Flame size={18} />;
-      case "economic":
-        return <Wallet size={18} />;
-      case "gourmet":
-        return <Compass size={18} />;
+      case "everyday":
+        return <Utensils size={18} />;
       case "vegan":
         return <Leaf size={18} />;
       case "tourist":
@@ -108,7 +96,7 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
 
         {/* Persona Selector Tabs */}
         <div className="persona-selector">
-          {(["fit", "cheat_day", "economic", "gourmet", "vegan", "tourist", "zero_waste"] as const).map((persona) => (
+          {PERSONAS.map((persona) => (
             <button
               key={persona}
               className={`persona-tab ${activePersona === persona ? "active" : ""}`}

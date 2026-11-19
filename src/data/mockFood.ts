@@ -1,6 +1,15 @@
 import type { DishType } from "./dishTypes";
 
-export type Persona = "fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist" | "zero_waste";
+// The modes the app offers. "everyday" (Gündelik) replaced Cheat Day, Ekonomik and Gurme
+// (November 2026); their dish lists were merged into it.
+export type Persona = "fit" | "everyday" | "vegan" | "tourist" | "zero_waste";
+export const PERSONAS: Persona[] = ["everyday", "fit", "vegan", "tourist", "zero_waste"];
+
+// A mode saved before November 2026 (on the phone or in the account) → the mode it became.
+export const normalizePersona = (p: unknown): Persona | null => {
+  if (p === "cheat_day" || p === "economic" || p === "gourmet") return "everyday";
+  return PERSONAS.includes(p as Persona) ? (p as Persona) : null;
+};
 
 export interface MenuItem {
   id: string;
@@ -26,7 +35,9 @@ export interface MenuItem {
   isSponsored?: boolean;
   sponsorDiscount?: number;
   sponsorCoupon?: string;
-  modes: ("fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist")[];
+  // Source data still carries the old mode names; allFood.ts replaces this with the
+  // modes from MODE_LISTS (fit, everyday, vegan, tourist).
+  modes: ("fit" | "cheat_day" | "economic" | "gourmet" | "vegan" | "tourist" | "everyday")[];
   aiInsights: {
     tr: {
       fit: string;

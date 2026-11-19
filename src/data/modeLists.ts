@@ -22,9 +22,11 @@
 // Divisive or niche dishes (deniz börülcesi, kereviz, pırasa, bakla, bamya, şırdan,
 // zerde, kinoa...) were removed. Ranking inside a list is editorial judgement.
 // ==========================================
-import type { MenuItem } from "./mockFood";
 
-export type Mode = MenuItem["modes"][number];
+export type Mode = "fit" | "everyday" | "vegan" | "tourist";
+
+// The three former lists that make up Gündelik (everyday). Their AI comments are reused.
+export type EverydaySource = "economic" | "cheat_day" | "gourmet";
 
 // Dishes whose photo is a web URL, so the photo file name cannot be their key.
 export const KEY_BY_ID: Record<string, string> = {
@@ -32,7 +34,13 @@ export const KEY_BY_ID: Record<string, string> = {
   cheat_32: "hamburger"
 };
 
-export const MODE_LISTS: Record<Mode, string[]> = {
+const FORMER_LISTS: Record<EverydaySource, string[]> = {
+  cheat_day: [] as string[],
+  economic: [] as string[],
+  gourmet: [] as string[]
+};
+
+const LISTS = {
   fit: [
     "tavuk-gogsu", "tavuk-sis", "izgara-kofte", "izgara-somon", "mercimek-corbasi-vegan",
     "coban-salata", "tavuklu-sezar-salata", "ton-balikli-salata", "izgara-levrek", "izgara-cipura",
@@ -105,6 +113,32 @@ export const MODE_LISTS: Record<Mode, string[]> = {
     "kazandibi", "tavuk-gogsu-tatlisi", "lokma", "katmer", "kaburga-dolmasi",
     "ciger-sis", "tepsi-kebabi", "boyoz", "cig-borek", "misir"
   ]
+};
+FORMER_LISTS.cheat_day = LISTS.cheat_day;
+FORMER_LISTS.economic = LISTS.economic;
+FORMER_LISTS.gourmet = LISTS.gourmet;
+
+// Gündelik: the former Ekonomik, Cheat Day and Gurme lists taken in turns (1st of each,
+// then 2nd of each, ...), each dish once. So the top of the deck mixes an everyday cheap
+// dish, a treat and a special one. `EVERYDAY_SOURCE` remembers which list a dish came from.
+export const EVERYDAY_SOURCE = new Map<string, EverydaySource>();
+const everyday: string[] = [];
+const order: EverydaySource[] = ["economic", "cheat_day", "gourmet"];
+for (let i = 0; i < 50; i++) {
+  for (const src of order) {
+    const key = FORMER_LISTS[src][i];
+    if (key && !EVERYDAY_SOURCE.has(key)) {
+      EVERYDAY_SOURCE.set(key, src);
+      everyday.push(key);
+    }
+  }
+}
+
+export const MODE_LISTS: Record<Mode, string[]> = {
+  everyday,
+  fit: LISTS.fit,
+  vegan: LISTS.vegan,
+  tourist: LISTS.tourist
 };
 
 // Names corrected so each name says exactly what its photo shows

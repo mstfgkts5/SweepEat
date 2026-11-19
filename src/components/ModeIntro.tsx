@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dumbbell, Flame, Wallet, Compass, Leaf, Landmark, Recycle } from "lucide-react";
+import { Dumbbell, Utensils, Leaf, Landmark, Recycle } from "lucide-react";
 import type { Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { ecoText } from "../data/sustainability";
@@ -15,10 +15,8 @@ interface ModeIntroProps {
 
 // Circle fill + icon color per mode (brand palette)
 const MODE_COLORS: Record<Persona, { bg: string; fg: string }> = {
+  everyday: { bg: "#E63946", fg: "#ffffff" },
   fit: { bg: "#2A9D8F", fg: "#ffffff" },
-  cheat_day: { bg: "#E63946", fg: "#ffffff" },
-  economic: { bg: "#E9C46A", fg: "#1D2D44" },
-  gourmet: { bg: "#E63946", fg: "#ffffff" },
   vegan: { bg: "#2A9D8F", fg: "#ffffff" },
   tourist: { bg: "#E9C46A", fg: "#1D2D44" },
   zero_waste: { bg: "#2A9D8F", fg: "#ffffff" }
@@ -41,30 +39,24 @@ const ModeIntro: React.FC<ModeIntroProps> = ({ persona, language, onDone }) => {
   }, [persona]);
 
   const title: Record<Persona, string> = {
+    everyday: t.profileEverydayTitle,
     fit: t.profileFitTitle,
-    cheat_day: t.profileCheatTitle,
-    economic: t.profileEconomicTitle,
-    gourmet: t.profileGourmetTitle,
     vegan: t.profileVeganTitle,
     tourist: t.profileTouristTitle,
     zero_waste: eco.zeroWasteTitle
   };
 
   const desc: Record<Persona, string> = {
+    everyday: t.profileEverydayDesc,
     fit: t.profileFitDesc,
-    cheat_day: t.profileCheatDesc,
-    economic: t.profileEconomicDesc,
-    gourmet: t.profileGourmetDesc,
     vegan: t.profileVeganDesc,
     tourist: t.profileTouristDesc,
     zero_waste: eco.zeroWasteDesc
   };
 
   const icon: Record<Persona, React.ReactNode> = {
+    everyday: <Utensils size={54} />,
     fit: <Dumbbell size={54} />,
-    cheat_day: <Flame size={54} />,
-    economic: <Wallet size={54} />,
-    gourmet: <Compass size={54} />,
     vegan: <Leaf size={54} />,
     tourist: <Landmark size={54} />,
     zero_waste: <Recycle size={54} />

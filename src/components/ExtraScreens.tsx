@@ -1,7 +1,7 @@
 import AccountSection from "./AccountSection";
 import React, { useState, useMemo } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown } from "lucide-react";
-import type { MenuItem, Persona } from "../data/mockFood";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Utensils, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown } from "lucide-react";
+import { PERSONAS, type MenuItem, type Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
@@ -166,12 +166,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return t.profileFitDesc;
-      case "cheat_day":
-        return t.profileCheatDesc;
-      case "economic":
-        return t.profileEconomicDesc;
-      case "gourmet":
-        return t.profileGourmetDesc;
+      case "everyday":
+        return t.profileEverydayDesc;
       case "vegan":
         return t.profileVeganDesc;
       case "tourist":
@@ -187,12 +183,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return t.profileFitTitle;
-      case "cheat_day":
-        return t.profileCheatTitle;
-      case "economic":
-        return t.profileEconomicTitle;
-      case "gourmet":
-        return t.profileGourmetTitle;
+      case "everyday":
+        return t.profileEverydayTitle;
       case "vegan":
         return t.profileVeganTitle;
       case "tourist":
@@ -208,12 +200,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return <Dumbbell size={18} />;
-      case "cheat_day":
-        return <Flame size={18} />;
-      case "economic":
-        return <Wallet size={18} />;
-      case "gourmet":
-        return <Compass size={18} />;
+      case "everyday":
+        return <Utensils size={18} />;
       case "vegan":
         return <Leaf size={18} />;
       case "tourist":
@@ -235,7 +223,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
       <span className="section-label">{t.profileAiModeLabel}</span>
       <div className="setting-card">
-        {(["fit", "cheat_day", "economic", "gourmet", "vegan", "tourist", "zero_waste"] as const).map((persona) => (
+        {PERSONAS.map((persona) => (
           <div
             key={persona}
             className={`setting-row`}
@@ -557,6 +545,8 @@ interface WinnerScreenProps {
   onRescue?: (item: MenuItem) => void;
   // Heading over the dish (default: arena champion).
   label?: string;
+  // Gündelik: the phone's position, to list the closest restaurants first.
+  near?: { lat: number; lon: number } | null;
 }
 
 export const WinnerScreen: React.FC<WinnerScreenProps> = ({
@@ -569,7 +559,8 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   averageCarbon = 0,
   zeroWaste = false,
   onRescue,
-  label
+  label,
+  near = null
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -585,10 +576,12 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
       generateTopRestaurants(
         { key: dishKeyOf(champion), names: restaurantLookupNames(champion), nameEn: champion.nameEn, dishType: champion.dishType, category: champion.category },
         userCity,
-        language
+        language,
+        near
       ),
-    [champion, userCity, language]
+    [champion, userCity, language, near]
   );
+  const showsNearby = restaurants.some((r) => r.distanceKm !== undefined);
   const isLoadingRestaurants = false;
   // Provinces without restaurant data use the nearest city that has it.
   const restaurantCity = restaurantCityFor(userCity);
@@ -626,7 +619,11 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           onClick={() => setActiveTabSection("restaurants")}
         >
           <Trophy size={13} />
-          <span>{t.winnerTabRestaurants} ({restaurantCityFor(userCity)})</span>
+          <span>
+            {showsNearby
+              ? (language === "tr" ? "Yakınındaki 5 Restoran" : "5 Restaurants Near You")
+              : `${t.winnerTabRestaurants} (${restaurantCityFor(userCity)})`}
+          </span>
         </button>
       </div>
 
@@ -735,6 +732,14 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                         : language === "tr" ? "Genel öneri" : "General pick"}
                   </span>
                   <div className="restaurant-meta-detail">
+                    {rest.distanceKm !== undefined && (
+                      <span className="restaurant-distance">
+                        <MapPin size={11} />
+                        {rest.distanceKm < 1
+                          ? `${Math.max(50, Math.round(rest.distanceKm * 20) * 50)} m`
+                          : `${rest.distanceKm.toLocaleString(language === "tr" ? "tr-TR" : "en-US", { maximumFractionDigits: 1 })} km`}
+                      </span>
+                    )}
                     {rest.area && <span>{rest.area}</span>}
                     {rest.area && rest.rating !== null && <span>•</span>}
                     {rest.rating !== null ? (

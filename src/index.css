@@ -3325,3 +3325,159 @@ body {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Öğün: picker (when the app opens / after a mode change) and the switch in Explore */
+.meal-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background-color: rgba(29, 45, 68, 0.55);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.meal-picker-card {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  padding: 24px 20px max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: authIn 0.25s ease-out;
+}
+
+.meal-picker-mode {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #E8ECF2;
+  color: #1D2D44;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.meal-picker-title {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1D2D44;
+}
+
+.meal-picker-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meal-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 1.5px solid #D5DBE3;
+  border-radius: 18px;
+  background: #FFFFFF;
+  color: #1D2D44;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.meal-option.suggested {
+  border: 2px solid #1D2D44;
+  background: #FFF3E0;
+}
+
+.meal-option-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #FFB74D;
+  color: #1D2D44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meal-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.meal-option-text strong {
+  font-size: 16px;
+}
+
+.meal-option-text span {
+  font-size: 13px;
+  color: #4A5A70;
+}
+
+.meal-option-now {
+  font-size: 11px;
+  font-weight: 800;
+  color: #7A4F0D;
+  background: #FDF3D7;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.meal-switch {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.meal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(29, 45, 68, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #3A4A60;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.meal-chip svg {
+  width: 15px;
+  height: 15px;
+}
+
+.meal-chip.active {
+  background: #1D2D44;
+  border-color: #1D2D44;
+  color: #FFFFFF;
+}
+
+/* Gündelik: distance to the restaurant */
+.restaurant-distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #1D2D44;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 11px;
+}
