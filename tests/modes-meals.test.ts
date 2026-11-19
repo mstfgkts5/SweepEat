@@ -47,6 +47,8 @@ test("meals: breakfast dishes, breakfast-only dishes and the clock default", asy
   assert.deepEqual(meals.mealsForKey("serpme-kahvalti"), ["breakfast"]);
   assert.deepEqual(meals.mealsForKey("iskender"), ["lunch", "dinner"]);
   assert.deepEqual(meals.mealsForKey("mercimek-corbasi-vegan"), ["breakfast", "lunch", "dinner"]);
+  assert.deepEqual(meals.mealsForKey("ciger-sis"), ["breakfast", "lunch", "dinner"], "sabah ciğeri");
+  assert.deepEqual(meals.mealsForKey("tarhana-corbasi"), ["lunch", "dinner"]);
   assert.equal(meals.mealForHour(8), "breakfast");
   assert.equal(meals.mealForHour(13), "lunch");
   assert.equal(meals.mealForHour(20), "dinner");

@@ -26,7 +26,9 @@ const BREAKFAST = new Set([
   "serpme-kahvalti", "menemen", "sahanda-yumurta", "yumurtali-ispanak", "lor-omlet", "sebzeli-omlet",
   "kuymak", "yulaf-lapasi", "chia-yogurt", "simit", "pogaca", "boyoz", "su-boregi", "gozleme-eco",
   "patatesli-gozleme", "sikma-eco", "yumurtali-ekmek", "salcali-tost", "ayvalik-tostu",
-  "mercimek-corbasi-vegan", "tarhana-corbasi", "kelle-paca"
+  "mercimek-corbasi-vegan", "kelle-paca",
+  // added in the review of 19 November 2026 (Mustafa): breakfast in many cities
+  "beyran", "ciger-sis", "tavuk-corbasi", "hellim-salata"
 ]);
 
 const BREAKFAST_ONLY = new Set([
