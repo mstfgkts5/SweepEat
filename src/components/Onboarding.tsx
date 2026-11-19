@@ -46,8 +46,8 @@ const PAGES: Page[] = [
     key: "swipe",
     title: { tr: "Kaydır: sağa beğen, sola geç", en: "Swipe: right to like, left to skip" },
     text: {
-      tr: "Kartı sağa kaydır ya da ❤️'ye bas: beğendin. Sola kaydır ya da ✕'e bas: geçtin. Karta dokunup “Yapay Zeka Analizi” ile yemeğin detayına bakabilirsin.",
-      en: "Swipe right or tap ❤️ to like. Swipe left or tap ✕ to skip. Tap “AI Analysis” on a card to see the dish in detail."
+      tr: "Kartı sağa kaydır ya da ❤️'ye bas: beğendin. Sola kaydır ya da ✕'e bas: geçtin. Beğendiğin yemeğin detayına Beğenilenler sekmesinden bakabilirsin.",
+      en: "Swipe right or tap ❤️ to like. Swipe left or tap ✕ to skip. See a liked dish in detail from the Liked tab."
     },
     art: <SwipeArt />
   },

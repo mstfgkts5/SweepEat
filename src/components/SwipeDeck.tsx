@@ -35,7 +35,8 @@ interface SwipeDeckProps {
   // Undo the last swipe (the button only shows when this is given).
   onUndo?: () => void;
   canUndo?: boolean;
-  // false hides the "Yapay Zeka Analizi" button (Grup Masası).
+  // The "Yapay Zeka Analizi" button on the card. Off since 19 Nov 2026 (the dish detail
+  // still opens from Beğenilenler); kept as a switch in case it comes back.
   showInsight?: boolean;
 }
 
@@ -52,7 +53,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   isPlus = false,
   onUndo,
   canUndo = false,
-  showInsight = true
+  showInsight = false
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
