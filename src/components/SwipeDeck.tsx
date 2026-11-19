@@ -207,9 +207,10 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   let colorOverlayColor = "transparent";
 
   if (dragOffset.x > 0) {
-    glowShadow = `0 12px 35px rgba(42, 157, 143, ${dragPercentage * 0.45})`;
-    borderGlow = `${1 + dragPercentage}px solid rgba(42, 157, 143, ${dragPercentage})`;
-    colorOverlayColor = `rgba(42, 157, 143, ${dragPercentage * 0.25})`;
+    // Right swipe = like: a clear green (Tailwind green-500 #22C55E / green-600 #16A34A).
+    glowShadow = `0 12px 35px rgba(34, 197, 94, ${dragPercentage * 0.55})`;
+    borderGlow = `${1 + dragPercentage * 2}px solid rgba(22, 163, 74, ${dragPercentage})`;
+    colorOverlayColor = `rgba(34, 197, 94, ${dragPercentage * 0.35})`;
   } else if (dragOffset.x < 0) {
     glowShadow = `0 12px 35px rgba(230, 57, 70, ${dragPercentage * 0.45})`;
     borderGlow = `${1 + dragPercentage}px solid rgba(230, 57, 70, ${dragPercentage})`;
