@@ -1351,16 +1351,36 @@ body {
 /* Winner Tab Bar */
 .winner-tabs-container {
   display: flex;
-  background-color: #f3f4f6;
-  /* navy frame (the palette's darkest colour, softer than pure black):
-     the tab row stands out from the light confetti background */
-  border: 2px solid #1D2D44;
+  /* Moving frame: a navy + logo-orange band runs around the tab row so it stands out
+     from the confetti. Inside stays the light grey; the band is the 2.5 px border. */
+  border: 2.5px solid transparent;
+  background:
+    linear-gradient(#f3f4f6, #f3f4f6) padding-box,
+    conic-gradient(from var(--tab-frame-angle), #1D2D44 0deg, #1D2D44 200deg, #F07A2C 270deg, #FDB443 310deg, #1D2D44 360deg) border-box;
+  animation: tabFrameSpin 3s linear infinite;
   box-shadow: 0 4px 14px rgba(29, 45, 68, 0.18);
   padding: 4px;
   border-radius: 14px;
   width: 100%;
   margin-bottom: 16px;
   gap: 4px;
+}
+
+@property --tab-frame-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes tabFrameSpin {
+  to { --tab-frame-angle: 360deg; }
+}
+
+/* People who turn animations off get a still frame. */
+@media (prefers-reduced-motion: reduce) {
+  .winner-tabs-container {
+    animation: none;
+  }
 }
 
 .winner-tab-btn {
