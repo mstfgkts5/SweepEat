@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight } from "lucide-react";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown } from "lucide-react";
 import type { MenuItem, Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
@@ -132,6 +132,8 @@ interface ProfileScreenProps {
   setShowCarbonLabels?: (value: boolean) => void;
   impact?: ImpactStats;
   onShowGuide?: () => void;
+  isPlus?: boolean;
+  onOpenPlus?: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
@@ -142,7 +144,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   showCarbonLabels = false,
   setShowCarbonLabels,
   impact = EMPTY_IMPACT,
-  onShowGuide
+  onShowGuide,
+  isPlus = false,
+  onOpenPlus
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -344,6 +348,21 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
+      {onOpenPlus && (
+        <button className="setting-card guide-link" onClick={onOpenPlus}>
+          <span className="setting-info">
+            <span className="setting-icon" style={{ color: "#B7791F", backgroundColor: "#FDF3D7" }}>
+              <Crown size={18} />
+            </span>
+            <span className="setting-title">
+              {isPlus
+                ? (language === "tr" ? "Kaydırak Plus üyesisin" : "You are a Kaydırak Plus member")
+                : (language === "tr" ? "Kaydırak Plus: reklamsız kaydır" : "Kaydırak Plus: swipe with no ads")}
+            </span>
+          </span>
+          <ChevronRight size={18} color="var(--text-light)" />
+        </button>
+      )}
       {onShowGuide && (
         <button className="setting-card guide-link" onClick={onShowGuide}>
           <span className="setting-info">

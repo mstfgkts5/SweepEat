@@ -2372,7 +2372,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  min-height: 32px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
   color: #1D2D44;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   text-decoration: underline;
@@ -2417,4 +2423,124 @@ body {
   font-family: inherit;
   cursor: pointer;
   box-shadow: var(--shadow-md);
+}
+
+/* Kaydırak Plus sheet */
+.plus-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plus-title svg {
+  color: #D4A017;
+}
+
+.plus-lead {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1D2D44;
+}
+
+.plus-perks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plus-perks li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #3A4A60;
+}
+
+.plus-perks svg {
+  color: #2A9D8F;
+  flex-shrink: 0;
+}
+
+.plus-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plus-plan {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 2px solid #1D2D44;
+  border-radius: 16px;
+  background: #FFFFFF;
+  color: #1D2D44;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.plus-plan:first-child {
+  background: #1D2D44;
+  color: #FFFFFF;
+}
+
+.plus-plan:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.plus-plan-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.plus-plan-price {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.plus-plan-price small {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.plus-secondary {
+  min-height: 44px;
+  border: none;
+  background: none;
+  color: #1D2D44;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.plus-active {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #E6F4F2;
+  color: #1D5E56;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.plus-note {
+  margin: 0;
+  font-size: 14px;
+  color: #3A4A60;
+}
+
+.plus-legal {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #5A6A80;
 }

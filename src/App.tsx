@@ -20,6 +20,8 @@ import { translations } from "./data/translations";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
+import { checkPlus, loadSavedPlus } from "./plus/plus";
+import PlusSheet from "./components/PlusSheet";
 
 const AVERAGE_CARBON = getAverageCarbon(mockFoodItems);
 
@@ -84,6 +86,14 @@ export default function App() {
 
   // Selected item for AI Modal
   const [selectedInsightItem, setSelectedInsightItem] = useState<MenuItem | null>(null);
+  // Kaydırak Plus (ad-free subscription): remembered state first, then Google Play's answer.
+  const [isPlus, setIsPlus] = useState(loadSavedPlus);
+  const [showPlus, setShowPlus] = useState(false);
+  useEffect(() => {
+    checkPlus().then((on) => {
+      if (on !== null) setIsPlus(on);
+    });
+  }, []);
 
   // Geolocation & Location Search
   // Starts from the last known province; replaced by the detected one when the app opens.
@@ -97,9 +107,9 @@ export default function App() {
   // App only: once the splash and the first-run guide are gone, ask for ad consent (where the law
   // requires it) and start AdMob, so the first ad card does not stop the user mid-swipe.
   useEffect(() => {
-    if (showSplash || showOnboarding) return;
+    if (showSplash || showOnboarding || isPlus) return;
     prepareAds();
-  }, [showSplash, showOnboarding]);
+  }, [showSplash, showOnboarding, isPlus]);
 
   // Detect the province on start; on failure (no permission, no signal) keep the saved one.
   useEffect(() => {
@@ -259,7 +269,9 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
-              adsPaused={showSplash || showOnboarding || selectedInsightItem !== null}
+              adsPaused={showSplash || showOnboarding || showPlus || selectedInsightItem !== null}
+              adsEnabled={!isPlus}
+              onOpenPlus={() => setShowPlus(true)}
             />
           </div>
         );
@@ -288,6 +300,8 @@ export default function App() {
             setShowCarbonLabels={setShowCarbonLabels}
             impact={impact}
             onShowGuide={() => setShowOnboarding(true)}
+            isPlus={isPlus}
+            onOpenPlus={() => setShowPlus(true)}
           />
         );
       default:
@@ -405,6 +419,10 @@ export default function App() {
               <span>{t.tabProfile}</span>
             </button>
           </nav>
+        )}
+
+        {!showSplash && showPlus && (
+          <PlusSheet language={language} isPlus={isPlus} onPlusChange={setIsPlus} onClose={() => setShowPlus(false)} />
         )}
 
         {!showSplash && selectedInsightItem && (

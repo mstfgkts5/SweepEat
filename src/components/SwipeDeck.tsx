@@ -27,6 +27,9 @@ interface SwipeDeckProps {
   zeroWaste?: boolean;
   // Something covers the deck (dish detail, guide): a native ad must hide meanwhile.
   adsPaused?: boolean;
+  // false for Kaydırak Plus members: no ad cards.
+  adsEnabled?: boolean;
+  onOpenPlus?: () => void;
 }
 
 export const SwipeDeck: React.FC<SwipeDeckProps> = ({
@@ -36,7 +39,9 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   language,
   showCarbon = false,
   zeroWaste = false,
-  adsPaused = false
+  adsPaused = false,
+  adsEnabled = true,
+  onOpenPlus = () => undefined
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -152,12 +157,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   }, [isDragging, dragOffset]);
 
   // Every few dishes an ad card comes before the next dish (Android/iOS app only, never on the web).
-  if (activeItem && adsSupported() && adDue(swipesSinceAd)) {
+  if (activeItem && adsEnabled && adsSupported() && adDue(swipesSinceAd)) {
     return (
       <AdCard
         slotKey={`swipe-ad-${adSerial}`}
         language={language}
         paused={adsPaused}
+        onOpenPlus={onOpenPlus}
         onDone={() => {
           setSwipesSinceAd(0);
           setAdSerial((n) => n + 1);

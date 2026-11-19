@@ -10,13 +10,15 @@ interface AdCardProps {
   paused: boolean;
   // Leave the ad: the user tapped "Devam", or no ad could be loaded.
   onDone: () => void;
+  // Open the Kaydırak Plus (ad-free) sheet.
+  onOpenPlus: () => void;
 }
 
 // Google's ad is a native view drawn above the app, in the slot this card reserves.
 // It cannot follow a dragged/rotated card, so this card stays still and is left with a button.
 const LOAD_TIMEOUT_MS = 8000;
 
-const AdCard: React.FC<AdCardProps> = ({ slotKey, language, paused, onDone }) => {
+const AdCard: React.FC<AdCardProps> = ({ slotKey, language, paused, onDone, onOpenPlus }) => {
   const slotRef = useRef<HTMLDivElement>(null);
   const feedRef = useRef<import("@capacitor-community/admob").NativeAdFeed | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -100,10 +102,10 @@ const AdCard: React.FC<AdCardProps> = ({ slotKey, language, paused, onDone }) =>
         <div className="food-card ad-card">
           <div className="ad-card-head">
             <span className="ad-card-label">{tr ? "Reklam" : "Ad"}</span>
-            <span className="ad-card-plus">
+            <button className="ad-card-plus" onClick={onOpenPlus}>
               <Crown size={14} />
               {tr ? "Reklamsız deneyim için Kaydırak Plus" : "Go ad-free with Kaydırak Plus"}
-            </span>
+            </button>
           </div>
           {/* The plugin draws Google's ad over this box. */}
           <div ref={slotRef} className="ad-card-slot">
