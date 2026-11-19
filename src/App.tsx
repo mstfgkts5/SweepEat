@@ -13,15 +13,29 @@ import { allFoodItems as mockFoodItems, sortByModeRank, pickLocalDishes, filterB
 import type { Course } from "./data/allFood";
 import { recommend, rankTypes } from "./data/recommend";
 import { DISH_TYPE_LABELS } from "./data/dishTypes";
-import { loadRecentSelections, addRecentSelection } from "./data/selectionHistory";
+import { loadRecentSelections, addRecentSelection, saveRecentSelections } from "./data/selectionHistory";
+import { RECENT_LIMIT } from "./data/recommend";
 import { loadSavedCity, saveCity, detectProvince, DEFAULT_CITY } from "./data/location";
 import type { MenuItem, Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
-import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
+import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact, EMPTY_IMPACT } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
 import { checkPlus, loadSavedPlus } from "./plus/plus";
 import PlusSheet from "./components/PlusSheet";
+import AuthScreen, { type AuthMode } from "./components/AuthScreen";
+import {
+  supabase,
+  type User as AuthUser,
+  displayNameOf,
+  isAuthPromptDone,
+  markAuthPromptDone,
+  loadRemoteState,
+  saveRemoteState,
+  mergeRecent,
+  signOut,
+  deleteAccount
+} from "./account/account";
 
 const AVERAGE_CARBON = getAverageCarbon(mockFoodItems);
 
@@ -95,6 +109,108 @@ export default function App() {
     });
   }, []);
 
+  // Account (optional): Supabase session, the login screen, and settings synced to the account.
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authScreen, setAuthScreen] = useState<{ mode: AuthMode; firstRun: boolean } | null>(null);
+  // The account whose saved settings have been loaded; only then are changes written back.
+  const [syncedUserId, setSyncedUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setAuthUser(data.session?.user ?? null);
+      setAuthChecked(true);
+    });
+    // Note: no Supabase calls inside this callback (they would wait on each other).
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      setAuthUser(session?.user ?? null);
+      if (event === "PASSWORD_RECOVERY") {
+        setAuthScreen({ mode: "newPassword", firstRun: false });
+      } else if (event === "SIGNED_IN") {
+        markAuthPromptDone();
+        setAuthScreen((cur) => (cur && cur.mode !== "newPassword" ? null : cur));
+      }
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  // First run: after the guide, offer to sign in (with "continue as guest").
+  useEffect(() => {
+    if (showSplash || showOnboarding || !authChecked || authUser || isAuthPromptDone()) return;
+    setAuthScreen((cur) => cur ?? { mode: "signin", firstRun: true });
+  }, [showSplash, showOnboarding, authChecked, authUser]);
+
+  const closeAuthScreen = () => {
+    setAuthScreen((cur) => {
+      if (cur?.firstRun) markAuthPromptDone();
+      return null;
+    });
+  };
+
+  // On sign-in: take the account's mode, language, recent picks and zero-waste stats.
+  useEffect(() => {
+    if (!authUser) {
+      setSyncedUserId(null);
+      return;
+    }
+    let cancelled = false;
+    loadRemoteState(authUser.id)
+      .then((remote) => {
+        if (cancelled || !remote) return;
+        if (remote.persona) setActivePersona(remote.persona as Persona);
+        if (remote.language === "tr" || remote.language === "en") setLanguage(remote.language);
+        setRecentSelections((local) => {
+          const merged = mergeRecent(remote.recent_selections ?? [], local, RECENT_LIMIT);
+          saveRecentSelections(merged);
+          return merged;
+        });
+        const r = { ...EMPTY_IMPACT, ...(remote.impact ?? {}) } as ImpactStats;
+        setImpact((local) => {
+          const next = r.meals > local.meals ? r : local;
+          saveImpact(next);
+          return next;
+        });
+      })
+      .catch((err) => console.warn("Hesap verileri alınamadı", err))
+      .finally(() => {
+        if (!cancelled) setSyncedUserId(authUser.id);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser?.id]);
+
+  // While signed in: save changes to the account (a moment after the last change).
+  useEffect(() => {
+    if (!authUser || syncedUserId !== authUser.id) return;
+    const timer = setTimeout(() => {
+      saveRemoteState(authUser.id, {
+        display_name: displayNameOf(authUser).slice(0, 60) || null,
+        persona: activePersona,
+        language,
+        recent_selections: recentSelections,
+        impact: { ...impact }
+      }).catch((err) => console.warn("Hesap verileri kaydedilemedi", err));
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [authUser, syncedUserId, activePersona, language, recentSelections, impact]);
+
+  const handleSignOut = async () => {
+    await signOut().catch(() => undefined);
+    setAuthUser(null);
+  };
+
+  // Account deletion: the server removes the account and its data; this phone forgets the
+  // synced picks and stats too.
+  const handleDeleteAccount = async () => {
+    await deleteAccount();
+    setAuthUser(null);
+    saveRecentSelections([]);
+    setRecentSelections([]);
+    saveImpact(EMPTY_IMPACT);
+    setImpact(EMPTY_IMPACT);
+  };
+
   // Geolocation & Location Search
   // Starts from the last known province; replaced by the detected one when the app opens.
   const [userCity, setUserCityState] = useState<string>(() => loadSavedCity() ?? DEFAULT_CITY);
@@ -107,14 +223,14 @@ export default function App() {
   // App only: once the splash and the first-run guide are gone, ask for ad consent (where the law
   // requires it) and start AdMob, so the first ad card does not stop the user mid-swipe.
   useEffect(() => {
-    if (showSplash || showOnboarding || isPlus) return;
+    if (showSplash || showOnboarding || authScreen || isPlus) return;
     prepareAds();
-  }, [showSplash, showOnboarding, isPlus]);
+  }, [showSplash, showOnboarding, authScreen, isPlus]);
 
   // Detect the province on start; on failure (no permission, no signal) keep the saved one.
   useEffect(() => {
-    // On first run the guide explains the location question first.
-    if (showOnboarding) return;
+    // On first run the guide explains the location question first (and the sign-in offer comes before it).
+    if (showOnboarding || authScreen?.firstRun) return;
     let cancelled = false;
     detectProvince().then((result) => {
       if (cancelled || !result.ok) return;
@@ -127,7 +243,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [showOnboarding]);
+  }, [showOnboarding, authScreen?.firstRun]);
 
   // The toast stays 3 s once the splash screen is gone.
   useEffect(() => {
@@ -269,7 +385,7 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
-              adsPaused={showSplash || showOnboarding || showPlus || selectedInsightItem !== null}
+              adsPaused={showSplash || showOnboarding || showPlus || authScreen !== null || selectedInsightItem !== null}
               adsEnabled={!isPlus}
               onOpenPlus={() => setShowPlus(true)}
             />
@@ -302,6 +418,11 @@ export default function App() {
             onShowGuide={() => setShowOnboarding(true)}
             isPlus={isPlus}
             onOpenPlus={() => setShowPlus(true)}
+            account={authUser ? { name: displayNameOf(authUser), email: authUser.email ?? "" } : null}
+            onSignIn={() => setAuthScreen({ mode: "signin", firstRun: false })}
+            onSignUp={() => setAuthScreen({ mode: "signup", firstRun: false })}
+            onSignOut={handleSignOut}
+            onDeleteAccount={handleDeleteAccount}
           />
         );
       default:
@@ -419,6 +540,16 @@ export default function App() {
               <span>{t.tabProfile}</span>
             </button>
           </nav>
+        )}
+
+        {!showSplash && !showOnboarding && authScreen && (
+          <AuthScreen
+            key={`${authScreen.mode}-${authScreen.firstRun}`}
+            language={language}
+            initialMode={authScreen.mode}
+            firstRun={authScreen.firstRun}
+            onClose={closeAuthScreen}
+          />
         )}
 
         {!showSplash && showPlus && (
