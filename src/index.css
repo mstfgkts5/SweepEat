@@ -2372,19 +2372,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 32px;
-  padding: 0 4px;
-  border: none;
-  background: none;
   color: #1D2D44;
-  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   text-decoration: underline;
   text-decoration-color: #E9C46A;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
-  cursor: pointer;
 }
 
 .ad-card-plus svg {
