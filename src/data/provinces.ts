@@ -144,6 +144,9 @@ export const nearestProvince = (lat: number, lon: number): Province | null => {
   return bestKm <= 250 ? best : null;
 };
 
+// True when we have our own restaurant list for this province.
+export const hasRestaurantData = (city: string): boolean => RESTAURANT_CITIES.some((c) => norm(c) === norm(city));
+
 // For restaurant suggestions: the city itself if it has data, otherwise the nearest one that does.
 export const restaurantCityFor = (city: string): string => {
   const own = RESTAURANT_CITIES.find((c) => norm(c) === norm(city));

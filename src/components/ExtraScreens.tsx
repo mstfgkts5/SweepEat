@@ -1,6 +1,6 @@
 import AccountSection from "./AccountSection";
 import React, { useState, useMemo } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Utensils, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown } from "lucide-react";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, Navigation, RefreshCw, Award, Leaf, Dumbbell, Utensils, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown, Hourglass, Bell } from "lucide-react";
 import { PERSONAS, type MenuItem, type Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
@@ -11,7 +11,8 @@ import { generateTopRestaurants } from "../data/restaurantMatch";
 import { buildRound, roundKind, roundCount } from "../data/bracket";
 import SlideCelebration from "./SlideCelebration";
 import { prefersReducedMotion, PICK_SLIDE_MS } from "../data/motion";
-import { restaurantCityFor } from "../data/provinces";
+import { restaurantCityFor, hasRestaurantData } from "../data/provinces";
+import { hasRequestedCity, requestCity } from "../data/cityRequest";
 import { restaurantLookupNames, dishKeyOf, filterByCourse } from "../data/allFood";
 import type { Course } from "../data/allFood";
 import CourseToggle from "./CourseToggle";
@@ -585,14 +586,29 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   const isLoadingRestaurants = false;
   // Provinces without restaurant data use the nearest city that has it.
   const restaurantCity = restaurantCityFor(userCity);
+  // No list of our own for this province: say so first ("yakında"); the nearest city's
+  // list is one tap away. Nearby (GPS) results are always real distances, so they stay.
+  const cityCovered = hasRestaurantData(userCity) || showsNearby;
+  const [showNearestList, setShowNearestList] = useState(false);
+  const [cityRequest, setCityRequest] = useState<"idle" | "sending" | "sent" | "failed">(
+    () => (hasRequestedCity(userCity) ? "sent" : "idle")
+  );
+  const sendCityRequest = async () => {
+    setCityRequest("sending");
+    setCityRequest((await requestCity(userCity)) ? "sent" : "failed");
+  };
+  const searchDishOnMaps = () => {
+    const q = encodeURIComponent(`${champion.nameTr} ${userCity}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+  };
 
-  const handleOrder = () => {
-    const name = language === "tr" ? champion.nameTr : champion.nameEn;
-    const bestRestaurant = restaurants[0]?.name || champion.restaurant;
-    const msg = language === "tr"
-      ? `Eşsiz Seçim! Yemeksepeti / Getir Yemek yönlendirmesi simüle ediliyor: ${name} - ${bestRestaurant}`
-      : `Excellent Choice! Redirecting to Yemeksepeti / Getir Yemek: ${name} - ${bestRestaurant}`;
-    alert(msg);
+  // There is no ordering integration: the main button gives honest directions to the
+  // best restaurant (or a Maps search in a city we do not cover yet).
+  const bestRestaurant = cityCovered ? restaurants[0] : undefined;
+  const handleDirections = () => {
+    if (!bestRestaurant) return searchDishOnMaps();
+    const place = [bestRestaurant.name, bestRestaurant.address || bestRestaurant.area, restaurantCity].filter(Boolean).join(" ");
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}`, "_blank");
   };
 
   return (
@@ -622,7 +638,9 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           <span>
             {showsNearby
               ? (language === "tr" ? "Yakınındaki 5 Restoran" : "5 Restaurants Near You")
-              : `${t.winnerTabRestaurants} (${restaurantCityFor(userCity)})`}
+              : cityCovered || showNearestList
+                ? `${t.winnerTabRestaurants} (${restaurantCity})`
+                : `${language === "tr" ? "Restoranlar" : "Restaurants"} (${userCity})`}
           </span>
         </button>
       </div>
@@ -679,13 +697,54 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           )}
         </div>
       ) : (
-        <div className="winner-restaurant-list">
+        <div className={`winner-restaurant-list ${!cityCovered && !showNearestList ? "is-soon" : ""}`}>
           {isLoadingRestaurants ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", gap: "12px" }}>
               <RefreshCw size={24} className="spin-animation" style={{ color: "var(--emerald-green)" }} />
               <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 600 }}>
                 {language === "tr" ? "Gerçek mekanlar sorgulanıyor..." : "Searching real places..."}
               </span>
+            </div>
+          ) : !cityCovered && !showNearestList ? (
+            <div className="city-soon-card">
+              <div className="city-soon-icon"><Hourglass size={22} /></div>
+              <strong className="city-soon-title">
+                {language === "tr" ? `${userCity} çok yakında` : `${userCity} is coming soon`}
+              </strong>
+              <p className="city-soon-text">
+                {language === "tr"
+                  ? `${userCity} için kendi restoran listemizi hazırlıyoruz. Şimdilik bu yemeği senin için Google Haritalar'da arayabiliriz.`
+                  : `We are preparing our own restaurant list for ${userCity}. For now we can search this dish on Google Maps for you.`}
+              </p>
+              <button className="city-soon-primary" onClick={searchDishOnMaps}>
+                <MapPin size={15} />
+                <span>
+                  {language === "tr"
+                    ? `"${champion.nameTr} ${userCity}" ara`
+                    : `Search "${champion.nameEn} ${userCity}"`}
+                </span>
+              </button>
+              <button
+                className="city-soon-secondary"
+                onClick={sendCityRequest}
+                disabled={cityRequest === "sending" || cityRequest === "sent"}
+              >
+                {cityRequest === "sent" ? <Check size={15} /> : <Bell size={15} />}
+                <span>
+                  {cityRequest === "sent"
+                    ? language === "tr" ? `${userCity} isteğin alındı, teşekkürler!` : `Request for ${userCity} received, thanks!`
+                    : cityRequest === "failed"
+                      ? language === "tr" ? "Gönderilemedi, tekrar dene" : "Could not send, try again"
+                      : language === "tr" ? `${userCity} gelsin diye oy ver` : `Vote for ${userCity}`}
+                </span>
+              </button>
+              {restaurants.length > 0 && restaurantCity !== userCity && (
+                <button className="city-soon-link" onClick={() => setShowNearestList(true)}>
+                  {language === "tr"
+                    ? `En yakın şehir ${restaurantCity} listesini göster`
+                    : `Show the list for the nearest city, ${restaurantCity}`}
+                </button>
+              )}
             </div>
           ) : restaurants.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "16px 0" }}>
@@ -807,9 +866,14 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{price}", String(championDeal.rescuedPrice))}
           </button>
         )}
-        <button className="action-btn" onClick={handleOrder} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-          <ShoppingCart size={18} /> {t.winnerOrderBtn}
+        <button className="action-btn" onClick={handleDirections} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+          <Navigation size={18} /> {bestRestaurant ? t.winnerOrderBtn : t.winnerSearchBtn}
         </button>
+        {bestRestaurant && (
+          <span className="order-btn-hint">
+            {language === "tr" ? `${bestRestaurant.name} için yol tarifi açılır` : `Opens directions to ${bestRestaurant.name}`}
+          </span>
+        )}
         <button className="secondary-btn" onClick={onRestart} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
           <RefreshCw size={16} /> {t.winnerReturnBtn}
         </button>

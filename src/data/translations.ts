@@ -13,7 +13,7 @@ export const translations = {
     modeIntroLabel: "Seçilen Mod",
 
     // Explore / Swipe Deck
-    swipeSponsored: "SPONSORLU",
+    swipeSponsored: "REKLAM · SPONSORLU",
     swipeCouponUnlock: "%15 İNDİRİM KUPONUNU AÇMAK İÇİN SAĞA KAYDIR",
     swipeAiInsight: "YAPAY ZEKA ANALİZİ",
     swipeEmpty: "Deste Bitti!",
@@ -73,6 +73,7 @@ export const translations = {
     locationModalAuto: "Konumumu Otomatik Bul",
     locationModalLoading: "Konum bulunuyor...",
     cityDetected: "Konumun: {city}. Yemekler buradan başlıyor.",
+    cityDetectedSoon: "Konumun: {city}. Yemekler hazır; {city} restoran listesi çok yakında.",
     locationSearchPlaceholder: "İl ara...",
 
     // Tournament / Duello Screen
@@ -90,7 +91,8 @@ export const translations = {
     winnerAiRefLabel: "YAPAY ZEKA HAKEM YORUMU",
     winnerSponsorLabel: "ÖZEL İNDİRİM KAZANDINIZ!",
     winnerSponsorText: "Bu yemeğe özel %{discount} indirim kodunuz:",
-    winnerOrderBtn: "Sipariş Ver",
+    winnerOrderBtn: "Yol Tarifi Al",
+    winnerSearchBtn: "Haritada Ara",
     winnerReturnBtn: "Keşfetmeye Geri Dön",
     winnerTabCommentary: "Hakem Yorumu",
     winnerTabRestaurants: "En İyi 5 Restoran",
@@ -111,7 +113,7 @@ export const translations = {
     modeIntroLabel: "Selected Mode",
 
     // Explore / Swipe Deck
-    swipeSponsored: "SPONSORED",
+    swipeSponsored: "AD · SPONSORED",
     swipeCouponUnlock: "SWIPE RIGHT TO UNLOCK 15% COUPON",
     swipeAiInsight: "AI INSIGHT",
     swipeEmpty: "Deck Finished!",
@@ -171,6 +173,7 @@ export const translations = {
     locationModalAuto: "Detect Location Automatically",
     locationModalLoading: "Locating...",
     cityDetected: "You are in {city}. Dishes start from here.",
+    cityDetectedSoon: "You are in {city}. Dishes are ready; the {city} restaurant list is coming soon.",
     locationSearchPlaceholder: "Search city...",
 
     // Tournament / Duello Screen
@@ -188,7 +191,8 @@ export const translations = {
     winnerAiRefLabel: "AI REFEREE COMMENTARY",
     winnerSponsorLabel: "YOU WON A SPECIAL DISCOUNT!",
     winnerSponsorText: "Your special %{discount} discount code for this dish:",
-    winnerOrderBtn: "Order Now",
+    winnerOrderBtn: "Get Directions",
+    winnerSearchBtn: "Search on Maps",
     winnerReturnBtn: "Return to Exploring",
     winnerTabCommentary: "Referee Review",
     winnerTabRestaurants: "Top 5 Restaurants",

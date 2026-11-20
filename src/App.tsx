@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { Compass, Heart, User, MapPin, Sparkles, Users } from "lucide-react";
+import { Compass, Heart, User, MapPin, Sparkles, Users, Zap } from "lucide-react";
 import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
@@ -18,12 +18,15 @@ import { RECENT_LIMIT } from "./data/recommend";
 import { loadSavedCity, saveCity, detectProvince, DEFAULT_CITY } from "./data/location";
 import { normalizePersona, type MenuItem, type Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
+import { hasRestaurantData } from "./data/provinces";
 import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact, EMPTY_IMPACT, ecoText } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
 import { checkPlus, loadSavedPlus } from "./plus/plus";
 import PlusSheet from "./components/PlusSheet";
 import GroupScreen from "./components/GroupScreen";
+import { readInviteCode } from "./group/group";
+import QuickPick from "./components/QuickPick";
 import MealPicker, { MEAL_ICONS } from "./components/MealPicker";
 import { filterByMeal, MEALS, MEAL_LABELS, type Meal } from "./data/meals";
 import AuthScreen, { type AuthMode } from "./components/AuthScreen";
@@ -47,15 +50,33 @@ type TabType = "explore" | "liked" | "profile";
 export default function App() {
   // Navigation & Flows
   const [showSplash, setShowSplash] = useState(true);
+  // Invite link ("?masa=ABC234"): open the Group Table with the code filled in. The friend
+  // skips the first-run guide this time (it shows on the next visit).
+  const [inviteCode] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : readInviteCode(window.location.search)
+  );
   // First-run guide (shown once after the splash; can be opened again from Profile).
-  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
+  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone() && !inviteCode);
+  // Grup Masası (each friend on their own phone).
+  const [showGroup, setShowGroup] = useState(() => inviteCode !== null);
+  // Drop "?masa=" from the address so a reload does not reopen the invite.
+  useEffect(() => {
+    if (!inviteCode) return;
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("masa");
+      window.history.replaceState(null, "", url.toString());
+    } catch {
+      // old browser: the parameter just stays
+    }
+  }, [inviteCode]);
   const finishOnboarding = () => {
     markOnboardingDone();
     setShowOnboarding(false);
   };
   const [activeTab, setActiveTab] = useState<TabType>("explore");
   const [isTournamentActive, setIsTournamentActive] = useState(false);
-  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string; label?: string } | null>(null);
+  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string; label?: string; keepDeck?: boolean } | null>(null);
 
   // Localization
   const [language, setLanguage] = useState<"tr" | "en">("tr");
@@ -146,9 +167,9 @@ export default function App() {
 
   // First run: after the guide, offer to sign in (with "continue as guest").
   useEffect(() => {
-    if (showSplash || showOnboarding || !authChecked || authUser || isAuthPromptDone()) return;
+    if (showSplash || showOnboarding || showGroup || !authChecked || authUser || isAuthPromptDone()) return;
     setAuthScreen((cur) => cur ?? { mode: "signin", firstRun: true });
-  }, [showSplash, showOnboarding, authChecked, authUser]);
+  }, [showSplash, showOnboarding, showGroup, authChecked, authUser]);
 
   const closeAuthScreen = () => {
     setAuthScreen((cur) => {
@@ -327,8 +348,8 @@ export default function App() {
     }
   };
 
-  // Grup Masası (each friend on their own phone).
-  const [showGroup, setShowGroup] = useState(false);
+  // Hızlı karar: three suggestions without swiping; `quickPage` = which three.
+  const [quickPage, setQuickPage] = useState<number | null>(null);
 
   const handleRemoveLiked = (item: MenuItem) => {
     setLikedPool((prev) => prev.filter((x) => x.id !== item.id));
@@ -383,6 +404,11 @@ export default function App() {
     ? t.recoSubtitlePersonal.replace("{type}", DISH_TYPE_LABELS[language][topType].toLocaleLowerCase(language === "tr" ? "tr-TR" : "en-US"))
     : t.recoSubtitlePopular;
 
+  // Ranked once per opening: mode, course, meal, recent picks; dishes already swiped left out.
+  const quickRanked = quickPage === null ? [] : recommend(getFilteredPool(), recentSelections, 30);
+  const quickPages = Math.max(1, Math.ceil(quickRanked.length / 3));
+  const quickItems = quickPage === null ? [] : quickRanked.slice((quickPage % quickPages) * 3, (quickPage % quickPages) * 3 + 3);
+
   const renderActiveContent = () => {
     if (isTournamentActive) {
       return (
@@ -414,8 +440,10 @@ export default function App() {
           label={tournamentChampion.label}
           near={activePersona === "everyday" ? userPos : null}
           onRestart={() => {
+            const keepDeck = tournamentChampion.keepDeck;
             setTournamentChampion(null);
-            handleRestartExplore();
+            // Quick pick: back to the same deck and likes; after the arena: a fresh deck.
+            if (!keepDeck) handleRestartExplore();
           }}
         />
       );
@@ -442,6 +470,10 @@ export default function App() {
                 <span>{language === "tr" ? "Grup" : "Group"}</span>
               </button>
             </div>
+            <button className="quick-pick-entry" onClick={() => setQuickPage(0)}>
+              <Zap size={14} />
+              <span>{language === "tr" ? "Kararsız mısın? Bana 3 öneri ver" : "Can't decide? Give me 3 picks"}</span>
+            </button>
             <SwipeDeck
               items={getFilteredPool()}
               onSwipe={handleSwipe}
@@ -449,7 +481,7 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
-              adsPaused={showSplash || showOnboarding || showPlus || showGroup || authScreen !== null || selectedInsightItem !== null}
+              adsPaused={showSplash || showOnboarding || showPlus || showGroup || quickPage !== null || authScreen !== null || selectedInsightItem !== null}
               adsEnabled={!isPlus}
               onOpenPlus={() => setShowPlus(true)}
               isPlus={isPlus}
@@ -546,7 +578,7 @@ export default function App() {
         {cityToast && !showSplash && !showOnboarding && (
           <div className="city-toast" role="status">
             <MapPin size={14} />
-            <span>{t.cityDetected.replace("{city}", cityToast)}</span>
+            <span>{(hasRestaurantData(cityToast) ? t.cityDetected : t.cityDetectedSoon).split("{city}").join(cityToast)}</span>
           </div>
         )}
 
@@ -632,8 +664,9 @@ export default function App() {
             onPickWinner={(item) => {
               setShowGroup(false);
               setIsTournamentActive(false);
-              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Grup Masasının seçimi" : "The table's pick" });
+              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Grup Masasının seçimi" : "The table's pick", keepDeck: true });
             }}
+            initialCode={inviteCode}
           />
         )}
 
@@ -652,7 +685,7 @@ export default function App() {
           />
         )}
 
-        {!showSplash && !showOnboarding && !authScreen && !modeIntro && (mealPickerOpen || meal === null) && (
+        {!showSplash && !showOnboarding && !authScreen && !showGroup && !modeIntro && (mealPickerOpen || meal === null) && (
           <MealPicker
             language={language}
             modeName={modeTitle(activePersona)}
@@ -672,6 +705,21 @@ export default function App() {
               setModeIntro(null);
               setActiveTab("explore");
               setMealPickerOpen(true);
+            }}
+          />
+        )}
+
+        {!showSplash && quickPage !== null && (
+          <QuickPick
+            items={quickItems}
+            language={language}
+            canShuffle={quickPages > 1}
+            onShuffle={() => setQuickPage((p) => (p ?? 0) + 1)}
+            onClose={() => setQuickPage(null)}
+            onPick={(item) => {
+              rememberSelection(item);
+              setQuickPage(null);
+              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Hızlı Kararın" : "Your Quick Pick", keepDeck: true });
             }}
           />
         )}

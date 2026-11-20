@@ -8,6 +8,7 @@ import {
   fetchGroupState,
   groupErrorText,
   groupWinners,
+  inviteLink,
   isValidCode,
   joinGroup,
   loadGroupSession,
@@ -35,6 +36,8 @@ interface GroupScreenProps {
   onClose: () => void;
   // "Restoranları gör" on the winning dish.
   onPickWinner: (item: MenuItem) => void;
+  // Code from an invite link ("?masa=ABC234"): filled in, the friend only types a name.
+  initialCode?: string | null;
 }
 
 const TEXT = {
@@ -48,9 +51,10 @@ const TEXT = {
     code: "Masa kodu",
     join: "Katıl",
     lobbyTitle: "Masa kodu",
-    shareHint: "Arkadaşların Kaydırak'ta Grup Masası > Katıl'a bu kodu yazsın.",
-    share: "Kodu paylaş",
-    copied: "Kod kopyalandı",
+    shareHint: "Davet linkini gönder: arkadaşın linke dokununca kod hazır gelir, uygulaması olmasa da tarayıcıdan katılır.",
+    share: "Davet linkini paylaş",
+    copied: "Davet linki kopyalandı",
+    invited: "Davet linkiyle geldin. Adını yaz ve katıl.",
     members: "Masadakiler",
     host: "masa sahibi",
     start: "Oylamayı başlat",
@@ -69,7 +73,7 @@ const TEXT = {
     newTable: "Yeni masa",
     leave: "Masadan çık",
     close: "Kapat",
-    shareText: (code: string) => `Kaydırak'ta Grup Masası'na katıl! Uygulamada Grup Masası > Katıl'a şu kodu yaz: ${code}`
+    shareText: (code: string) => `Kaydırak'ta Grup Masası'na katıl! Linke dokun: ${inviteLink(code)} (ya da Grup Masası > Katıl'a şu kodu yaz: ${code})`
   },
   en: {
     title: "Group Table",
@@ -81,9 +85,10 @@ const TEXT = {
     code: "Table code",
     join: "Join",
     lobbyTitle: "Table code",
-    shareHint: "Friends type this code in Kaydırak under Group Table > Join.",
-    share: "Share code",
-    copied: "Code copied",
+    shareHint: "Send the invite link: the code is filled in when a friend taps it, and they can join from the browser without the app.",
+    share: "Share invite link",
+    copied: "Invite link copied",
+    invited: "You came with an invite link. Enter your name and join.",
     members: "At the table",
     host: "host",
     start: "Start voting",
@@ -102,7 +107,7 @@ const TEXT = {
     newTable: "New table",
     leave: "Leave table",
     close: "Close",
-    shareText: (code: string) => `Join my Group Table on Kaydırak! In the app, go to Group Table > Join and type: ${code}`
+    shareText: (code: string) => `Join my Group Table on Kaydırak! Tap the link: ${inviteLink(code)} (or go to Group Table > Join and type: ${code})`
   }
 };
 
@@ -115,13 +120,14 @@ const GroupScreen: React.FC<GroupScreenProps> = ({
   city,
   onOpenPlus,
   onClose,
-  onPickWinner
+  onPickWinner,
+  initialCode = null
 }) => {
   const t = TEXT[language];
   const [session, setSession] = useState<GroupSession | null>(loadGroupSession);
   const [state, setState] = useState<GroupState | null>(null);
   const [name, setName] = useState(defaultName);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(initialCode ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -192,7 +198,7 @@ const GroupScreen: React.FC<GroupScreenProps> = ({
       return; // share sheet closed
     }
     try {
-      await navigator.clipboard.writeText(state.code);
+      await navigator.clipboard.writeText(inviteLink(state.code));
       setNote(t.copied);
       setTimeout(() => setNote(null), 2000);
     } catch {
@@ -229,17 +235,23 @@ const GroupScreen: React.FC<GroupScreenProps> = ({
     body = (
       <div className="group-body">
         <p className="group-lead">{t.lead}</p>
+        {initialCode && <p className="group-invited" role="status">{t.invited}</p>}
         <label className="auth-field">
           <span className="auth-label">{t.yourName}</span>
           <span className="auth-input-wrap">
             <input value={name} onChange={(e) => setName(e.target.value)} maxLength={30} autoComplete="given-name" />
           </span>
         </label>
-        <button className="group-primary" disabled={busy || !name.trim()} onClick={open}>
-          {!isPlus && <Crown size={18} />} {t.open}
-        </button>
-        {!isPlus && <p className="group-small">{t.plusOnly}</p>}
-        <div className="auth-or"><span>{t.or}</span></div>
+        {/* Came with an invite: only the join part, the code is already filled in. */}
+        {!initialCode && (
+          <>
+            <button className="group-primary" disabled={busy || !name.trim()} onClick={open}>
+              {!isPlus && <Crown size={18} />} {t.open}
+            </button>
+            {!isPlus && <p className="group-small">{t.plusOnly}</p>}
+            <div className="auth-or"><span>{t.or}</span></div>
+          </>
+        )}
         <label className="auth-field">
           <span className="auth-label">{t.code}</span>
           <span className="auth-input-wrap">
@@ -255,7 +267,7 @@ const GroupScreen: React.FC<GroupScreenProps> = ({
             />
           </span>
         </label>
-        <button className="group-secondary" disabled={busy || !name.trim() || !isValidCode(code)} onClick={join}>
+        <button className={initialCode ? "group-primary" : "group-secondary"} disabled={busy || !name.trim() || !isValidCode(code)} onClick={join}>
           {t.join}
         </button>
       </div>

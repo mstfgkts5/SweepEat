@@ -6,7 +6,7 @@
 // with the most likes win. Server side: Supabase functions group_* (see the migration);
 // each phone keeps a secret member token and checks the table every 2 seconds.
 // ==========================================
-import { supabase } from "../account/account";
+import { supabase, WEB_APP_URL } from "../account/account";
 
 export const GROUP_DISH_COUNT = 12;
 export const GROUP_MAX_MEMBERS = 8;
@@ -66,6 +66,23 @@ export const normalizeCode = (raw: string): string =>
     .slice(0, 6);
 
 export const isValidCode = (code: string): boolean => /^[A-HJ-NP-Z2-9]{6}$/.test(code);
+
+// Invite link: opens the web version (or the app's web view) with the code filled in,
+// so a friend without the app can join from the browser.
+export const inviteLink = (code: string, base: string = WEB_APP_URL): string =>
+  `${base}${base.includes("?") ? "&" : "?"}masa=${encodeURIComponent(code)}`;
+
+// The table code in a page address ("?masa=ABC234"), if there is a valid one.
+export const readInviteCode = (search: string): string | null => {
+  try {
+    const raw = new URLSearchParams(search).get("masa");
+    if (!raw) return null;
+    const code = normalizeCode(raw);
+    return isValidCode(code) ? code : null;
+  } catch {
+    return null;
+  }
+};
 
 const call = async <T>(fn: string, args: Record<string, unknown>): Promise<T> => {
   const { data, error } = await supabase.rpc(fn, args);

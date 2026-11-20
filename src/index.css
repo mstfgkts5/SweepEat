@@ -3481,3 +3481,215 @@ body {
   font-weight: 700;
   font-size: 11px;
 }
+
+/* ==========================================
+   City without our own restaurant list ("yakında")
+   ========================================== */
+.city-soon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  margin: 4px 0;
+  border-radius: var(--radius-md);
+  background: var(--accent-orange-light);
+  border: 1px dashed var(--accent-orange);
+  text-align: center;
+}
+.city-soon-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: var(--accent-text);
+}
+.city-soon-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.city-soon-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.city-soon-primary,
+.city-soon-secondary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+}
+.city-soon-primary {
+  background: var(--emerald-green);
+  color: #ffffff;
+}
+.city-soon-secondary {
+  background: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.city-soon-secondary:disabled {
+  color: var(--emerald-green);
+  cursor: default;
+}
+.city-soon-link {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-text);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px;
+}
+.city-soon-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-text);
+  background: var(--accent-orange-light);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.order-btn-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* ==========================================
+   Hızlı karar (3 suggestions without swiping)
+   ========================================== */
+.quick-pick-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  min-height: 34px;
+  padding: 0 14px;
+  margin: -2px 0 8px;
+  border: 1px solid var(--accent-orange);
+  border-radius: 999px;
+  background: var(--accent-orange-light);
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.quick-pick-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.quick-pick-lead {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+.quick-pick-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quick-pick-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--card-white);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.quick-pick-item:active {
+  transform: scale(0.98);
+}
+.quick-pick-item img {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.quick-pick-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.quick-pick-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.quick-pick-text strong {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.quick-pick-text span {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.quick-pick-shuffle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.group-invited {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--emerald-green-light);
+  color: var(--emerald-green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Notes and cards keep their height inside the scrolling restaurant list */
+.winner-restaurant-list > * {
+  flex-shrink: 0;
+}
+.winner-restaurant-list.is-soon {
+  max-height: none;
+  overflow: visible;
+}
