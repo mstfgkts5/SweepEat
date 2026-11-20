@@ -10,14 +10,6 @@ import AdCard from "./AdCard";
 // (which unmounts the deck) does not reset it.
 let swipesSinceAdStore = 0;
 
-// Typical price band for a dish (prices differ by restaurant): about -10% / +20%, rounded to 10 TL.
-const round10 = (n: number) => Math.max(10, Math.round(n / 10) * 10);
-const priceRange = (price: number): string => {
-  const low = round10(price * 0.9);
-  const high = Math.max(low + 10, round10(price * 1.2));
-  return `${low} - ${high} TL`;
-};
-
 interface SwipeDeckProps {
   items: MenuItem[];
   onSwipe: (item: MenuItem, direction: "left" | "right") => void;
@@ -312,10 +304,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <strong>{activeItem.rating}</strong>
                 <span className="card-review-count">({activeItem.reviewCount})</span>
               </div>
-              <span className="card-meta-dot">•</span>
-              {/* Price range is free for everyone since 20 Nov 2026 (fake-customer test:
-                  budget users left when prices were behind Plus). */}
-              <span className="card-price-range">{priceRange(activeItem.price)}</span>
               {showCarbon && (() => {
                 const c = estimateCarbon(activeItem);
                 return (
@@ -341,11 +329,11 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                   <div className="surplus-banner-top">
                     <span className="surplus-badge">{eco.surplusBadge}</span>
                     <span className="surplus-price">
-                      <s>{activeItem.price} ₺</s> <strong>{deal.rescuedPrice} ₺</strong>
+                      <strong>-%{deal.discountPercent}</strong>
                     </span>
                   </div>
                   <span className="surplus-meta">
-                    -%{deal.discountPercent} · {eco.portionsLeft.replace("{n}", String(deal.portionsLeft))} · {eco.pickupUntil.replace("{time}", deal.pickupUntil)}
+                    {eco.portionsLeft.replace("{n}", String(deal.portionsLeft))} · {eco.pickupUntil.replace("{time}", deal.pickupUntil)}
                   </span>
                 </div>
               );

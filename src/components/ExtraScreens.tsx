@@ -272,10 +272,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <span className="impact-value">{impact.co2Kg} kg</span>
           <span className="impact-label">{eco.impactCo2}</span>
         </div>
-        <div className="impact-stat">
-          <span className="impact-value">{impact.moneySaved} ₺</span>
-          <span className="impact-label">{eco.impactMoney}</span>
-        </div>
       </div>
 
       {/* SETTINGS SECTION */}
@@ -863,7 +859,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
           >
             <Recycle size={18} />
-            {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{price}", String(championDeal.rescuedPrice))}
+            {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{percent}", String(championDeal.discountPercent))}
           </button>
         )}
         <button className="action-btn" onClick={handleDirections} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
