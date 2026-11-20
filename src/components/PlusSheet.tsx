@@ -17,7 +17,6 @@ const TEXT = {
       "Reklam kartı yok: yemekleri reklamsız kaydır",
       "Geri al: yanlışlıkla kaydırdığın yemeği geri getir",
       "Grup Masası: masayı sen aç, arkadaşların kendi telefonlarından ücretsiz katılsın, ortak favoriyi birlikte bulun",
-      "Fiyat etiketleri: her yemekte fiyat aralığını gör",
       "Kaydırak'ın geliştirilmesine destek olursun"
     ],
     monthly: "Aylık",
@@ -42,7 +41,6 @@ const TEXT = {
       "No ad cards: swipe dishes without ads",
       "Undo: bring back a dish you swiped by mistake",
       "Group Table: you open the table, friends join free from their own phones, and you find the shared favourite",
-      "Price tags: see the price range of every dish",
       "You support Kaydırak's development"
     ],
     monthly: "Monthly",

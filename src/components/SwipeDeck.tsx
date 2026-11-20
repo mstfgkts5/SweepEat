@@ -30,7 +30,7 @@ interface SwipeDeckProps {
   // false for Kaydırak Plus members: no ad cards.
   adsEnabled?: boolean;
   onOpenPlus?: () => void;
-  // Kaydırak Plus: price ranges and undo. Others see a lock that opens the Plus sheet.
+  // Kaydırak Plus: undo. Others see a lock that opens the Plus sheet.
   isPlus?: boolean;
   // Undo the last swipe (the button only shows when this is given).
   onUndo?: () => void;
@@ -313,19 +313,9 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <span className="card-review-count">({activeItem.reviewCount})</span>
               </div>
               <span className="card-meta-dot">•</span>
-              {isPlus ? (
-                <span className="card-price-range">{priceRange(activeItem.price)}</span>
-              ) : (
-                <button
-                  className="price-lock"
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onClick={onOpenPlus}
-                  aria-label={language === "tr" ? "Fiyat aralığı Kaydırak Plus ile" : "Price range with Kaydırak Plus"}
-                >
-                  <Lock size={11} /> ₺ Plus
-                </button>
-              )}
+              {/* Price range is free for everyone since 20 Nov 2026 (fake-customer test:
+                  budget users left when prices were behind Plus). */}
+              <span className="card-price-range">{priceRange(activeItem.price)}</span>
               {showCarbon && (() => {
                 const c = estimateCarbon(activeItem);
                 return (
