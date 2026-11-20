@@ -21,7 +21,17 @@ const POPULAR_TURKISH_CITIES = [
   "Eskişehir",
   "Adana",
   "Diyarbakır",
-  "Kahramanmaraş"
+  "Kahramanmaraş",
+  "Bursa",
+  "Antalya",
+  "Konya",
+  "Şanlıurfa",
+  "Kocaeli",
+  "Hatay",
+  "Manisa",
+  "Kayseri",
+  "Samsun",
+  "Trabzon"
 ];
 
 export default function LocationModal({

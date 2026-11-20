@@ -18,10 +18,12 @@ test("cities with and without our own restaurant list", async () => {
   const { provinces } = await load();
   assert.equal(provinces.hasRestaurantData("İzmir"), true);
   assert.equal(provinces.hasRestaurantData("izmir"), true);
-  assert.equal(provinces.hasRestaurantData("Bursa"), false);
-  assert.equal(provinces.hasRestaurantData("Trabzon"), false);
-  // Bursa still falls back to a covered city for the "nearest city" list.
-  assert.equal(provinces.hasRestaurantData(provinces.restaurantCityFor("Bursa")), true);
+  assert.equal(provinces.hasRestaurantData("Bursa"), true);
+  assert.equal(provinces.hasRestaurantData("Trabzon"), true);
+  assert.equal(provinces.hasRestaurantData("Van"), false);
+  assert.equal(provinces.hasRestaurantData("Balıkesir"), false);
+  // Van still falls back to a covered city for the "nearest city" list.
+  assert.equal(provinces.hasRestaurantData(provinces.restaurantCityFor("Van")), true);
 });
 
 test("invite links carry the table code", async () => {

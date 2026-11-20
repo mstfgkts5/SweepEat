@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { createServer } from "vite";
 import type { ViteDevServer } from "vite";
 
-const CITIES = ["İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş"];
+const CITIES = ["İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş", "Bursa", "Antalya", "Konya", "Şanlıurfa", "Kocaeli", "Hatay", "Manisa", "Kayseri", "Samsun", "Trabzon"];
 
 let server: ViteDevServer;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,8 +105,10 @@ test("a province without restaurant data uses the nearest city that has it", asy
   assert.equal(prov.restaurantCityFor("Gaziantep"), "Gaziantep");
   assert.equal(prov.restaurantCityFor("Kilis"), "Gaziantep");
   assert.equal(prov.restaurantCityFor("Batman"), "Diyarbakır");
-  assert.equal(prov.restaurantCityFor("Osmaniye"), "Adana");
-  assert.equal(prov.restaurantCityFor("Kocaeli"), "İstanbul");
-  assert.equal(prov.restaurantCityFor("Manisa"), "İzmir");
+  assert.equal(prov.restaurantCityFor("Osmaniye"), "Hatay");
+  assert.equal(prov.restaurantCityFor("Kocaeli"), "Kocaeli");
+  assert.equal(prov.restaurantCityFor("Sakarya"), "Kocaeli");
+  assert.equal(prov.restaurantCityFor("Manisa"), "Manisa");
+  assert.equal(prov.restaurantCityFor("Rize"), "Trabzon");
   assert.equal(prov.restaurantCityFor("Kırıkkale"), "Ankara");
 });

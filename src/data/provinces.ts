@@ -96,7 +96,8 @@ export const PROVINCES: Province[] = [
 
 // Cities that have restaurant data in the app (also the cities in the picker).
 export const RESTAURANT_CITIES = [
-  "İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş"
+  "İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş",
+  "Bursa", "Antalya", "Konya", "Şanlıurfa", "Kocaeli", "Hatay", "Manisa", "Kayseri", "Samsun", "Trabzon"
 ];
 
 const toRad = (d: number) => (d * Math.PI) / 180;
