@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { Compass, Heart, User, MapPin, Sparkles } from "lucide-react";
+import { Compass, Heart, User, MapPin, Sparkles, Users, Zap } from "lucide-react";
 import SwipeDeck from "./components/SwipeDeck";
 import AiInsightModal from "./components/AiInsightModal";
 import LocationModal from "./components/LocationModal";
@@ -13,13 +13,35 @@ import { allFoodItems as mockFoodItems, sortByModeRank, pickLocalDishes, filterB
 import type { Course } from "./data/allFood";
 import { recommend, rankTypes } from "./data/recommend";
 import { DISH_TYPE_LABELS } from "./data/dishTypes";
-import { loadRecentSelections, addRecentSelection } from "./data/selectionHistory";
+import { loadRecentSelections, addRecentSelection, saveRecentSelections } from "./data/selectionHistory";
+import { RECENT_LIMIT } from "./data/recommend";
 import { loadSavedCity, saveCity, detectProvince, DEFAULT_CITY } from "./data/location";
-import type { MenuItem, Persona } from "./data/mockFood";
+import { normalizePersona, type MenuItem, type Persona } from "./data/mockFood";
 import { translations } from "./data/translations";
-import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact } from "./data/sustainability";
+import { hasRestaurantData } from "./data/provinces";
+import { getSurplusDeal, getPersonaInsight, getAverageCarbon, loadImpact, saveImpact, EMPTY_IMPACT, ecoText } from "./data/sustainability";
 import type { ImpactStats } from "./data/sustainability";
 import { prepareAds } from "./ads/ads";
+import { checkPlus, loadSavedPlus } from "./plus/plus";
+import PlusSheet from "./components/PlusSheet";
+import GroupScreen from "./components/GroupScreen";
+import { readInviteCode } from "./group/group";
+import QuickPick from "./components/QuickPick";
+import MealPicker, { MEAL_ICONS } from "./components/MealPicker";
+import { filterByMeal, MEALS, MEAL_LABELS, type Meal } from "./data/meals";
+import AuthScreen, { type AuthMode } from "./components/AuthScreen";
+import {
+  supabase,
+  type User as AuthUser,
+  displayNameOf,
+  isAuthPromptDone,
+  markAuthPromptDone,
+  loadRemoteState,
+  saveRemoteState,
+  mergeRecent,
+  signOut,
+  deleteAccount
+} from "./account/account";
 
 const AVERAGE_CARBON = getAverageCarbon(mockFoodItems);
 
@@ -28,27 +50,52 @@ type TabType = "explore" | "liked" | "profile";
 export default function App() {
   // Navigation & Flows
   const [showSplash, setShowSplash] = useState(true);
+  // Invite link ("?masa=ABC234"): open the Group Table with the code filled in. The friend
+  // skips the first-run guide this time (it shows on the next visit).
+  const [inviteCode] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : readInviteCode(window.location.search)
+  );
   // First-run guide (shown once after the splash; can be opened again from Profile).
-  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
+  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone() && !inviteCode);
+  // Grup Masası (each friend on their own phone).
+  const [showGroup, setShowGroup] = useState(() => inviteCode !== null);
+  // Drop "?masa=" from the address so a reload does not reopen the invite.
+  useEffect(() => {
+    if (!inviteCode) return;
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("masa");
+      window.history.replaceState(null, "", url.toString());
+    } catch {
+      // old browser: the parameter just stays
+    }
+  }, [inviteCode]);
   const finishOnboarding = () => {
     markOnboardingDone();
     setShowOnboarding(false);
   };
   const [activeTab, setActiveTab] = useState<TabType>("explore");
   const [isTournamentActive, setIsTournamentActive] = useState(false);
-  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string } | null>(null);
+  const [tournamentChampion, setTournamentChampion] = useState<{ item: MenuItem; commentary: string; label?: string; keepDeck?: boolean } | null>(null);
 
   // Localization
   const [language, setLanguage] = useState<"tr" | "en">("tr");
   const t = translations[language];
+  const modeTitle = (p: Persona): string =>
+    p === "zero_waste"
+      ? ecoText[language].zeroWasteTitle
+      : { everyday: t.profileEverydayTitle, fit: t.profileFitTitle, vegan: t.profileVeganTitle, tourist: t.profileTouristTitle }[p];
 
   // Data pools
   const [foodPool, setFoodPool] = useState<MenuItem[]>(mockFoodItems);
   const [likedPool, setLikedPool] = useState<MenuItem[]>([]);
   const [swipedIds, setSwipedIds] = useState<string[]>([]);
-  const [activePersona, setActivePersona] = useState<Persona>("gourmet");
+  const [activePersona, setActivePersona] = useState<Persona>("everyday");
   // Mode intro: after picking a mode, show which mode was picked before the dishes
   const [modeIntro, setModeIntro] = useState<Persona | null>(null);
+  // Öğün: asked when the app opens and after a mode change (see data/meals.ts).
+  const [meal, setMeal] = useState<Meal | null>(null);
+  const [mealPickerOpen, setMealPickerOpen] = useState(false);
 
   // Main dishes by default; the "Tatlılar" button shows only desserts.
   const [course, setCourse] = useState<Course>("main");
@@ -84,11 +131,124 @@ export default function App() {
 
   // Selected item for AI Modal
   const [selectedInsightItem, setSelectedInsightItem] = useState<MenuItem | null>(null);
+  // Kaydırak Plus (ad-free subscription): remembered state first, then Google Play's answer.
+  const [isPlus, setIsPlus] = useState(loadSavedPlus);
+  const [showPlus, setShowPlus] = useState(false);
+  useEffect(() => {
+    checkPlus().then((on) => {
+      if (on !== null) setIsPlus(on);
+    });
+  }, []);
+
+  // Account (optional): Supabase session, the login screen, and settings synced to the account.
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authScreen, setAuthScreen] = useState<{ mode: AuthMode; firstRun: boolean } | null>(null);
+  // The account whose saved settings have been loaded; only then are changes written back.
+  const [syncedUserId, setSyncedUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setAuthUser(data.session?.user ?? null);
+      setAuthChecked(true);
+    });
+    // Note: no Supabase calls inside this callback (they would wait on each other).
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      setAuthUser(session?.user ?? null);
+      if (event === "PASSWORD_RECOVERY") {
+        setAuthScreen({ mode: "newPassword", firstRun: false });
+      } else if (event === "SIGNED_IN") {
+        markAuthPromptDone();
+        setAuthScreen((cur) => (cur && cur.mode !== "newPassword" ? null : cur));
+      }
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  // First run: after the guide, offer to sign in (with "continue as guest").
+  useEffect(() => {
+    if (showSplash || showOnboarding || showGroup || !authChecked || authUser || isAuthPromptDone()) return;
+    setAuthScreen((cur) => cur ?? { mode: "signin", firstRun: true });
+  }, [showSplash, showOnboarding, showGroup, authChecked, authUser]);
+
+  const closeAuthScreen = () => {
+    setAuthScreen((cur) => {
+      if (cur?.firstRun) markAuthPromptDone();
+      return null;
+    });
+  };
+
+  // On sign-in: take the account's mode, language, recent picks and zero-waste stats.
+  useEffect(() => {
+    if (!authUser) {
+      setSyncedUserId(null);
+      return;
+    }
+    let cancelled = false;
+    loadRemoteState(authUser.id)
+      .then((remote) => {
+        if (cancelled || !remote) return;
+        const mode = normalizePersona(remote.persona);
+        if (mode) setActivePersona(mode);
+        if (remote.language === "tr" || remote.language === "en") setLanguage(remote.language);
+        setRecentSelections((local) => {
+          const merged = mergeRecent(remote.recent_selections ?? [], local, RECENT_LIMIT);
+          saveRecentSelections(merged);
+          return merged;
+        });
+        const r = { ...EMPTY_IMPACT, ...(remote.impact ?? {}) } as ImpactStats;
+        setImpact((local) => {
+          const next = r.meals > local.meals ? r : local;
+          saveImpact(next);
+          return next;
+        });
+      })
+      .catch((err) => console.warn("Hesap verileri alınamadı", err))
+      .finally(() => {
+        if (!cancelled) setSyncedUserId(authUser.id);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser?.id]);
+
+  // While signed in: save changes to the account (a moment after the last change).
+  useEffect(() => {
+    if (!authUser || syncedUserId !== authUser.id) return;
+    const timer = setTimeout(() => {
+      saveRemoteState(authUser.id, {
+        display_name: displayNameOf(authUser).slice(0, 60) || null,
+        persona: activePersona,
+        language,
+        recent_selections: recentSelections,
+        impact: { ...impact }
+      }).catch((err) => console.warn("Hesap verileri kaydedilemedi", err));
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [authUser, syncedUserId, activePersona, language, recentSelections, impact]);
+
+  const handleSignOut = async () => {
+    await signOut().catch(() => undefined);
+    setAuthUser(null);
+  };
+
+  // Account deletion: the server removes the account and its data; this phone forgets the
+  // synced picks and stats too.
+  const handleDeleteAccount = async () => {
+    await deleteAccount();
+    setAuthUser(null);
+    saveRecentSelections([]);
+    setRecentSelections([]);
+    saveImpact(EMPTY_IMPACT);
+    setImpact(EMPTY_IMPACT);
+  };
 
   // Geolocation & Location Search
   // Starts from the last known province; replaced by the detected one when the app opens.
   const [userCity, setUserCityState] = useState<string>(() => loadSavedCity() ?? DEFAULT_CITY);
   const [cityToast, setCityToast] = useState<string | null>(null);
+  // Phone position from the last location check: memory only, for Gündelik's closest restaurants.
+  const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
   const setUserCity = (city: string) => {
     setUserCityState(city);
     saveCity(city);
@@ -97,17 +257,18 @@ export default function App() {
   // App only: once the splash and the first-run guide are gone, ask for ad consent (where the law
   // requires it) and start AdMob, so the first ad card does not stop the user mid-swipe.
   useEffect(() => {
-    if (showSplash || showOnboarding) return;
+    if (showSplash || showOnboarding || authScreen || isPlus) return;
     prepareAds();
-  }, [showSplash, showOnboarding]);
+  }, [showSplash, showOnboarding, authScreen, isPlus]);
 
   // Detect the province on start; on failure (no permission, no signal) keep the saved one.
   useEffect(() => {
-    // On first run the guide explains the location question first.
-    if (showOnboarding) return;
+    // On first run the guide explains the location question first (and the sign-in offer comes before it).
+    if (showOnboarding || authScreen?.firstRun) return;
     let cancelled = false;
     detectProvince().then((result) => {
       if (cancelled || !result.ok) return;
+      setUserPos({ lat: result.lat, lon: result.lon });
       setUserCityState((current) => {
         if (current !== result.city) setCityToast(result.city);
         return result.city;
@@ -117,7 +278,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [showOnboarding]);
+  }, [showOnboarding, authScreen?.firstRun]);
 
   // The toast stays 3 s once the splash screen is gone.
   useEffect(() => {
@@ -149,8 +310,12 @@ export default function App() {
     setStatusBarStyle();
   }, []);
 
+  // Last swipes, newest last, for "geri al" (Kaydırak Plus).
+  const [swipeHistory, setSwipeHistory] = useState<{ item: MenuItem; direction: "left" | "right" }[]>([]);
+
   const handleSwipe = (item: MenuItem, direction: "left" | "right") => {
     setSwipedIds((prev) => [...prev, item.id]);
+    setSwipeHistory((prev) => [...prev.slice(-19), { item, direction }]);
 
     if (direction === "right") {
       rememberSelection(item);
@@ -161,6 +326,31 @@ export default function App() {
     }
   };
 
+  // Undo the last swipe: the dish comes back to the top of the deck and, if it was liked,
+  // leaves the liked list and the recent picks again.
+  const handleUndoSwipe = () => {
+    const last = swipeHistory[swipeHistory.length - 1];
+    if (!last) return;
+    setSwipeHistory((prev) => prev.slice(0, -1));
+    setSwipedIds((prev) => {
+      const i = prev.lastIndexOf(last.item.id);
+      return i === -1 ? prev : [...prev.slice(0, i), ...prev.slice(i + 1)];
+    });
+    if (last.direction === "right") {
+      setLikedPool((prev) => prev.filter((x) => x.id !== last.item.id));
+      setRecentSelections((prev) => {
+        const i = prev.lastIndexOf(last.item.id);
+        if (i === -1) return prev;
+        const next = [...prev.slice(0, i), ...prev.slice(i + 1)];
+        saveRecentSelections(next);
+        return next;
+      });
+    }
+  };
+
+  // Hızlı karar: three suggestions without swiping; `quickPage` = which three.
+  const [quickPage, setQuickPage] = useState<number | null>(null);
+
   const handleRemoveLiked = (item: MenuItem) => {
     setLikedPool((prev) => prev.filter((x) => x.id !== item.id));
   };
@@ -168,6 +358,7 @@ export default function App() {
   const handleRestartExplore = () => {
     setLikedPool([]);
     setSwipedIds([]);
+    setSwipeHistory([]);
     setFoodPool([...mockFoodItems].sort(() => Math.random() - 0.5));
     setActiveTab("explore");
   };
@@ -186,30 +377,37 @@ export default function App() {
     return [...local, ...ordered.filter((x) => !localIds.has(x.id))];
   };
 
+  // Main dishes are limited to the chosen meal; desserts are not.
+  const forMeal = (items: MenuItem[]) => (meal ? filterByMeal(items, meal) : items);
   const unswipedModePool = getModePool(
     foodPool.filter((x) => !swipedIds.includes(x.id)),
     foodPool === mockFoodItems
   );
   const courseCounts = {
-    main: filterByCourse(unswipedModePool, "main").length,
+    main: forMeal(filterByCourse(unswipedModePool, "main")).length,
     dessert: filterByCourse(unswipedModePool, "dessert").length
   };
-  const getFilteredPool = () => filterByCourse(unswipedModePool, course);
+  const getFilteredPool = () => forMeal(filterByCourse(unswipedModePool, course));
 
   // "Sana Özel Öneriler": from the whole menu of the active mode and course,
   // weighted by the types of the last 5 selections (see data/recommend.ts).
   const recommendations = useMemo(() => {
-    const candidates = filterByCourse(getModePool(mockFoodItems, true), course);
+    const candidates = forMeal(filterByCourse(getModePool(mockFoodItems, true), course));
     return recommend(candidates, recentSelections, 10);
     // getModePool only depends on activePersona and userCity
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePersona, userCity, course, recentSelections]);
+  }, [activePersona, userCity, course, recentSelections, meal]);
   const topType = rankTypes(
     recentSelections.map((id) => mockFoodItems.find((x) => x.id === id)).filter((x): x is MenuItem => x !== undefined)
   )[0];
   const recoSubtitle = topType
     ? t.recoSubtitlePersonal.replace("{type}", DISH_TYPE_LABELS[language][topType].toLocaleLowerCase(language === "tr" ? "tr-TR" : "en-US"))
     : t.recoSubtitlePopular;
+
+  // Ranked once per opening: mode, course, meal, recent picks; dishes already swiped left out.
+  const quickRanked = quickPage === null ? [] : recommend(getFilteredPool(), recentSelections, 30);
+  const quickPages = Math.max(1, Math.ceil(quickRanked.length / 3));
+  const quickItems = quickPage === null ? [] : quickRanked.slice((quickPage % quickPages) * 3, (quickPage % quickPages) * 3 + 3);
 
   const renderActiveContent = () => {
     if (isTournamentActive) {
@@ -239,9 +437,13 @@ export default function App() {
           averageCarbon={AVERAGE_CARBON}
           zeroWaste={isZeroWaste}
           onRescue={handleRescue}
+          label={tournamentChampion.label}
+          near={activePersona === "everyday" ? userPos : null}
           onRestart={() => {
+            const keepDeck = tournamentChampion.keepDeck;
             setTournamentChampion(null);
-            handleRestartExplore();
+            // Quick pick: back to the same deck and likes; after the arena: a fresh deck.
+            if (!keepDeck) handleRestartExplore();
           }}
         />
       );
@@ -251,7 +453,27 @@ export default function App() {
       case "explore":
         return (
           <div className="deck-container">
-            <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
+            {course === "main" && meal && (
+              <div className="meal-switch" role="tablist" aria-label={language === "tr" ? "Öğün" : "Meal"}>
+                {MEALS.map((m) => (
+                  <button key={m} role="tab" aria-selected={meal === m} className={`meal-chip ${meal === m ? "active" : ""}`} onClick={() => setMeal(m)}>
+                    {MEAL_ICONS[m]}
+                    <span>{MEAL_LABELS[language][m]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="deck-top-row">
+              <CourseToggle course={course} onChange={setCourse} counts={courseCounts} language={language} />
+              <button className="group-entry" onClick={() => setShowGroup(true)} aria-label={language === "tr" ? "Grup Masası" : "Group Table"}>
+                <Users size={18} />
+                <span>{language === "tr" ? "Grup" : "Group"}</span>
+              </button>
+            </div>
+            <button className="quick-pick-entry" onClick={() => setQuickPage(0)}>
+              <Zap size={14} />
+              <span>{language === "tr" ? "Kararsız mısın? Bana 3 öneri ver" : "Can't decide? Give me 3 picks"}</span>
+            </button>
             <SwipeDeck
               items={getFilteredPool()}
               onSwipe={handleSwipe}
@@ -259,7 +481,12 @@ export default function App() {
               language={language}
               showCarbon={carbonVisible}
               zeroWaste={isZeroWaste}
-              adsPaused={showSplash || showOnboarding || selectedInsightItem !== null}
+              adsPaused={showSplash || showOnboarding || showPlus || showGroup || quickPage !== null || authScreen !== null || selectedInsightItem !== null}
+              adsEnabled={!isPlus}
+              onOpenPlus={() => setShowPlus(true)}
+              isPlus={isPlus}
+              onUndo={handleUndoSwipe}
+              canUndo={swipeHistory.length > 0}
             />
           </div>
         );
@@ -288,6 +515,13 @@ export default function App() {
             setShowCarbonLabels={setShowCarbonLabels}
             impact={impact}
             onShowGuide={() => setShowOnboarding(true)}
+            isPlus={isPlus}
+            onOpenPlus={() => setShowPlus(true)}
+            account={authUser ? { name: displayNameOf(authUser), email: authUser.email ?? "" } : null}
+            onSignIn={() => setAuthScreen({ mode: "signin", firstRun: false })}
+            onSignUp={() => setAuthScreen({ mode: "signup", firstRun: false })}
+            onSignOut={handleSignOut}
+            onDeleteAccount={handleDeleteAccount}
           />
         );
       default:
@@ -344,7 +578,7 @@ export default function App() {
         {cityToast && !showSplash && !showOnboarding && (
           <div className="city-toast" role="status">
             <MapPin size={14} />
-            <span>{t.cityDetected.replace("{city}", cityToast)}</span>
+            <span>{(hasRestaurantData(cityToast) ? t.cityDetected : t.cityDetectedSoon).split("{city}").join(cityToast)}</span>
           </div>
         )}
 
@@ -407,6 +641,39 @@ export default function App() {
           </nav>
         )}
 
+        {!showSplash && !showOnboarding && authScreen && (
+          <AuthScreen
+            key={`${authScreen.mode}-${authScreen.firstRun}`}
+            language={language}
+            initialMode={authScreen.mode}
+            firstRun={authScreen.firstRun}
+            onClose={closeAuthScreen}
+          />
+        )}
+
+        {!showSplash && !showOnboarding && showGroup && (
+          <GroupScreen
+            language={language}
+            isPlus={isPlus}
+            defaultName={authUser ? displayNameOf(authUser) : ""}
+            dishPool={forMeal(filterByCourse(getModePool(mockFoodItems, true), "main"))}
+            allItems={mockFoodItems}
+            city={userCity}
+            onOpenPlus={() => setShowPlus(true)}
+            onClose={() => setShowGroup(false)}
+            onPickWinner={(item) => {
+              setShowGroup(false);
+              setIsTournamentActive(false);
+              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Grup Masasının seçimi" : "The table's pick", keepDeck: true });
+            }}
+            initialCode={inviteCode}
+          />
+        )}
+
+        {!showSplash && showPlus && (
+          <PlusSheet language={language} isPlus={isPlus} onPlusChange={setIsPlus} onClose={() => setShowPlus(false)} />
+        )}
+
         {!showSplash && selectedInsightItem && (
           <AiInsightModal
             item={selectedInsightItem}
@@ -418,6 +685,18 @@ export default function App() {
           />
         )}
 
+        {!showSplash && !showOnboarding && !authScreen && !showGroup && !modeIntro && (mealPickerOpen || meal === null) && (
+          <MealPicker
+            language={language}
+            modeName={modeTitle(activePersona)}
+            current={mealPickerOpen ? meal : null}
+            onPick={(m) => {
+              setMeal(m);
+              setMealPickerOpen(false);
+            }}
+          />
+        )}
+
         {!showSplash && modeIntro && (
           <ModeIntro
             persona={modeIntro}
@@ -425,6 +704,22 @@ export default function App() {
             onDone={() => {
               setModeIntro(null);
               setActiveTab("explore");
+              setMealPickerOpen(true);
+            }}
+          />
+        )}
+
+        {!showSplash && quickPage !== null && (
+          <QuickPick
+            items={quickItems}
+            language={language}
+            canShuffle={quickPages > 1}
+            onShuffle={() => setQuickPage((p) => (p ?? 0) + 1)}
+            onClose={() => setQuickPage(null)}
+            onPick={(item) => {
+              rememberSelection(item);
+              setQuickPage(null);
+              setTournamentChampion({ item, commentary: "", label: language === "tr" ? "Hızlı Kararın" : "Your Quick Pick", keepDeck: true });
             }}
           />
         )}
@@ -432,7 +727,11 @@ export default function App() {
         {!showSplash && showLocationModal && (
           <LocationModal
             currentCity={userCity}
-            onSelectCity={(city) => setUserCity(city)}
+            onSelectCity={(city) => {
+              // A city picked by hand: the phone's position no longer says where the user eats.
+              setUserPos(null);
+              setUserCity(city);
+            }}
             onClose={() => setShowLocationModal(false)}
             language={language}
           />

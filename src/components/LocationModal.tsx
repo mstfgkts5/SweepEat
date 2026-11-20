@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, MapPin, Compass, Search } from "lucide-react";
 import { translations } from "../data/translations";
 import { detectProvince } from "../data/location";
-import { PROVINCES } from "../data/provinces";
+import { PROVINCES, hasRestaurantData } from "../data/provinces";
 
 interface LocationModalProps {
   currentCity: string;
@@ -21,7 +21,17 @@ const POPULAR_TURKISH_CITIES = [
   "Eskişehir",
   "Adana",
   "Diyarbakır",
-  "Kahramanmaraş"
+  "Kahramanmaraş",
+  "Bursa",
+  "Antalya",
+  "Konya",
+  "Şanlıurfa",
+  "Kocaeli",
+  "Hatay",
+  "Manisa",
+  "Kayseri",
+  "Samsun",
+  "Trabzon"
 ];
 
 export default function LocationModal({
@@ -185,6 +195,9 @@ export default function LocationModal({
                 <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <MapPin size={14} style={{ opacity: isSelected ? 1 : 0.4 }} />
                   {city}
+                  {!hasRestaurantData(city) && (
+                    <span className="city-soon-tag">{language === "tr" ? "restoranlar yakında" : "restaurants soon"}</span>
+                  )}
                 </span>
                 {isSelected && <span style={{ fontSize: "11px", fontWeight: 800 }}>✓</span>}
               </button>

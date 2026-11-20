@@ -96,7 +96,8 @@ export const PROVINCES: Province[] = [
 
 // Cities that have restaurant data in the app (also the cities in the picker).
 export const RESTAURANT_CITIES = [
-  "İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş"
+  "İstanbul", "Ankara", "İzmir", "Mersin", "Gaziantep", "Eskişehir", "Adana", "Diyarbakır", "Kahramanmaraş",
+  "Bursa", "Antalya", "Konya", "Şanlıurfa", "Kocaeli", "Hatay", "Manisa", "Kayseri", "Samsun", "Trabzon"
 ];
 
 const toRad = (d: number) => (d * Math.PI) / 180;
@@ -143,6 +144,9 @@ export const nearestProvince = (lat: number, lon: number): Province | null => {
   }
   return bestKm <= 250 ? best : null;
 };
+
+// True when we have our own restaurant list for this province.
+export const hasRestaurantData = (city: string): boolean => RESTAURANT_CITIES.some((c) => norm(c) === norm(city));
 
 // For restaurant suggestions: the city itself if it has data, otherwise the nearest one that does.
 export const restaurantCityFor = (city: string): string => {

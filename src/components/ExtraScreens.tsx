@@ -1,6 +1,7 @@
+import AccountSection from "./AccountSection";
 import React, { useState, useMemo } from "react";
-import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, ShoppingCart, RefreshCw, Award, Leaf, Dumbbell, Flame, Wallet, Compass, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight } from "lucide-react";
-import type { MenuItem, Persona } from "../data/mockFood";
+import { Trash2, Trophy, ArrowRight, User, Settings, Check, Sparkles, Navigation, RefreshCw, Award, Leaf, Dumbbell, Utensils, MapPin, Star, Landmark, Recycle, Sprout, BookOpen, ChevronRight, Crown, Hourglass, Bell } from "lucide-react";
+import { PERSONAS, type MenuItem, type Persona } from "../data/mockFood";
 import { translations } from "../data/translations";
 import confetti from "canvas-confetti";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText, EMPTY_IMPACT } from "../data/sustainability";
@@ -10,7 +11,8 @@ import { generateTopRestaurants } from "../data/restaurantMatch";
 import { buildRound, roundKind, roundCount } from "../data/bracket";
 import SlideCelebration from "./SlideCelebration";
 import { prefersReducedMotion, PICK_SLIDE_MS } from "../data/motion";
-import { restaurantCityFor } from "../data/provinces";
+import { restaurantCityFor, hasRestaurantData } from "../data/provinces";
+import { hasRequestedCity, requestCity } from "../data/cityRequest";
 import { restaurantLookupNames, dishKeyOf, filterByCourse } from "../data/allFood";
 import type { Course } from "../data/allFood";
 import CourseToggle from "./CourseToggle";
@@ -132,6 +134,13 @@ interface ProfileScreenProps {
   setShowCarbonLabels?: (value: boolean) => void;
   impact?: ImpactStats;
   onShowGuide?: () => void;
+  isPlus?: boolean;
+  onOpenPlus?: () => void;
+  account?: { name: string; email: string } | null;
+  onSignIn?: () => void;
+  onSignUp?: () => void;
+  onSignOut?: () => Promise<void> | void;
+  onDeleteAccount?: () => Promise<void>;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
@@ -142,7 +151,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   showCarbonLabels = false,
   setShowCarbonLabels,
   impact = EMPTY_IMPACT,
-  onShowGuide
+  onShowGuide,
+  isPlus = false,
+  onOpenPlus,
+  account = null,
+  onSignIn,
+  onSignUp,
+  onSignOut,
+  onDeleteAccount
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -151,12 +167,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return t.profileFitDesc;
-      case "cheat_day":
-        return t.profileCheatDesc;
-      case "economic":
-        return t.profileEconomicDesc;
-      case "gourmet":
-        return t.profileGourmetDesc;
+      case "everyday":
+        return t.profileEverydayDesc;
       case "vegan":
         return t.profileVeganDesc;
       case "tourist":
@@ -172,12 +184,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return t.profileFitTitle;
-      case "cheat_day":
-        return t.profileCheatTitle;
-      case "economic":
-        return t.profileEconomicTitle;
-      case "gourmet":
-        return t.profileGourmetTitle;
+      case "everyday":
+        return t.profileEverydayTitle;
       case "vegan":
         return t.profileVeganTitle;
       case "tourist":
@@ -193,12 +201,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     switch (persona) {
       case "fit":
         return <Dumbbell size={18} />;
-      case "cheat_day":
-        return <Flame size={18} />;
-      case "economic":
-        return <Wallet size={18} />;
-      case "gourmet":
-        return <Compass size={18} />;
+      case "everyday":
+        return <Utensils size={18} />;
       case "vegan":
         return <Leaf size={18} />;
       case "tourist":
@@ -220,7 +224,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
       <span className="section-label">{t.profileAiModeLabel}</span>
       <div className="setting-card">
-        {(["fit", "cheat_day", "economic", "gourmet", "vegan", "tourist", "zero_waste"] as const).map((persona) => (
+        {PERSONAS.map((persona) => (
           <div
             key={persona}
             className={`setting-row`}
@@ -267,10 +271,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         <div className="impact-stat">
           <span className="impact-value">{impact.co2Kg} kg</span>
           <span className="impact-label">{eco.impactCo2}</span>
-        </div>
-        <div className="impact-stat">
-          <span className="impact-value">{impact.moneySaved} ₺</span>
-          <span className="impact-label">{eco.impactMoney}</span>
         </div>
       </div>
 
@@ -344,6 +344,31 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
+      {onSignIn && onSignUp && onSignOut && onDeleteAccount && (
+        <AccountSection
+          language={language}
+          account={account}
+          onSignIn={onSignIn}
+          onSignUp={onSignUp}
+          onSignOut={onSignOut}
+          onDeleteAccount={onDeleteAccount}
+        />
+      )}
+      {onOpenPlus && (
+        <button className="setting-card guide-link" onClick={onOpenPlus}>
+          <span className="setting-info">
+            <span className="setting-icon" style={{ color: "#B7791F", backgroundColor: "#FDF3D7" }}>
+              <Crown size={18} />
+            </span>
+            <span className="setting-title">
+              {isPlus
+                ? (language === "tr" ? "Kaydırak Plus üyesisin" : "You are a Kaydırak Plus member")
+                : (language === "tr" ? "Kaydırak Plus: reklamsız kaydır" : "Kaydırak Plus: swipe with no ads")}
+            </span>
+          </span>
+          <ChevronRight size={18} color="var(--text-light)" />
+        </button>
+      )}
       {onShowGuide && (
         <button className="setting-card guide-link" onClick={onShowGuide}>
           <span className="setting-info">
@@ -515,6 +540,10 @@ interface WinnerScreenProps {
   averageCarbon?: number;
   zeroWaste?: boolean;
   onRescue?: (item: MenuItem) => void;
+  // Heading over the dish (default: arena champion).
+  label?: string;
+  // Gündelik: the phone's position, to list the closest restaurants first.
+  near?: { lat: number; lon: number } | null;
 }
 
 export const WinnerScreen: React.FC<WinnerScreenProps> = ({
@@ -526,7 +555,9 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
   showCarbon = false,
   averageCarbon = 0,
   zeroWaste = false,
-  onRescue
+  onRescue,
+  label,
+  near = null
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -542,21 +573,38 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
       generateTopRestaurants(
         { key: dishKeyOf(champion), names: restaurantLookupNames(champion), nameEn: champion.nameEn, dishType: champion.dishType, category: champion.category },
         userCity,
-        language
+        language,
+        near
       ),
-    [champion, userCity, language]
+    [champion, userCity, language, near]
   );
+  const showsNearby = restaurants.some((r) => r.distanceKm !== undefined);
   const isLoadingRestaurants = false;
   // Provinces without restaurant data use the nearest city that has it.
   const restaurantCity = restaurantCityFor(userCity);
+  // No list of our own for this province: say so first ("yakında"); the nearest city's
+  // list is one tap away. Nearby (GPS) results are always real distances, so they stay.
+  const cityCovered = hasRestaurantData(userCity) || showsNearby;
+  const [showNearestList, setShowNearestList] = useState(false);
+  const [cityRequest, setCityRequest] = useState<"idle" | "sending" | "sent" | "failed">(
+    () => (hasRequestedCity(userCity) ? "sent" : "idle")
+  );
+  const sendCityRequest = async () => {
+    setCityRequest("sending");
+    setCityRequest((await requestCity(userCity)) ? "sent" : "failed");
+  };
+  const searchDishOnMaps = () => {
+    const q = encodeURIComponent(`${champion.nameTr} ${userCity}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+  };
 
-  const handleOrder = () => {
-    const name = language === "tr" ? champion.nameTr : champion.nameEn;
-    const bestRestaurant = restaurants[0]?.name || champion.restaurant;
-    const msg = language === "tr"
-      ? `Eşsiz Seçim! Yemeksepeti / Getir Yemek yönlendirmesi simüle ediliyor: ${name} - ${bestRestaurant}`
-      : `Excellent Choice! Redirecting to Yemeksepeti / Getir Yemek: ${name} - ${bestRestaurant}`;
-    alert(msg);
+  // There is no ordering integration: the main button gives honest directions to the
+  // best restaurant (or a Maps search in a city we do not cover yet).
+  const bestRestaurant = cityCovered ? restaurants[0] : undefined;
+  const handleDirections = () => {
+    if (!bestRestaurant) return searchDishOnMaps();
+    const place = [bestRestaurant.name, bestRestaurant.address || bestRestaurant.area, restaurantCity].filter(Boolean).join(" ");
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}`, "_blank");
   };
 
   return (
@@ -564,7 +612,7 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
       <div className="winner-crown">
         <Award size={36} />
       </div>
-      <span className="winner-subtitle">{t.winnerLabel}</span>
+      <span className="winner-subtitle">{label ?? t.winnerLabel}</span>
       <h2 className="winner-title">{language === "tr" ? champion.nameTr : champion.nameEn}</h2>
 
       <img src={champion.imageUrl} alt={language === "tr" ? champion.nameTr : champion.nameEn} className="winner-image" />
@@ -583,7 +631,13 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           onClick={() => setActiveTabSection("restaurants")}
         >
           <Trophy size={13} />
-          <span>{t.winnerTabRestaurants} ({restaurantCityFor(userCity)})</span>
+          <span>
+            {showsNearby
+              ? (language === "tr" ? "Yakınındaki 5 Restoran" : "5 Restaurants Near You")
+              : cityCovered || showNearestList
+                ? `${t.winnerTabRestaurants} (${restaurantCity})`
+                : `${language === "tr" ? "Restoranlar" : "Restaurants"} (${userCity})`}
+          </span>
         </button>
       </div>
 
@@ -639,13 +693,54 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
           )}
         </div>
       ) : (
-        <div className="winner-restaurant-list">
+        <div className={`winner-restaurant-list ${!cityCovered && !showNearestList ? "is-soon" : ""}`}>
           {isLoadingRestaurants ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", gap: "12px" }}>
               <RefreshCw size={24} className="spin-animation" style={{ color: "var(--emerald-green)" }} />
               <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 600 }}>
                 {language === "tr" ? "Gerçek mekanlar sorgulanıyor..." : "Searching real places..."}
               </span>
+            </div>
+          ) : !cityCovered && !showNearestList ? (
+            <div className="city-soon-card">
+              <div className="city-soon-icon"><Hourglass size={22} /></div>
+              <strong className="city-soon-title">
+                {language === "tr" ? `${userCity} çok yakında` : `${userCity} is coming soon`}
+              </strong>
+              <p className="city-soon-text">
+                {language === "tr"
+                  ? `${userCity} için kendi restoran listemizi hazırlıyoruz. Şimdilik bu yemeği senin için Google Haritalar'da arayabiliriz.`
+                  : `We are preparing our own restaurant list for ${userCity}. For now we can search this dish on Google Maps for you.`}
+              </p>
+              <button className="city-soon-primary" onClick={searchDishOnMaps}>
+                <MapPin size={15} />
+                <span>
+                  {language === "tr"
+                    ? `"${champion.nameTr} ${userCity}" ara`
+                    : `Search "${champion.nameEn} ${userCity}"`}
+                </span>
+              </button>
+              <button
+                className="city-soon-secondary"
+                onClick={sendCityRequest}
+                disabled={cityRequest === "sending" || cityRequest === "sent"}
+              >
+                {cityRequest === "sent" ? <Check size={15} /> : <Bell size={15} />}
+                <span>
+                  {cityRequest === "sent"
+                    ? language === "tr" ? `${userCity} isteğin alındı, teşekkürler!` : `Request for ${userCity} received, thanks!`
+                    : cityRequest === "failed"
+                      ? language === "tr" ? "Gönderilemedi, tekrar dene" : "Could not send, try again"
+                      : language === "tr" ? `${userCity} gelsin diye oy ver` : `Vote for ${userCity}`}
+                </span>
+              </button>
+              {restaurants.length > 0 && restaurantCity !== userCity && (
+                <button className="city-soon-link" onClick={() => setShowNearestList(true)}>
+                  {language === "tr"
+                    ? `En yakın şehir ${restaurantCity} listesini göster`
+                    : `Show the list for the nearest city, ${restaurantCity}`}
+                </button>
+              )}
             </div>
           ) : restaurants.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "16px 0" }}>
@@ -692,6 +787,14 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
                         : language === "tr" ? "Genel öneri" : "General pick"}
                   </span>
                   <div className="restaurant-meta-detail">
+                    {rest.distanceKm !== undefined && (
+                      <span className="restaurant-distance">
+                        <MapPin size={11} />
+                        {rest.distanceKm < 1
+                          ? `${Math.max(50, Math.round(rest.distanceKm * 20) * 50)} m`
+                          : `${rest.distanceKm.toLocaleString(language === "tr" ? "tr-TR" : "en-US", { maximumFractionDigits: 1 })} km`}
+                      </span>
+                    )}
                     {rest.area && <span>{rest.area}</span>}
                     {rest.area && rest.rating !== null && <span>•</span>}
                     {rest.rating !== null ? (
@@ -756,12 +859,17 @@ export const WinnerScreen: React.FC<WinnerScreenProps> = ({
             style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
           >
             <Recycle size={18} />
-            {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{price}", String(championDeal.rescuedPrice))}
+            {isRescued ? eco.rescuedBtn : eco.rescueBtn.replace("{percent}", String(championDeal.discountPercent))}
           </button>
         )}
-        <button className="action-btn" onClick={handleOrder} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-          <ShoppingCart size={18} /> {t.winnerOrderBtn}
+        <button className="action-btn" onClick={handleDirections} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+          <Navigation size={18} /> {bestRestaurant ? t.winnerOrderBtn : t.winnerSearchBtn}
         </button>
+        {bestRestaurant && (
+          <span className="order-btn-hint">
+            {language === "tr" ? `${bestRestaurant.name} için yol tarifi açılır` : `Opens directions to ${bestRestaurant.name}`}
+          </span>
+        )}
         <button className="secondary-btn" onClick={onRestart} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
           <RefreshCw size={16} /> {t.winnerReturnBtn}
         </button>

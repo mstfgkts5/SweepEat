@@ -4,6 +4,8 @@
 // Everything here is additive: existing modes keep working unchanged.
 // ==========================================
 import type { MenuItem, Persona } from "./mockFood";
+import { everydaySourceOf } from "./allFood";
+import { stripPrices } from "./noPrice";
 
 export type CarbonGrade = "A" | "B" | "C" | "D" | "E";
 
@@ -160,7 +162,7 @@ export const ecoText = {
     winnerEcoLine: "Tahmini karbon ayak izi: {kg} kg CO₂e (Not {grade}).",
     winnerEcoLower: "Ortalama bir yemekten {diff} kg daha düşük. 🌱",
     winnerEcoHigher: "Ortalama bir yemekten {diff} kg daha yüksek.",
-    rescueBtn: "Porsiyonu Kurtar • {price} ₺",
+    rescueBtn: "Porsiyonu Kurtar • %{percent} indirim",
     rescuedBtn: "Kurtarıldı! Teşekkürler 🌍",
     rescuedAlert: "{name} senin için ayrıldı! {restaurant} şubesinden teslim alabilirsin. Son teslim saati: {time}.",
     duelEcoHint: "Çevre dostu seçim",
@@ -185,7 +187,7 @@ export const ecoText = {
     winnerEcoLine: "Estimated footprint: {kg} kg CO₂e (Grade {grade}).",
     winnerEcoLower: "{diff} kg lower than an average dish. 🌱",
     winnerEcoHigher: "{diff} kg higher than an average dish.",
-    rescueBtn: "Rescue Portion • ₺{price}",
+    rescueBtn: "Rescue Portion • {percent}% off",
     rescuedBtn: "Rescued! Thank you 🌍",
     rescuedAlert: "{name} is reserved for you! Pick it up from {restaurant} by {time}.",
     duelEcoHint: "Eco-friendly pick",
@@ -200,5 +202,7 @@ export const getPersonaInsight = (
   language: "tr" | "en"
 ): string => {
   if (persona === "zero_waste") return getZeroWasteInsight(item, language);
-  return item.aiInsights[language][persona];
+  // No prices on screen: older texts were written around an amount (see noPrice.ts).
+  if (persona === "everyday") return stripPrices(item.aiInsights[language][everydaySourceOf(item)]);
+  return stripPrices(item.aiInsights[language][persona]);
 };

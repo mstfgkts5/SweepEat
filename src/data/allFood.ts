@@ -8,7 +8,8 @@ import { mockFoodItems } from "./mockFood";
 import type { MenuItem, Persona } from "./mockFood";
 import { extraFoodItems } from "./moreFood";
 import { popularFoodItems } from "./popularFood";
-import { MODE_LISTS, KEY_BY_ID, NAME_OVERRIDES } from "./modeLists";
+import { MODE_LISTS, KEY_BY_ID, NAME_OVERRIDES, EVERYDAY_SOURCE } from "./modeLists";
+import type { EverydaySource } from "./modeLists";
 import type { Mode } from "./modeLists";
 import { localDishKeys } from "./localDishes";
 import { dishTypeFor, isDessertType } from "./dishTypes";
@@ -79,6 +80,11 @@ export const sortByModeRank = (items: MenuItem[], persona: Persona): MenuItem[] 
 
 // Name to look a dish up in the curated restaurant lists.
 export const restaurantLookupName = (item: MenuItem): string => ORIGINAL_NAME.get(item.id) ?? item.nameTr;
+
+// Gündelik: which former list (Ekonomik / Cheat Day / Gurme) a dish came from; its AI
+// comment for Gündelik is the one written for that list.
+export const everydaySourceOf = (item: MenuItem): EverydaySource =>
+  EVERYDAY_SOURCE.get(KEY_BY_ITEM_ID.get(item.id) ?? "") ?? "economic";
 
 // Key of a dish in the menu (photo file name without ".jpg").
 export const dishKeyOf = (item: MenuItem): string => KEY_BY_ITEM_ID.get(item.id) ?? keyOf(item);

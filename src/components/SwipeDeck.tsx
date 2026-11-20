@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Heart, Sparkles, Star } from "lucide-react";
+import { X, Heart, Sparkles, Star, RotateCcw, Lock } from "lucide-react";
 import type { MenuItem } from "../data/mockFood";
 import { translations } from "../data/translations";
 import { estimateCarbon, getSurplusDeal, CARBON_GRADE_COLORS, ecoText } from "../data/sustainability";
@@ -10,14 +10,6 @@ import AdCard from "./AdCard";
 // (which unmounts the deck) does not reset it.
 let swipesSinceAdStore = 0;
 
-// Typical price band for a dish (prices differ by restaurant): about -10% / +20%, rounded to 10 TL.
-const round10 = (n: number) => Math.max(10, Math.round(n / 10) * 10);
-const priceRange = (price: number): string => {
-  const low = round10(price * 0.9);
-  const high = Math.max(low + 10, round10(price * 1.2));
-  return `${low} - ${high} TL`;
-};
-
 interface SwipeDeckProps {
   items: MenuItem[];
   onSwipe: (item: MenuItem, direction: "left" | "right") => void;
@@ -27,6 +19,17 @@ interface SwipeDeckProps {
   zeroWaste?: boolean;
   // Something covers the deck (dish detail, guide): a native ad must hide meanwhile.
   adsPaused?: boolean;
+  // false for Kaydırak Plus members: no ad cards.
+  adsEnabled?: boolean;
+  onOpenPlus?: () => void;
+  // Kaydırak Plus: undo. Others see a lock that opens the Plus sheet.
+  isPlus?: boolean;
+  // Undo the last swipe (the button only shows when this is given).
+  onUndo?: () => void;
+  canUndo?: boolean;
+  // The "Yapay Zeka Analizi" button on the card. Off since 19 Nov 2026 (the dish detail
+  // still opens from Beğenilenler); kept as a switch in case it comes back.
+  showInsight?: boolean;
 }
 
 export const SwipeDeck: React.FC<SwipeDeckProps> = ({
@@ -36,7 +39,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   language,
   showCarbon = false,
   zeroWaste = false,
-  adsPaused = false
+  adsPaused = false,
+  adsEnabled = true,
+  onOpenPlus = () => undefined,
+  isPlus = false,
+  onUndo,
+  canUndo = false,
+  showInsight = false
 }) => {
   const t = translations[language];
   const eco = ecoText[language];
@@ -152,12 +161,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   }, [isDragging, dragOffset]);
 
   // Every few dishes an ad card comes before the next dish (Android/iOS app only, never on the web).
-  if (activeItem && adsSupported() && adDue(swipesSinceAd)) {
+  if (activeItem && adsEnabled && adsSupported() && adDue(swipesSinceAd)) {
     return (
       <AdCard
         slotKey={`swipe-ad-${adSerial}`}
         language={language}
         paused={adsPaused}
+        onOpenPlus={onOpenPlus}
         onDone={() => {
           setSwipesSinceAd(0);
           setAdSerial((n) => n + 1);
@@ -190,9 +200,10 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   let colorOverlayColor = "transparent";
 
   if (dragOffset.x > 0) {
-    glowShadow = `0 12px 35px rgba(42, 157, 143, ${dragPercentage * 0.45})`;
-    borderGlow = `${1 + dragPercentage}px solid rgba(42, 157, 143, ${dragPercentage})`;
-    colorOverlayColor = `rgba(42, 157, 143, ${dragPercentage * 0.25})`;
+    // Right swipe = like: a clear green (Tailwind green-500 #22C55E / green-600 #16A34A).
+    glowShadow = `0 12px 35px rgba(34, 197, 94, ${dragPercentage * 0.55})`;
+    borderGlow = `${1 + dragPercentage * 2}px solid rgba(22, 163, 74, ${dragPercentage})`;
+    colorOverlayColor = `rgba(34, 197, 94, ${dragPercentage * 0.35})`;
   } else if (dragOffset.x < 0) {
     glowShadow = `0 12px 35px rgba(230, 57, 70, ${dragPercentage * 0.45})`;
     borderGlow = `${1 + dragPercentage}px solid rgba(230, 57, 70, ${dragPercentage})`;
@@ -270,7 +281,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
             )}
 
             {/* AI Insight Button (Center-Bottom of the Image) */}
-            <div
+            {showInsight && <div
               className="ai-insight-btn-wrapper"
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -280,7 +291,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <Sparkles size={13} />
                 {t.swipeAiInsight}
               </button>
-            </div>
+            </div>}
           </div>
 
           {/* Details (white area under the photo) */}
@@ -293,8 +304,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                 <strong>{activeItem.rating}</strong>
                 <span className="card-review-count">({activeItem.reviewCount})</span>
               </div>
-              <span className="card-meta-dot">•</span>
-              <span className="card-price-range">{priceRange(activeItem.price)}</span>
               {showCarbon && (() => {
                 const c = estimateCarbon(activeItem);
                 return (
@@ -320,11 +329,11 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
                   <div className="surplus-banner-top">
                     <span className="surplus-badge">{eco.surplusBadge}</span>
                     <span className="surplus-price">
-                      <s>{activeItem.price} ₺</s> <strong>{deal.rescuedPrice} ₺</strong>
+                      <strong>-%{deal.discountPercent}</strong>
                     </span>
                   </div>
                   <span className="surplus-meta">
-                    -%{deal.discountPercent} · {eco.portionsLeft.replace("{n}", String(deal.portionsLeft))} · {eco.pickupUntil.replace("{time}", deal.pickupUntil)}
+                    {eco.portionsLeft.replace("{n}", String(deal.portionsLeft))} · {eco.pickupUntil.replace("{time}", deal.pickupUntil)}
                   </span>
                 </div>
               );
@@ -343,10 +352,25 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
       {/* Swipe Control Buttons */}
       <div className="swipe-controls">
-        <button className="control-btn dislike" onClick={() => triggerSwipe("left")}>
+        <button className="control-btn dislike" onClick={() => triggerSwipe("left")} aria-label={language === "tr" ? "Geç" : "Skip"}>
           <X size={24} strokeWidth={3} />
         </button>
-        <button className="control-btn like" onClick={() => triggerSwipe("right")}>
+        {onUndo && (
+          <button
+            className={`control-btn undo ${isPlus && !canUndo ? "idle" : ""}`}
+            onClick={() => {
+              if (!isPlus) return onOpenPlus();
+              if (!canUndo) return;
+              setSwipesSinceAd(Math.max(0, swipesSinceAdStore - 1));
+              onUndo();
+            }}
+            aria-label={language === "tr" ? "Son kaydırmayı geri al" : "Undo last swipe"}
+          >
+            <RotateCcw size={20} strokeWidth={2.6} />
+            {!isPlus && <span className="undo-lock"><Lock size={10} /></span>}
+          </button>
+        )}
+        <button className="control-btn like" onClick={() => triggerSwipe("right")} aria-label={language === "tr" ? "Beğen" : "Like"}>
           <Heart size={24} strokeWidth={3} fill="white" />
         </button>
       </div>

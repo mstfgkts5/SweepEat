@@ -19,7 +19,8 @@ import { hasTrustedRating, bayesianScore } from "./ranking";
 import { GUIDE_PLACES } from "./cityGuide";
 import type { PlaceKind } from "./cityGuide";
 import type { DishType } from "./dishTypes";
-import { restaurantCityFor } from "./provinces";
+import { restaurantCityFor, distanceKm } from "./provinces";
+import placeCoords from "./placeCoords.json";
 
 export const SUGGESTION_COUNT = 5;
 
@@ -40,6 +41,8 @@ export interface MockRestaurant {
   match: MatchLevel;
   address?: string;
   mapsUri?: string;
+  // Gündelik: straight-line distance from the user, when both positions are known.
+  distanceKm?: number;
 }
 
 export interface DishQuery {
@@ -440,8 +443,8 @@ export interface Suggestion {
   match: MatchLevel;
 }
 
-// The places to suggest for a dish in a city (no UI text): at most `count`, best first.
-export const suggestPlaces = (q: DishQuery, city: string, count: number = SUGGESTION_COUNT): Suggestion[] => {
+// Every place of the city, best match for the dish first.
+const rankPlaces = (q: DishQuery, city: string): Suggestion[] => {
   const places = cityPlaces(city);
   const curatedNames = q.names.map(norm);
   const words = dishKeywords(q);
@@ -475,7 +478,50 @@ export const suggestPlaces = (q: DishQuery, city: string, count: number = SUGGES
     for (let i = 0; i < a.score.length; i++) if (a.score[i] !== b.score[i]) return a.score[i] - b.score[i];
     return 0;
   });
-  return scored.slice(0, count).map(({ place, match }) => ({ place, match }));
+  return scored.map(({ place, match }) => ({ place, match }));
+};
+
+// The places to suggest for a dish in a city (no UI text): at most `count`, best first.
+export const suggestPlaces = (q: DishQuery, city: string, count: number = SUGGESTION_COUNT): Suggestion[] =>
+  rankPlaces(q, city).slice(0, count);
+
+// ---------- Near the user (Gündelik mode) ----------
+
+// Map positions of the places, from OpenStreetMap (tools/geocode-places.mts).
+const COORDS = placeCoords as Record<string, [number, number, string]>;
+export const placePosition = (city: string, name: string): { lat: number; lon: number } | null => {
+  const c = COORDS[`${city}|${name}`];
+  return c ? { lat: c[0], lon: c[1] } : null;
+};
+
+// Search circles around the user, smallest first. The first circle with enough places that
+// serve the dish (or this kind of food) is used, so suggestions stay as close as possible.
+export const NEAR_RADII_KM = [1, 2, 3, 5, 8, 12, 20];
+
+export interface NearSuggestion extends Suggestion {
+  distanceKm: number;
+}
+
+// Places that serve the dish or this kind of food, closest first, inside the smallest
+// circle that has `count` of them. Empty when no such place has a known position near the
+// user (then the normal city-wide list is used).
+export const suggestNearby = (
+  q: DishQuery,
+  city: string,
+  pos: { lat: number; lon: number },
+  count: number = SUGGESTION_COUNT
+): NearSuggestion[] => {
+  const candidates = rankPlaces(q, city)
+    .filter((s) => s.match !== "general")
+    .map((s) => {
+      const p = placePosition(city, s.place.name);
+      return p ? { ...s, distanceKm: distanceKm(pos.lat, pos.lon, p.lat, p.lon) } : null;
+    })
+    .filter((s): s is NearSuggestion => s !== null)
+    .sort((a, b) => a.distanceKm - b.distanceKm);
+  const radius = NEAR_RADII_KM.find((r) => candidates.filter((c) => c.distanceKm <= r).length >= count);
+  const inside = candidates.filter((c) => c.distanceKm <= (radius ?? NEAR_RADII_KM[NEAR_RADII_KM.length - 1]));
+  return inside.slice(0, count);
 };
 
 const MATCH_NOTE: Record<MatchLevel, { tr: string; en: string }> = {
@@ -484,9 +530,16 @@ const MATCH_NOTE: Record<MatchLevel, { tr: string; en: string }> = {
   general: { tr: "Şehirdeki genel öneri; bu yemeği menüsünde aramayı unutmayın.", en: "A general pick in the city; check the menu for this dish." }
 };
 
-export const generateTopRestaurants = (q: DishQuery, userCity: string, language: "tr" | "en"): MockRestaurant[] => {
+export const generateTopRestaurants = (
+  q: DishQuery,
+  userCity: string,
+  language: "tr" | "en",
+  near: { lat: number; lon: number } | null = null
+): MockRestaurant[] => {
   const city = restaurantCityFor(userCity);
-  return suggestPlaces(q, city).map(({ place, match }, index) => {
+  const nearby = near ? suggestNearby(q, city, near) : [];
+  const list: (Suggestion & { distanceKm?: number })[] = nearby.length > 0 ? nearby : suggestPlaces(q, city);
+  return list.map(({ place, match, distanceKm: km }, index) => {
     const trusted = hasTrustedRating(place.rating, place.reviews);
     const note = MATCH_NOTE[match][language];
     return {
@@ -499,7 +552,8 @@ export const generateTopRestaurants = (q: DishQuery, userCity: string, language:
       mapsUri: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name} ${place.address || place.district} ${city}`)}`,
       comment: note ? `${place.comment} ${note}`.trim() : place.comment,
       isFoodAvailable: match === "dish",
-      match
+      match,
+      ...(km !== undefined ? { distanceKm: Math.round(km * 10) / 10 } : {})
     };
   });
 };

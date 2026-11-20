@@ -46,8 +46,8 @@ const PAGES: Page[] = [
     key: "swipe",
     title: { tr: "Kaydır: sağa beğen, sola geç", en: "Swipe: right to like, left to skip" },
     text: {
-      tr: "Kartı sağa kaydır ya da ❤️'ye bas: beğendin. Sola kaydır ya da ✕'e bas: geçtin. Karta dokunup “Yapay Zeka Analizi” ile yemeğin detayına bakabilirsin.",
-      en: "Swipe right or tap ❤️ to like. Swipe left or tap ✕ to skip. Tap “AI Analysis” on a card to see the dish in detail."
+      tr: "Kartı sağa kaydır ya da ❤️'ye bas: beğendin. Sola kaydır ya da ✕'e bas: geçtin. Beğendiğin yemeğin detayına Beğenilenler sekmesinden bakabilirsin.",
+      en: "Swipe right or tap ❤️ to like. Swipe left or tap ✕ to skip. See a liked dish in detail from the Liked tab."
     },
     art: <SwipeArt />
   },
@@ -62,10 +62,10 @@ const PAGES: Page[] = [
   },
   {
     key: "mode",
-    title: { tr: "Modunu ve şehrini seç", en: "Pick your mode and city" },
+    title: { tr: "Modunu, öğününü ve şehrini seç", en: "Pick your mode, meal and city" },
     text: {
-      tr: "Profil'den Fit, Cheat Day, Ekonomik, Gurme, Vegan, Turist ya da Sıfır Atık modunu seç. Konum izni verirsen bulunduğun ili otomatik bulur, yemeklere oradan başlarız; konumun telefonundan dışarı çıkmaz.",
-      en: "Choose Fit, Cheat Day, Budget, Gourmet, Vegan, Tourist or Zero Waste in Profile. If you allow location, we find your province and start from there; your location never leaves your phone."
+      tr: "Profil'den Gündelik, Fit, Vegan, Turist ya da Sıfır Atık modunu seç; sonra kahvaltı, öğle ya da akşam yemeği mi, onu söyle. Konum izni verirsen bulunduğun yeri bulur, Gündelik modda sana en yakın restoranları önerir; konumun telefonundan dışarı çıkmaz.",
+      en: "Choose Everyday, Fit, Vegan, Tourist or Zero Waste in Profile, then tell us if it is breakfast, lunch or dinner. If you allow location, we find where you are and, in Everyday mode, suggest the closest restaurants; your location never leaves your phone."
     },
     art: <IconArt icon={<MapPin size={44} />} tone="teal" />
   },

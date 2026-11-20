@@ -13,7 +13,7 @@ export const translations = {
     modeIntroLabel: "Seçilen Mod",
 
     // Explore / Swipe Deck
-    swipeSponsored: "SPONSORLU",
+    swipeSponsored: "REKLAM · SPONSORLU",
     swipeCouponUnlock: "%15 İNDİRİM KUPONUNU AÇMAK İÇİN SAĞA KAYDIR",
     swipeAiInsight: "YAPAY ZEKA ANALİZİ",
     swipeEmpty: "Deste Bitti!",
@@ -54,12 +54,8 @@ export const translations = {
     profileAiModeLabel: "Aktif Yapay Zeka Modu",
     profileFitTitle: "Fit & Diyet Modu",
     profileFitDesc: "Yüksek protein, düşük kalori ve sağlıklı seçimleri destekler.",
-    profileCheatTitle: "Cheat Day Modu",
-    profileCheatDesc: "Kaloriyi önemsemez, yüksek puanlı lezzetleri öne çıkarır!",
-    profileEconomicTitle: "Ekonomik Mod",
-    profileEconomicDesc: "Fiyat/Performans odaklı en doyurucu teklifleri seçer.",
-    profileGourmetTitle: "Gurme / Kaşif Modu",
-    profileGourmetDesc: "Kullanıcı geçmişine göre en eşsiz, popüler ve gurme tatları önerir.",
+    profileEverydayTitle: "Gündelik Mod",
+    profileEverydayDesc: "Her gün için: doyurucu ve uygun fiyatlı yemekler, sevilen sokak lezzetleri ve özel tabaklar bir arada. Konumuna en yakın restoranları önerir.",
     profileVeganTitle: "Vegan Modu",
     profileVeganDesc: "Tamamen bitkisel, temiz ve sürdürülebilir lezzetli vegan alternatifleri filtreler.",
     profileTouristTitle: "Turist Modu (Yerel Lezzetler)",
@@ -77,6 +73,7 @@ export const translations = {
     locationModalAuto: "Konumumu Otomatik Bul",
     locationModalLoading: "Konum bulunuyor...",
     cityDetected: "Konumun: {city}. Yemekler buradan başlıyor.",
+    cityDetectedSoon: "Konumun: {city}. Yemekler hazır; {city} restoran listesi çok yakında.",
     locationSearchPlaceholder: "İl ara...",
 
     // Tournament / Duello Screen
@@ -94,7 +91,8 @@ export const translations = {
     winnerAiRefLabel: "YAPAY ZEKA HAKEM YORUMU",
     winnerSponsorLabel: "ÖZEL İNDİRİM KAZANDINIZ!",
     winnerSponsorText: "Bu yemeğe özel %{discount} indirim kodunuz:",
-    winnerOrderBtn: "Sipariş Ver",
+    winnerOrderBtn: "Yol Tarifi Al",
+    winnerSearchBtn: "Haritada Ara",
     winnerReturnBtn: "Keşfetmeye Geri Dön",
     winnerTabCommentary: "Hakem Yorumu",
     winnerTabRestaurants: "En İyi 5 Restoran",
@@ -115,7 +113,7 @@ export const translations = {
     modeIntroLabel: "Selected Mode",
 
     // Explore / Swipe Deck
-    swipeSponsored: "SPONSORED",
+    swipeSponsored: "AD · SPONSORED",
     swipeCouponUnlock: "SWIPE RIGHT TO UNLOCK 15% COUPON",
     swipeAiInsight: "AI INSIGHT",
     swipeEmpty: "Deck Finished!",
@@ -156,12 +154,8 @@ export const translations = {
     profileAiModeLabel: "Active AI Mode",
     profileFitTitle: "Fit & Diet Mode",
     profileFitDesc: "Supports high protein, low calorie, and healthy choices.",
-    profileCheatTitle: "Cheat Day Mode",
-    profileCheatDesc: "Ignores calories, highlights highly rated tastes!",
-    profileEconomicTitle: "Economic Mode",
-    profileEconomicDesc: "Selects the most filling value-for-money offers.",
-    profileGourmetTitle: "Gourmet / Explorer Mode",
-    profileGourmetDesc: "Recommends unique, popular, and gourmet tastes based on user history.",
+    profileEverydayTitle: "Everyday Mode",
+    profileEverydayDesc: "For every day: filling, good-value dishes, favourite street food and special plates together. Suggests the restaurants closest to you.",
     profileVeganTitle: "Vegan Mode",
     profileVeganDesc: "Filters entirely plant-based, clean, and sustainable delicious vegan alternatives.",
     profileTouristTitle: "Tourist Mode (Local Food)",
@@ -179,6 +173,7 @@ export const translations = {
     locationModalAuto: "Detect Location Automatically",
     locationModalLoading: "Locating...",
     cityDetected: "You are in {city}. Dishes start from here.",
+    cityDetectedSoon: "You are in {city}. Dishes are ready; the {city} restaurant list is coming soon.",
     locationSearchPlaceholder: "Search city...",
 
     // Tournament / Duello Screen
@@ -196,7 +191,8 @@ export const translations = {
     winnerAiRefLabel: "AI REFEREE COMMENTARY",
     winnerSponsorLabel: "YOU WON A SPECIAL DISCOUNT!",
     winnerSponsorText: "Your special %{discount} discount code for this dish:",
-    winnerOrderBtn: "Order Now",
+    winnerOrderBtn: "Get Directions",
+    winnerSearchBtn: "Search on Maps",
     winnerReturnBtn: "Return to Exploring",
     winnerTabCommentary: "Referee Review",
     winnerTabRestaurants: "Top 5 Restaurants",
