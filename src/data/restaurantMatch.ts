@@ -20,7 +20,7 @@ import { GUIDE_PLACES } from "./cityGuide";
 import type { PlaceKind } from "./cityGuide";
 import type { DishType } from "./dishTypes";
 import { restaurantCityFor, distanceKm } from "./provinces";
-import { isDishChecked } from "./checkedDishes";
+import { isDishChecked, isPlaceClosed } from "./checkedDishes";
 import placeCoords from "./placeCoords.json";
 
 export const SUGGESTION_COUNT = 5;
@@ -159,6 +159,7 @@ export const cityPlaces = (city: string): Place[] => {
     trusted = false
   ) => {
     const cleanName = name.split("(")[0].trim();
+    if (isPlaceClosed(city, cleanName)) return;
     const key = norm(cleanName);
     let place = byName.get(key);
     if (!place) {
