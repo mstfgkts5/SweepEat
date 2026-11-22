@@ -9,8 +9,11 @@
 //  - places with an OpenStreetMap id: their position from the Overpass API (one request)
 //  - other places: OpenStreetMap Nominatim search by address, then by name, at most one
 //    request per second as its usage policy asks, with an identifying User-Agent.
-// A result further than 60 km from the city centre is thrown away (wrong match).
-import { writeFileSync } from "node:fs";
+// A result further than 60 km from the city centre is thrown away (wrong match), and so is a
+// search result that is just the city centre or that several places share (Nominatim's
+// fallback to a town or street centre, which would give wrong distances).
+// Places already in the file are kept and not looked up again, so a new city only adds its own.
+import { readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "vite";
 
 const UA = "Kaydirak-app/1.3 (one-off geocoding; https://github.com/mstfgkts5/SweepEat)";
@@ -22,12 +25,20 @@ const { RESTAURANT_CITIES, findProvince, distanceKm } = await server.ssrLoadModu
 const { getVerifiedRestaurant } = await server.ssrLoadModule("/src/data/verifiedRestaurants.ts");
 
 type Coord = [number, number, string];
-const out: Record<string, Coord> = {};
+const out: Record<string, Coord> = (() => {
+  try {
+    return JSON.parse(readFileSync("src/data/placeCoords.json", "utf8"));
+  } catch {
+    return {};
+  }
+})();
+const known = new Set(Object.keys(out));
 const todo: { key: string; city: string; name: string; address: string; district: string; osm?: string }[] = [];
 
 for (const city of RESTAURANT_CITIES as string[]) {
   for (const p of cityPlaces(city) as { name: string; address: string; district: string }[]) {
     const v = getVerifiedRestaurant(city, p.name);
+    if (known.has(`${city}|${p.name}`)) continue;
     todo.push({ key: `${city}|${p.name}`, city, name: p.name, address: p.address, district: p.district, osm: v?.osm });
   }
 }
@@ -36,6 +47,10 @@ console.log(`${todo.length} places`);
 const near = (city: string, lat: number, lon: number) => {
   const c = findProvince(city);
   return c ? distanceKm(lat, lon, c.lat, c.lon) <= 60 : true;
+};
+const atCentre = (city: string, lat: number, lon: number) => {
+  const c = findProvince(city);
+  return c ? distanceKm(lat, lon, c.lat, c.lon) < 0.5 : false;
 };
 
 // 1) OpenStreetMap ids → positions, in one Overpass request.
@@ -91,7 +106,7 @@ for (const t of todo) {
   ];
   for (const [q, how] of tries) {
     const r = await search(q);
-    if (r && near(t.city, r.lat, r.lon)) {
+    if (r && near(t.city, r.lat, r.lon) && !atCentre(t.city, r.lat, r.lon)) {
       out[t.key] = [+r.lat.toFixed(6), +r.lon.toFixed(6), how];
       if (how === "address") byAddress++;
       else byName++;
@@ -100,6 +115,12 @@ for (const t of todo) {
   }
 }
 console.log(`nominatim: ${byAddress} by address, ${byName} by name`);
+
+// Search results that several places share are a street or district centre: drop them.
+const spot = (c: Coord) => `${c[0].toFixed(4)},${c[1].toFixed(4)}`;
+const shared = new Map<string, number>();
+for (const c of Object.values(out)) shared.set(spot(c), (shared.get(spot(c)) ?? 0) + 1);
+for (const [k, c] of Object.entries(out)) if (c[2] !== "osm" && (shared.get(spot(c)) ?? 0) > 1) delete out[k];
 console.log(`total: ${Object.keys(out).length}/${todo.length}`);
 
 const sorted = Object.fromEntries(Object.entries(out).sort(([a], [b]) => a.localeCompare(b, "tr")));
