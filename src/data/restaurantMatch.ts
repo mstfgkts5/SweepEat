@@ -462,6 +462,15 @@ const dishKeywords = (q: DishQuery): string[][] => {
 
 const hasWord = startsWord;
 
+// "tatlısı" is a stop word for search, but it tells "Tavuk Göğsü" (grill) from
+// "Tavuk Göğsü Tatlısı" (pudding), so it is kept here.
+const wordSet = (name: string): string =>
+  [...new Set([...tokensOf(name).map(stem), ...(norm(name).includes("tatli") ? ["tatli"] : [])])].sort().join(" ");
+const sameWords = (a: string, b: string): boolean => {
+  const wa = wordSet(a);
+  return wa !== "" && wa === wordSet(b);
+};
+
 // Phrases that look like a dish word but are another dish: a "çiğ köfteci" is no köfte grill.
 const NOT_THIS_DISH: Record<string, string[]> = {
   "izgara-kofte": ["cig kofte", "mercimek kofte", "icli kofte"],
@@ -492,12 +501,10 @@ const rankPlaces = (q: DishQuery, city: string): Suggestion[] => {
   const [primary, secondary] = KEY_KINDS[q.key] ?? TYPE_KINDS[q.dishType ?? "et"];
 
   const scored = places.map((place) => {
-    // A curated list names the dish when it holds every distinctive word of the dish's name
-    // (so a "çorba" list does not make a place known for "Çorba + Lahmacun Menü").
-    const curated = place.curatedFor.some((d) => q.names.some((n) => {
-      const need = tokensOf(n).map(stem);
-      return norm(n) === d || (need.length > 0 && need.every((w) => hasWord(d, w)));
-    }));
+    // A curated list names the dish when it has the same distinctive words as one of the
+    // dish's names (so a "Mercimek Köftesi" list does not make a place known for
+    // "Izgara Köfte", nor a "çorba" list for "Çorba + Lahmacun Menü").
+    const curated = place.curatedFor.some((d) => q.names.some((n) => norm(n) === d || sameWords(n, d)));
     const named = namesDish(withoutOtherDishes(place.knownText, q.key), words);
     const kindRank = primary.some((k) => place.kinds.has(k)) ? 0 : secondary.some((k) => place.kinds.has(k)) ? 1 : 2;
     const fallbackKinds = q.dishType === "tatli" ? SWEET_KINDS : MEAL_KINDS;
