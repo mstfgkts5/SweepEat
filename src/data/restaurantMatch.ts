@@ -20,7 +20,7 @@ import { GUIDE_PLACES } from "./cityGuide";
 import type { PlaceKind } from "./cityGuide";
 import type { DishType } from "./dishTypes";
 import { restaurantCityFor, distanceKm } from "./provinces";
-import { isDishChecked, isPlaceClosed } from "./checkedDishes";
+import { isDishChecked, isDishRefuted, isPlaceClosed } from "./checkedDishes";
 import placeCoords from "./placeCoords.json";
 
 export const SUGGESTION_COUNT = 5;
@@ -207,7 +207,7 @@ export const cityPlaces = (city: string): Place[] => {
     for (const [dish, list] of Object.entries(db)) {
       for (const r of list) {
         const v = verified(r.name);
-        if (v) upsert(r.name, v, [], r.commentTr, dish);
+        if (v && !isDishRefuted(city, r.name.split("(")[0].trim(), dish)) upsert(r.name, v, [], r.commentTr, dish);
       }
     }
   }

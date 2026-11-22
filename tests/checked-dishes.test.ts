@@ -31,3 +31,11 @@ test("a place shown as permanently closed is never suggested", async () => {
   const { match } = await load();
   assert.ok(!match.cityPlaces("İstanbul").some((p) => p.name === "Gezi İstanbul"));
 });
+
+test("a dish that the place's full menu does not have is not suggested there", async () => {
+  const { match, checked } = await load();
+  assert.ok(checked.REFUTED_DISHES.length > 0);
+  for (const c of checked.REFUTED_DISHES) assert.ok(c.source.startsWith("http"), `${c.place}: ${c.dish}`);
+  const saray = match.cityPlaces("İstanbul").find((p) => p.name === "Saray Muhallebicisi");
+  assert.ok(!saray || !saray.text.includes("kabak sandal"), "Saray Muhallebicisi no longer listed for kabak sandal");
+});

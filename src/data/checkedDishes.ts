@@ -64,6 +64,41 @@ export const CHECKED_DISHES: CheckedDish[] = [
   { city: "Mersin", place: "Erzurum Cağ Kebabı", dish: "Cağ Kebabı", source: "mekânın adı + OpenStreetMap kaydı" },
   { city: "Gaziantep", place: "Metanet Lokantası", dish: "Beyran Çorbası", source: "https://www.bizevdeyokuz.com/antep-ne-yenir-nerede-yenir/" },
   { city: "İstanbul", place: "Komagene", dish: "Çiğ Köfte", source: "mekânın adı + OpenStreetMap kaydı" },
+  // 23 November 2026, second pass: food-delivery menus (Migros Yemek, Trendyol Go Yemek)
+  { city: "İstanbul", place: "Hafız Mustafa 1864", dish: "Zerde", source: "https://tgoyemek.com/restoranlar/290302" },
+  { city: "İzmir", place: "Ohannes Burger", dish: "Hamburger Menü", source: "https://tgoyemek.com/restoranlar/169706" },
+  { city: "İstanbul", place: "Oses Çiğ Köfte", dish: "Çiğ Köfte Dürüm", source: "https://www.migros.com.tr/yemek/oses-cig-kofte-basaksehir-2-kisim-mah-st-273eb" },
+  { city: "Ankara", place: "Oses Çiğ Köfte", dish: "Çiğ Köfte Dürüm", source: "https://www.migros.com.tr/yemek/oses-cig-kofte-basaksehir-2-kisim-mah-st-273eb" },
+  { city: "Eskişehir", place: "Oses Çiğ Köfte", dish: "Çiğ Köfte Dürüm", source: "https://www.migros.com.tr/yemek/oses-cig-kofte-basaksehir-2-kisim-mah-st-273eb" },
+  { city: "İzmir", place: "Köfteci Remzi", dish: "Kuru Fasulye Piyazı", source: "https://www.migros.com.tr/yemek/kofteci-remzi-bostanli-karsiyaka-mah-st-1ec03" },
+  { city: "İzmir", place: "Kırçiçeği", dish: "Mercimek Çorbası + Kıymalı Pide / Lahmacun", source: "https://www.migros.com.tr/yemek/kircicegi-konak-alsancak-mah-st-1b224" },
+  { city: "İstanbul", place: "Dürümcü Emmi", dish: "Beyran Çorbası", source: "https://www.migros.com.tr/yemek/durumcu-emmi-kadikoy-hasanpasa-mah-st-3239d" },
+  { city: "Ankara", place: "Düveroğlu", dish: "Ali Nazik Kebabı", source: "https://www.neredenekadarayenir.com/2021/10/duveroglu-pide-kebap-bilkent-ankara-menu-fiyat.html" },
+  { city: "İstanbul", place: "Tahin", dish: "Falafel Dürüm", source: "https://www.migros.com.tr/yemek/tahin-kadikoy-caddebostan-mah-st-3013d" },
+];
+
+// Pairs from the older lists that a full menu (on a food-delivery platform or a published menu)
+// shows the place does NOT serve: that list entry is dropped, so the place is not suggested for
+// that dish at all, not even as "serves this kind of food".
+export const REFUTED_DISHES: CheckedDish[] = [
+  { city: "Ankara", place: "Konyalı Hacı Usta", dish: "Zeytinyağlı Enginar", source: "https://www.migros.com.tr/yemek/konyali-haci-usta-etimesgut-istasyon-mah-st-1af9b" },
+  { city: "Ankara", place: "Konyalı Hacı Usta", dish: "Kuru Patlıcan Dolması", source: "https://www.migros.com.tr/yemek/konyali-haci-usta-etimesgut-istasyon-mah-st-1af9b" },
+  { city: "Ankara", place: "Konyalı Hacı Usta", dish: "İmam Bayıldı", source: "https://www.migros.com.tr/yemek/konyali-haci-usta-etimesgut-istasyon-mah-st-1af9b" },
+  { city: "Ankara", place: "Konyalı Hacı Usta", dish: "Yeşil Mercimekli Bulgur Pilavı", source: "https://www.migros.com.tr/yemek/konyali-haci-usta-etimesgut-istasyon-mah-st-1af9b" },
+  { city: "İstanbul", place: "Saray Muhallebicisi", dish: "Fırında Kabak Sandal", source: "https://www.migros.com.tr/yemek/saray-muhallebicisi-1935-sisli-esentepe-mah-st-1fb1a" },
+  { city: "İstanbul", place: "Saray Muhallebicisi", dish: "Zerde", source: "https://www.migros.com.tr/yemek/saray-muhallebicisi-1935-sisli-esentepe-mah-st-1fb1a" },
+  { city: "İstanbul", place: "Tarihi Sultanahmet Köftecisi", dish: "Cızbız Köfte ve Patates Kızartması", source: "https://www.migros.com.tr/yemek/tarihi-sultanahmet-koftecisi-1920-umraniye-serifali-mah-st-18e33" },
+  { city: "İstanbul", place: "Cookshop", dish: "Islak Kek / Ağlayan Pasta", source: "https://www.migros.com.tr/yemek/cookshop-besiktas-etiler-mah-st-30a8a" },
+  { city: "Gaziantep", place: "İmam Çağdaş", dish: "Beyti Sarma", source: "https://nekadarayenir.tumblr.com/post/189672993967/imam-%C3%A7a%C4%9Fda%C5%9F-gaziantep-men%C3%BC-fiyat-listesi/amp" },
+  { city: "Gaziantep", place: "İmam Çağdaş", dish: "İçli Köfte", source: "https://nekadarayenir.tumblr.com/post/189672993967/imam-%C3%A7a%C4%9Fda%C5%9F-gaziantep-men%C3%BC-fiyat-listesi/amp" },
+  { city: "Gaziantep", place: "İmam Çağdaş", dish: "Kuru Patlıcan Dolması", source: "https://nekadarayenir.tumblr.com/post/189672993967/imam-%C3%A7a%C4%9Fda%C5%9F-gaziantep-men%C3%BC-fiyat-listesi/amp" },
+  { city: "Gaziantep", place: "İmam Çağdaş", dish: "Humus", source: "https://nekadarayenir.tumblr.com/post/189672993967/imam-%C3%A7a%C4%9Fda%C5%9F-gaziantep-men%C3%BC-fiyat-listesi/amp" },
+  { city: "İstanbul", place: "Bodrum Mantı & Cafe", dish: "Cevizli Mantı", source: "https://www.migros.com.tr/yemek/bodrum-manti-cafe-kadikoy-caddebostan-mah-st-26605" },
+  { city: "İzmir", place: "Kırçiçeği", dish: "Mantı", source: "https://www.migros.com.tr/yemek/kircicegi-konak-alsancak-mah-st-1b224" },
+  { city: "İzmir", place: "Kırçiçeği", dish: "Kavurmalı Kaşarlı Pide", source: "https://www.migros.com.tr/yemek/kircicegi-konak-alsancak-mah-st-1b224" },
+  { city: "İzmir", place: "Kırçiçeği", dish: "Cevizli Mantı", source: "https://www.migros.com.tr/yemek/kircicegi-konak-alsancak-mah-st-1b224" },
+  { city: "İzmir", place: "Kırçiçeği", dish: "Kavrulmuş Çorbalık Erişte", source: "https://www.migros.com.tr/yemek/kircicegi-konak-alsancak-mah-st-1b224" },
+  { city: "İzmir", place: "Sevinç Pastanesi", dish: "Muhammara / Acuka", source: "https://tgoyemek.com/restoranlar/100886" },
 ];
 
 // Places from the older lists that a source shows as permanently closed: never suggested.
@@ -92,6 +127,11 @@ const CHECKED = new Set(CHECKED_DISHES.map((c) => `${norm(c.city)}|${norm(c.plac
 const CLOSED = new Set(CLOSED_PLACES.map((c) => `${norm(c.city)}|${norm(c.place)}`));
 
 export const isPlaceClosed = (city: string, place: string): boolean => CLOSED.has(`${norm(city)}|${norm(place)}`);
+
+const REFUTED = new Set(REFUTED_DISHES.map((c) => `${norm(c.city)}|${norm(c.place)}|${norm(c.dish)}`));
+
+export const isDishRefuted = (city: string, place: string, dish: string): boolean =>
+  REFUTED.has(`${norm(city)}|${norm(place)}|${norm(dish)}`);
 
 export const isDishChecked = (city: string, place: string, dish: string): boolean =>
   CHECKED.has(`${norm(city)}|${norm(place)}|${norm(dish)}`);
