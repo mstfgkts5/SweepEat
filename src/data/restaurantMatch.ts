@@ -465,7 +465,13 @@ const hasWord = startsWord;
 // "tatlısı" is a stop word for search, but it tells "Tavuk Göğsü" (grill) from
 // "Tavuk Göğsü Tatlısı" (pudding), so it is kept here.
 const wordSet = (name: string): string =>
-  [...new Set([...tokensOf(name).map(stem), ...(norm(name).includes("tatli") ? ["tatli"] : [])])].sort().join(" ");
+  [
+    ...new Set([
+      // short words count here ("çiğ" in "Çiğ Köfte"), unlike in the search words
+      ...norm(name).split(" ").filter((w) => w.length >= 3 && !STOP_WORDS.has(w)).map(stem),
+      ...(norm(name).includes("tatli") ? ["tatli"] : [])
+    ])
+  ].sort().join(" ");
 const sameWords = (a: string, b: string): boolean => {
   const wa = wordSet(a);
   return wa !== "" && wa === wordSet(b);
