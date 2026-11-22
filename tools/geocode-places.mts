@@ -66,12 +66,30 @@ const parts = Object.entries(ids)
   .join("");
 if (parts) {
   const query = `[out:json][timeout:120];(${parts});out center;`;
-  const res = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    headers: { "User-Agent": UA, "Content-Type": "application/x-www-form-urlencoded" },
-    body: `data=${encodeURIComponent(query)}`
-  });
-  const data = (await res.json()) as { elements: { type: string; id: number; lat?: number; lon?: number; center?: { lat: number; lon: number } }[] };
+  type Element = { type: string; id: number; lat?: number; lon?: number; center?: { lat: number; lon: number } };
+  // Overpass servers are often busy and then answer with an HTML page: try a few, a few times.
+  // If none answers, these places fall through to the Nominatim search below.
+  let elements: Element[] = [];
+  const servers = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
+  outer: for (let attempt = 0; attempt < 3; attempt++) {
+    for (const server of servers) {
+      try {
+        const res = await fetch(server, {
+          method: "POST",
+          headers: { "User-Agent": UA, "Content-Type": "application/x-www-form-urlencoded" },
+          body: `data=${encodeURIComponent(query)}`
+        });
+        const text = await res.text();
+        if (!res.ok || !text.trimStart().startsWith("{")) throw new Error(`${server}: ${res.status}`);
+        elements = (JSON.parse(text) as { elements: Element[] }).elements;
+        break outer;
+      } catch (err) {
+        console.log(`overpass busy (${(err as Error).message}), trying again`);
+        await sleep(10000);
+      }
+    }
+  }
+  const data = { elements };
   const pos = new Map(data.elements.map((e) => [`${e.type}/${e.id}`, e.center ?? { lat: e.lat!, lon: e.lon! }]));
   for (const t of withOsm) {
     const p = pos.get(t.osm!);
