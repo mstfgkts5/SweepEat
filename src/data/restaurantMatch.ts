@@ -488,7 +488,7 @@ export const suggestPlaces = (q: DishQuery, city: string, count: number = SUGGES
 // ---------- Near the user (Gündelik mode) ----------
 
 // Map positions of the places, from OpenStreetMap (tools/geocode-places.mts).
-const COORDS = placeCoords as Record<string, [number, number, string]>;
+const COORDS = placeCoords as unknown as Record<string, [number, number, string]>;
 export const placePosition = (city: string, name: string): { lat: number; lon: number } | null => {
   const c = COORDS[`${city}|${name}`];
   return c ? { lat: c[0], lon: c[1] } : null;
