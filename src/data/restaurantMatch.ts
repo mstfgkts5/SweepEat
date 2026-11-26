@@ -20,6 +20,7 @@ import { GUIDE_PLACES } from "./cityGuide";
 import type { PlaceKind } from "./cityGuide";
 import type { DishType } from "./dishTypes";
 import { restaurantCityFor, distanceKm } from "./provinces";
+import { isDishChecked, isDishRefuted, isPlaceClosed } from "./checkedDishes";
 import placeCoords from "./placeCoords.json";
 
 export const SUGGESTION_COUNT = 5;
@@ -82,7 +83,10 @@ interface Place {
   address: string;
   district: string;
   kinds: Set<PlaceKind>;
-  text: string;          // normalised name + descriptions, for dish keyword search
+  text: string;          // normalised name + all descriptions (for the kind of place)
+  // Normalised name + descriptions from sources we trust for what a place is known for
+  // (published city guides). Only this text makes a place "known for" a dish.
+  knownText: string;
   comment: string;       // description shown to the user
   curatedFor: string[];  // normalised dish names of the curated lists the place is in
   rating?: number;
@@ -151,9 +155,11 @@ export const cityPlaces = (city: string): Place[] => {
     v: { address: string; district: string; rating?: number; reviews?: number },
     kinds: PlaceKind[],
     description: string,
-    curatedFor?: string
+    curatedFor?: string,
+    trusted = false
   ) => {
     const cleanName = name.split("(")[0].trim();
+    if (isPlaceClosed(city, cleanName)) return;
     const key = norm(cleanName);
     let place = byName.get(key);
     if (!place) {
@@ -163,6 +169,7 @@ export const cityPlaces = (city: string): Place[] => {
         district: v.district,
         kinds: new Set(),
         text: norm(cleanName),
+        knownText: norm(cleanName),
         comment: description,
         curatedFor: [],
         rating: v.rating,
@@ -172,11 +179,14 @@ export const cityPlaces = (city: string): Place[] => {
       byName.set(key, place);
     }
     place.text += ` ${norm(`${name} ${description}`)}`;
+    if (trusted) place.knownText += ` ${norm(`${name} ${description}`)}`;
     // Curated per-dish lists: the description talks about that one dish, so the kind of
     // place is taken from the dish name, not from the text.
     const described = curatedFor ? kindsFromText(norm(curatedFor)) : kindsFromText(norm(description));
     for (const k of [...kinds, ...kindsFromText(norm(name)), ...described]) place.kinds.add(k);
-    if (curatedFor) place.curatedFor.push(norm(curatedFor));
+    // A curated per-dish list counts only where a check found the dish at that place
+    // (checkedDishes.ts): the older lists were written without sources.
+    if (curatedFor && isDishChecked(city, cleanName, curatedFor)) place.curatedFor.push(norm(curatedFor));
   };
 
   const verified = (name: string) => getVerifiedRestaurant(city, name) ?? getExtraCityPlace(city, name);
@@ -197,14 +207,14 @@ export const cityPlaces = (city: string): Place[] => {
     for (const [dish, list] of Object.entries(db)) {
       for (const r of list) {
         const v = verified(r.name);
-        if (v) upsert(r.name, v, [], r.commentTr, dish);
+        if (v && !isDishRefuted(city, r.name.split("(")[0].trim(), dish)) upsert(r.name, v, [], r.commentTr, dish);
       }
     }
   }
   // 2) city guides
   const guideKey = Object.keys(GUIDE_PLACES).find((k) => norm(k) === norm(city));
   for (const g of guideKey ? GUIDE_PLACES[guideKey] : []) {
-    upsert(g.name, { address: g.address, district: g.district }, g.kinds, g.known);
+    upsert(g.name, { address: g.address, district: g.district }, g.kinds, g.known, undefined, true);
   }
 
   // The same shop is sometimes listed under a shorter and a longer name
@@ -223,6 +233,7 @@ export const cityPlaces = (city: string): Place[] => {
       continue;
     }
     twin.text += ` ${place.text}`;
+    twin.knownText += ` ${place.knownText}`;
     for (const k of place.kinds) twin.kinds.add(k);
     twin.curatedFor.push(...place.curatedFor);
     if (twin.rating == null && place.rating != null) {
@@ -254,7 +265,7 @@ const KEY_WORDS: Record<string, string[]> = {
   "pilav-ustu-doner": ["doner"],
   "tavuk-doner-durum-eco": ["tavuk doner", "doner"],
   "tavuk-sis": ["tavuk sis"],
-  "kuzu-sis": ["kuzu sis", "sis"],
+  "kuzu-sis": ["kuzu sis"],
   "ciger-sis": ["ciger"],
   "hamsi-tava": ["hamsi"],
   "hamsili-pilav": ["hamsi"],
@@ -274,7 +285,7 @@ const KEY_WORDS: Record<string, string[]> = {
   "kunefe": ["kunefe"],
   "katmer": ["katmer"],
   "baklava": ["baklava"],
-  "fistikli-sarma": ["sarma", "baklava"],
+  "fistikli-sarma": ["fistikli sarma", "baklava"],
   "sobiyet": ["sobiyet", "baklava"],
   "maras-dondurmasi": ["dondurma"],
   "su-boregi": ["su boregi", "borek"],
@@ -288,7 +299,7 @@ const KEY_WORDS: Record<string, string[]> = {
   "islak-hamburger": ["islak hamburger", "islak burger"],
   "vegan-burger": ["vegan burger", "burger"],
   "menemen": ["menemen"],
-  "serpme-kahvalti": ["serpme", "kahvalti"],
+  "serpme-kahvalti": ["serpme"],
   "kuymak": ["kuymak", "muhlama"],
   "simit": ["simit"],
   "boyoz": ["boyoz"],
@@ -308,17 +319,17 @@ const KEY_WORDS: Record<string, string[]> = {
   "icli-kofte": ["icli kofte"],
   "cig-kofte-vegan": ["cig kofte", "cigkofte"],
   "tire-koftesi": ["tire kofte"],
-  "kofte-piyaz": ["kofte", "piyaz"],
-  "izgara-kofte": ["kofte"],
-  "islama-kofte": ["islama kofte", "kofte"],
-  "cizbiz-kofte": ["kofte"],
-  "ekmek-arasi-kofte-eco": ["kofte ekmek", "kofte"],
+  "kofte-piyaz": ["kofte piyaz", "piyaz"],
+  "izgara-kofte": ["izgara kofte", "kofteci", "kofte salonu"],
+  "islama-kofte": ["islama"],
+  "cizbiz-kofte": ["cizbiz"],
+  "ekmek-arasi-kofte-eco": ["kofte ekmek", "ekmek arasi kofte", "kofteci"],
   "ali-nazik-kebabi": ["ali nazik"],
   "beyti-sarma": ["beyti"],
   "cag-kebabi": ["cag kebab"],
   "kuzu-tandir": ["tandir"],
   "testi-kebabi": ["testi kebab"],
-  "hatay-durum": ["tavuk durum", "durum"],
+  "hatay-durum": ["tavuk durum"],
   "sikma-eco": ["sikma"],
   "gozleme-eco": ["gozleme"],
   "patatesli-gozleme": ["gozleme"],
@@ -330,17 +341,17 @@ const KEY_WORDS: Record<string, string[]> = {
   "etli-ekmek": ["etli ekmek"],
   "keskek": ["keskek"],
   "tarhana-corbasi": ["tarhana"],
-  "mercimek-corbasi-vegan": ["mercimek"],
+  "mercimek-corbasi-vegan": ["mercimek corba"],
   "ezogelin-corbasi": ["ezogelin"],
   "yayla-corbasi": ["yayla"],
   "domates-corbasi": ["domates corba"],
   "tavuk-corbasi": ["tavuk suyu", "tavuk corba"],
   "perde-pilavi": ["perde pilav"],
   "buryan-kebabi": ["buryan"],
-  "kuru-patlican-dolmasi": ["dolma"],
-  "yaprak-sarmasi": ["sarma", "yaprak"],
+  "kuru-patlican-dolmasi": ["kuru patlican", "kuru dolma"],
+  "yaprak-sarmasi": ["yaprak sarma", "zeytinyagli sarma"],
   "lahana-sarmasi": ["lahana sarma", "karalahana"],
-  "biber-dolmasi": ["dolma"],
+  "biber-dolmasi": ["biber dolma"],
   "hunkar-begendi": ["hunkar"],
   "karniyarik": ["karniyarik"],
   "imam-bayildi": ["imam bayildi"],
@@ -350,23 +361,39 @@ const KEY_WORDS: Record<string, string[]> = {
   "saksuka": ["saksuka"],
   "babagannus": ["babagannus"],
   "muhammara-acuka": ["muhammara", "acuka"],
-  "patlican-salatasi": ["patlican"],
+  "patlican-salatasi": ["patlican salata", "koz patlican"],
   "gavurdagi-salatasi": ["gavurdagi"],
   "coban-salata": ["coban"],
   "kisir": ["kisir"],
   "mercimek-koftesi": ["mercimek kofte"],
   "tavuk-kanat-cheat": ["kanat"],
-  "citir-tavuk": ["tavuk"],
-  "tavuk-gogsu": ["tavuk"],
-  "tavuk-pirzola": ["tavuk"],
-  "firinda-tavuk": ["tavuk"],
+  "citir-tavuk": ["citir tavuk", "tavuk kizart", "fried chicken"],
+  "tavuk-gogsu": ["tavuk gogsu izgara", "izgara tavuk"],
+  "tavuk-pirzola": ["tavuk pirzola"],
+  "firinda-tavuk": ["firin tavuk", "firinda tavuk"],
   "kuzu-pirzola": ["pirzola"],
   "izgara-bonfile": ["bonfile", "steak", "antrikot"],
   "kuzu-incik": ["incik"],
   "tepsi-kebabi": ["tepsi kebab"],
   "cokertme-kebabi": ["cokertme"],
-  "patates-kizartmasi": ["patates"],
-  "sosisli-sandvic-eco": ["sosis"]
+  "patates-kizartmasi": ["patates kizartma", "patates", "fast food"],
+  "sosisli-sandvic-eco": ["sosis"],
+  // 23 Nov 2026: dishes whose own name words are too general on their own
+  "izgara-sebze": ["izgara sebze", "sebze izgara"],
+  "sebze-corbasi": ["sebze corba"],
+  "sebzeli-makarna": ["sebzeli makarna"],
+  "kiymali-makarna": ["kiymali makarna"],
+  "bulgur-pilavi": ["bulgur pilav"],
+  "yesil-mercimekli-bulgur-pilavi": ["mercimekli bulgur"],
+  "firinda-baharatli-patates-dilimleri": ["elma dilim", "baharatli patates", "patates dilim"],
+  "patates-salatasi": ["patates salata"],
+  "kabak-tatlisi": ["kabak tatli"],
+  "ton-balikli-salata": ["ton balik"],
+  "tavuklu-nohutlu-pilav-eco": ["nohutlu pilav", "pilav ustu", "pilavci"],
+  "akdeniz-salatasi": ["akdeniz salata", "mevsim salata"],
+  "islak-kek": ["islak kek", "aglayan pasta"],
+  "taze-fasulye": ["taze fasulye"],
+  "sebzeli-guvec": ["sebze guvec", "sebzeli guvec"]
 };
 
 // Kinds of place for each dish type: first those that clearly serve it, then close ones.
@@ -420,15 +447,46 @@ const tokensOf = (name: string): string[] =>
 
 const stem = (w: string): string => (w.length > 6 ? w.slice(0, w.length - 2) : w);
 
-// Words that name the dish: the hand-picked ones when there are, otherwise the
-// distinctive words of its names ("Fırında Mücver" -> "mucver").
-const dishKeywords = (q: DishQuery): string[] => {
-  const words = new Set<string>(KEY_WORDS[q.key] ?? []);
-  if (words.size === 0) for (const n of q.names) for (const t of tokensOf(n)) words.add(stem(t));
-  return [...words].map(norm).filter((w) => w.length >= 3);
+// Ways to name the dish, each a list of words that must ALL be in the place's text: the
+// hand-picked phrases when there are, otherwise each name's distinctive words together
+// ("Bolonez Soslu Makarna" -> bolonez + makar), so a place that only says "makarna" is not
+// "known for" Bolonez (it stays "serves this kind of food; check the menu").
+// Reviewed 23 Nov 2026: single ingredient words ("tavuk", "dolma", "şiş", "dürüm") made
+// places look known for dishes they do not serve.
+const dishKeywords = (q: DishQuery): string[][] => {
+  const picked = KEY_WORDS[q.key];
+  if (picked) return picked.map((w) => [norm(w)]);
+  return q.names
+    .map((n) => tokensOf(n).map((t) => norm(stem(t))).filter((w) => w.length >= 3))
+    .filter((ws) => ws.length > 0);
 };
 
 const hasWord = startsWord;
+
+// "tatlısı" is a stop word for search, but it tells "Tavuk Göğsü" (grill) from
+// "Tavuk Göğsü Tatlısı" (pudding), so it is kept here.
+const wordSet = (name: string): string =>
+  [
+    ...new Set([
+      // short words count here ("çiğ" in "Çiğ Köfte"), unlike in the search words
+      ...norm(name).split(" ").filter((w) => w.length >= 3 && !STOP_WORDS.has(w)).map(stem),
+      ...(norm(name).includes("tatli") ? ["tatli"] : [])
+    ])
+  ].sort().join(" ");
+const sameWords = (a: string, b: string): boolean => {
+  const wa = wordSet(a);
+  return wa !== "" && wa === wordSet(b);
+};
+
+// Phrases that look like a dish word but are another dish: a "çiğ köfteci" is no köfte grill.
+const NOT_THIS_DISH: Record<string, string[]> = {
+  "izgara-kofte": ["cig kofte", "mercimek kofte", "icli kofte"],
+  "ekmek-arasi-kofte-eco": ["cig kofte", "mercimek kofte", "icli kofte"],
+  "kofte-piyaz": ["cig kofte", "mercimek kofte"]
+};
+const withoutOtherDishes = (text: string, key: string): string =>
+  (NOT_THIS_DISH[key] ?? []).reduce((t, phrase) => t.replace(new RegExp(`(^| )${phrase}\\S*`, "g"), " "), text);
+const namesDish = (text: string, ways: string[][]): boolean => ways.some((ws) => ws.every((w) => hasWord(text, w)));
 
 // For the "general" top-up: sit-down restaurants first for a main dish, sweet shops for a dessert.
 const MEAL_KINDS: PlaceKind[] = ["ev", "kebap", "meze", "balik", "italyan", "manti", "corba", "hamur"];
@@ -446,13 +504,15 @@ export interface Suggestion {
 // Every place of the city, best match for the dish first.
 const rankPlaces = (q: DishQuery, city: string): Suggestion[] => {
   const places = cityPlaces(city);
-  const curatedNames = q.names.map(norm);
   const words = dishKeywords(q);
   const [primary, secondary] = KEY_KINDS[q.key] ?? TYPE_KINDS[q.dishType ?? "et"];
 
   const scored = places.map((place) => {
-    const curated = place.curatedFor.some((d) => curatedNames.some((n) => d === n || d.includes(n) || n.includes(d)));
-    const named = words.some((w) => hasWord(place.text, w));
+    // A curated list names the dish when it has the same distinctive words as one of the
+    // dish's names (so a "Mercimek Köftesi" list does not make a place known for
+    // "Izgara Köfte", nor a "çorba" list for "Çorba + Lahmacun Menü").
+    const curated = place.curatedFor.some((d) => q.names.some((n) => norm(n) === d || sameWords(n, d)));
+    const named = namesDish(withoutOtherDishes(place.knownText, q.key), words);
     const kindRank = primary.some((k) => place.kinds.has(k)) ? 0 : secondary.some((k) => place.kinds.has(k)) ? 1 : 2;
     const fallbackKinds = q.dishType === "tatli" ? SWEET_KINDS : MEAL_KINDS;
     const fallbackRank = fallbackKinds.some((k) => place.kinds.has(k)) ? 0 : 1;
@@ -488,7 +548,7 @@ export const suggestPlaces = (q: DishQuery, city: string, count: number = SUGGES
 // ---------- Near the user (Gündelik mode) ----------
 
 // Map positions of the places, from OpenStreetMap (tools/geocode-places.mts).
-const COORDS = placeCoords as Record<string, [number, number, string]>;
+const COORDS = placeCoords as unknown as Record<string, [number, number, string]>;
 export const placePosition = (city: string, name: string): { lat: number; lon: number } | null => {
   const c = COORDS[`${city}|${name}`];
   return c ? { lat: c[0], lon: c[1] } : null;
